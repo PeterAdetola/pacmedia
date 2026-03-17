@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* AUTH GRADIENT ANIMATION */
+@keyframes auth-gradient-move {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.animate-gradient {
+    background-size: 200% 100%;
+    animation: auth-gradient-move 2.5s ease-in-out infinite;
+}
