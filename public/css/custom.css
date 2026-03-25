@@ -1,0 +1,1063 @@
+/* === Custom Overrides for Hover Styles === */
+
+/* 1. Buttons on hover - change text/icon color to peridot on black */
+.no-touch .hover-default:hover,
+.no-touch .hover-circle:hover {
+  color: #e6e200 !important;
+  background-color: #000000 !important;
+}
+
+.no-touch .hover-default:hover i,
+.no-touch .hover-circle:hover i {
+  color: #e6e200 !important;
+}
+
+/* 2. Navbar links on hover - change text color to peridot */
+.no-touch .menu-link:hover {
+  color: #e6e200 !important;
+}
+
+/* 3. Text links - change underline color on hover to peridot */
+.no-touch .text-link,
+.no-touch .text-link.text-link-medium {
+  text-decoration: none;
+  position: relative;
+}
+
+/* .no-touch .text-link::after,
+.no-touch .text-link.text-link-medium::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1px;
+  background-color: #e6e200;
+  transition: background-color 0.3s ease;
+} */
+
+/* .no-touch .text-link:hover::after,
+.no-touch .text-link.text-link-medium:hover::after {
+  background-color: #e6e200 !important;
+} */
+
+/* 4. Navbar underlines (if applicable) */
+/* .no-touch .menu-link {
+  position: relative;
+  text-decoration: none;
+} */
+
+/* .no-touch .menu-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -0.2rem;
+  width: 100%;
+  height: 2px;
+  background-color: transparent;
+  transition: background-color 0.3s ease;
+} */
+/*
+.no-touch .menu-link:hover::after {
+  background-color: #e6e200;
+} */
+
+/* Optional: also affect hover text-links */
+/* .no-touch a:hover.link-small,
+.no-touch a:hover.link-small-underline,
+.no-touch a:hover.link-small-160lh {
+  color: #e6e200 !important;
+  border-bottom: 1px solid #e6e200 !important;
+} */
+.action__btn {
+  display: flex;
+  align-items: center; /* vertically center buttons */
+  gap: 25px; /* space between buttons */
+  flex-wrap: wrap; /* allow wrapping on very small screens */
+  justify-content: center;
+}
+
+.red-border {
+  border: red solid 1px;
+}
+
+.logo-text-header {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 1.2s cubic-bezier(0.77, 0, 0.175, 1);
+  opacity: 0;
+  transform: translateX(-20px);
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 1.2s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.8s ease,
+    transform 1s ease;
+}
+.logo:hover .logo-text-header,
+.logo__link:hover .logo-text {
+  clip-path: inset(0 0% 0 0);
+  opacity: 1;
+  transform: translateX(0);
+  clip-path: inset(0 0% 0 0);
+}
+
+/* ------------------------------------------------*/
+/* FAQ Styles Start */
+/* ------------------------------------------------*/
+.faq-lines {
+    position: relative;
+}
+
+.faq-lines__item {
+    position: relative;
+    display: block;
+}
+
+.faq-lines__divider {
+    position: relative;
+    width: 100%;
+    height: 1px;
+    background-color: var(--stroke-elements);
+}
+
+.faq-lines__trigger {
+    position: relative;
+    padding: 3rem 0.4rem;
+    color: var(--t-bright);
+    overflow: hidden;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.faq-lines__trigger h4,
+.faq-lines__trigger i {
+    color: var(--t-bright);
+    transition: all var(--_animspeed-medium) var(--_animbezier);
+}
+
+.faq-lines__trigger.active h4 {
+    transform: translate(5rem, 0);
+}
+
+.faq-lines__trigger.active i {
+    transform: rotate(45deg);
+}
+
+.faq-lines__answer {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.6s cubic-bezier(0.77, 0, 0.175, 1),
+    opacity 0.6s cubic-bezier(0.77, 0, 0.175, 1);
+    padding: 0;
+    background-color: var(--base-tint);
+    border-radius: var(--_radius);
+    border: 1px solid transparent;
+    color: var(--t-medium);
+}
+
+.faq-lines__item.open .faq-lines__answer {
+    max-height: 500px;
+    opacity: 1;
+    margin-top: 0;
+    margin-bottom: 2rem;
+    padding: 2.5rem 3rem;
+    border-color: var(--stroke-elements);
+}
+
+.faq-lines__item.open .faq-lines__divider {
+    display: none;
+}
+
+.faq-space {
+    color: var(--t-medium);
+    margin: 0;
+}
+/* FAQ question font size */
+.faq-lines__trigger h4 {
+    font-size: 3rem;
+}
+
+@media only screen and (min-width: 1400px) {
+    .faq-lines__trigger h4 {
+        font-size: 2.2rem;
+    }
+}
+/* FAQ answer font size */
+.faq-space {
+    color: var(--t-medium);
+    margin: 0;
+    font-size: 1.6rem;
+}
+
+@media only screen and (min-width: 1400px) {
+    .faq-space {
+        font-size: 1.8rem;
+    }
+}
+/* FAQ question font size */
+.faq-lines__trigger h4 {
+    font-size: 1.8rem;
+}
+
+@media only screen and (min-width: 768px) {
+    .faq-lines__trigger h4 {
+        font-size: 1.8rem;
+    }
+}
+
+@media only screen and (min-width: 1400px) {
+    .faq-lines__trigger h4 {
+        font-size: 2rem;
+    }
+}
+@media only screen and (max-width: 767px) {
+    .faq-lines__trigger {
+        padding: 2rem 0;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .faq-lines__trigger h4 {
+        font-size: 1.6rem;
+        display: flex;
+        align-items: flex-start;
+        flex: 1;
+        gap: 0.8rem;
+    }
+
+    .faq-lines__trigger h4 span {
+        flex-shrink: 0;
+        margin-right: 0 !important;
+        padding-top: 0.15em;
+    }
+
+    .socials-lines__icon {
+        flex-shrink: 0;
+        padding-top: 0.15em;
+        font-size: 1.8rem;
+    }
+}
+
+/* ------------------------------------------------*/
+/* FAQ Styles End */
+/* ------------------------------------------------*/
+
+#about .pre-offcanvas-grid-block:last-child,
+#about .about-descr__btnholder {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+#about.inner-grid-bottom {
+  padding-bottom: 0;
+}
+
+/* ------------------------------------------------*/
+/* Divider Video Start */
+/* ------------------------------------------------*/
+
+/* Existing styles – keep them */
+.divider-video {
+  position: relative;
+  overflow: hidden;
+  margin-top: 4em;
+  border-radius: 2rem;
+}
+
+.divider-video .bg-video {
+  border-radius: inherit;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: translate(-50%, -50%);
+  z-index: 0;
+}
+
+/* Add this for small screens */
+@media (max-width: 768px) {
+  .divider-video {
+    height: auto;
+  }
+
+  .divider-video .bg-video {
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+    width: 100%;
+    height: auto;
+    object-fit: contain; /* Or cover, depending on what looks better */
+  }
+}
+
+/* ------------------------------------------------*/
+/* Team Hover Styles */
+/* ------------------------------------------------*/
+.tools-cards__item .tools-cards__card {
+  border: 2px solid var(--stroke-elements); /* keep default border */
+  transition: border-color 0.3s ease;
+}
+
+.tools-cards__item:hover .tools-cards__card {
+  border-color: #e6e200;
+}
+
+.tools-cards__item:hover .tools-cards__card svg {
+  color: #e6e200;
+  fill: #e6e200;
+}
+
+.icon-container svg {
+  transition: color 0.3s ease, fill 0.3s ease;
+  color: inherit;
+  fill: currentColor;
+}
+
+/* ------------------------------------------------*/
+/* Service Card Title */
+/* ------------------------------------------------*/
+
+.cards__title {
+  /* Small screens */
+  font-size: 3.4rem; /* ~32px at default 16px base */
+
+  /* Medium screens */
+  @media only screen and (min-width: 768px) {
+    font-size: 3.4rem; /* ~40px */
+  }
+
+  /* Large screens */
+  @media only screen and (min-width: 992px) {
+    font-size: 4.8rem; /* ~48px */
+  }
+
+  /* XL screens */
+  @media only screen and (min-width: 1200px) {
+    font-size: 4.8rem; /* ~56px */
+  }
+}
+
+/* For dark mode */
+@media (prefers-color-scheme: dark) {
+  .footer-logo {
+    color: #fff;
+  }
+}
+
+.headline__title {
+    color: white; /* Set to white for maximum contrast calculation */
+    mix-blend-mode: difference;
+
+    /* Optional: Improves rendering on some browsers */
+    position: relative;
+    z-index: 1;
+}
+.about-descr__text p + p {
+    margin-top: 3rem;
+}
+.h2__text p + p {
+    margin-top: 3rem;
+}
+.about-descr__text p,
+.h2__text p {
+    line-height: 1.8;
+}
+
+/* ------------------------------------------------*/
+/* Engagement Modal Start */
+/* ------------------------------------------------*/
+
+.engagement-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.engagement-modal.is-open {
+    opacity: 1;
+    visibility: visible;
+}
+
+.engagement-modal__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    cursor: pointer;
+}
+
+.engagement-modal__container {
+    position: relative;
+    width: 100%;
+    max-width: 560px;
+    background: var(--base);
+    border: 1px solid var(--stroke-elements);
+    border-radius: var(--_radius);
+    padding: 4rem 3rem 3rem 3rem;
+    z-index: 1;
+    transform: translateY(20px);
+    transition: transform 0.3s var(--_animbezier);
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.engagement-modal.is-open .engagement-modal__container {
+    transform: translateY(0);
+}
+
+/* Wider container when calendar is shown */
+.engagement-modal.show-calendar .engagement-modal__container {
+    max-width: 900px;
+}
+
+.engagement-modal__close {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    width: 3.6rem;
+    height: 3.6rem;
+    border-radius: var(--_radius-s);
+    border: 1px solid var(--stroke-elements);
+    background: transparent;
+    color: var(--t-bright);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    transition: all 0.2s ease;
+}
+
+.engagement-modal__close:hover {
+    background: var(--base-tint);
+}
+
+.engagement-modal__eyebrow {
+    font: normal var(--font-weight-medium) 1.4rem var(--_font-default);
+    color: #e6e117;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 1rem;
+}
+
+.engagement-modal__title {
+    font: normal 300 3.6rem var(--_font-accent);
+    color: var(--t-bright);
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+.engagement-modal__subtitle {
+    font: normal var(--font-weight-base) 1.6rem var(--_font-default);
+    color: var(--t-medium);
+    margin-bottom: 3rem;
+}
+
+/* Choices */
+.engagement-modal__choices {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.engagement-modal__choice {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    width: 100%;
+    padding: 2rem;
+    background: transparent;
+    border: 1px solid var(--stroke-elements);
+    border-radius: var(--_radius-s);
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.25s ease;
+    color: var(--t-bright);
+}
+
+.engagement-modal__choice:hover {
+    border-color: var(--neutral-bright);
+    background: var(--base-tint);
+    transform: translateX(4px);
+}
+
+.engagement-modal__choice-icon {
+    width: 4.8rem;
+    height: 4.8rem;
+    border-radius: var(--_radius-s);
+    border: 1px solid var(--stroke-elements);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    flex-shrink: 0;
+    color: var(--t-bright);
+    transition: all 0.25s ease;
+}
+
+.engagement-modal__choice:hover .engagement-modal__choice-icon {
+    border-color: #e6e117;
+    color: #e6e117;
+}
+
+.engagement-modal__choice-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.engagement-modal__choice-title {
+    font: normal var(--font-weight-medium) 1.8rem var(--_font-default);
+    color: var(--t-bright);
+}
+
+.engagement-modal__choice-desc {
+    font: normal var(--font-weight-base) 1.5rem var(--_font-default);
+    color: var(--t-medium);
+    line-height: 1.5;
+}
+
+.engagement-modal__choice-arrow {
+    font-size: 1.8rem;
+    color: var(--t-muted);
+    flex-shrink: 0;
+    transition: transform 0.25s ease, color 0.25s ease;
+}
+
+.engagement-modal__choice:hover .engagement-modal__choice-arrow {
+    transform: translateX(4px);
+    color: var(--t-bright);
+}
+
+/* Back button */
+.engagement-modal__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    background: transparent;
+    border: none;
+    color: var(--t-medium);
+    font: normal var(--font-weight-base) 1.5rem var(--_font-default);
+    cursor: pointer;
+    padding: 0;
+    margin-bottom: 2.5rem;
+    transition: color 0.2s ease;
+}
+
+.engagement-modal__back:hover {
+    color: var(--t-bright);
+}
+
+.engagement-modal__back i {
+    font-size: 1.6rem;
+}
+
+/* Calendar */
+.engagement-modal__calendar-wrap {
+    width: 100%;
+    margin-top: 2.5rem;
+    border-radius: var(--_radius-s);
+    overflow: hidden;
+    min-height: 500px;
+}
+
+.engagement-modal__cal-frame.is-loaded {
+    opacity: 1;
+}
+
+
+.engagement-modal__cal-loader.is-hidden {
+    display: none;
+}
+
+
+@keyframes modalSpin {
+    to { transform: rotate(360deg); }
+}
+
+/* Step transitions */
+.engagement-modal__step {
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.engagement-modal__step--hidden {
+    display: none;
+}
+
+@media only screen and (min-width: 768px) {
+    .engagement-modal__container {
+        padding: 5rem 4rem 4rem 4rem;
+    }
+    .engagement-modal__title {
+        font-size: 4.4rem;
+    }
+}
+/* Cal.com inline embed theming */
+#my-cal-inline-15min iframe {
+    border-radius: var(--_radius-s);
+}
+
+#my-cal-inline-15min,
+#my-cal-inline-15min iframe,
+#my-cal-inline-15min [data-testid="booker"] {
+    background: transparent !important;
+}
+
+/* Cal.com wider calendar */
+.engagement-modal__calendar-wrap {
+    width: 100%;
+}
+
+#my-cal-inline-15min {
+    width: 100% !important;
+    min-height: 550px;
+}
+
+#my-cal-inline-15min iframe {
+    width: 100% !important;
+    min-height: 550px;
+}
+
+#my-cal-inline-15min {
+    width: 100% !important;
+    min-height: 550px;
+}
+
+#my-cal-inline-15min iframe {
+    width: 100% !important;
+    min-height: 550px;
+}
+
+/* ------------------------------------------------*/
+/* Engagement Modal End */
+/* ------------------------------------------------*/
+
+/* ------------------------------------------------*/
+/* Process Cards */
+/* ------------------------------------------------*/
+.process-card {
+    position: relative;
+    padding: 4rem 3rem;
+    border: 1px solid var(--stroke-elements);
+    border-radius: var(--_radius);
+    margin-bottom: 2rem;
+    transition: border-color 0.3s ease;
+    overflow: hidden;
+}
+
+.process-card:hover {
+    border-color: var(--neutral-bright);
+}
+
+.process-card:last-child {
+    margin-bottom: 0;
+}
+
+@media only screen and (min-width: 1400px) {
+    .process-card {
+        padding: 5rem 4rem;
+    }
+}
+
+/* Top row */
+.process-card__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 3rem;
+}
+
+.process-card__number {
+    font: normal 300 1.6rem var(--_font-default);
+    color: var(--t-muted);
+    letter-spacing: 0.05em;
+}
+
+.process-card__icon {
+    font-size: 5.6rem;
+    color: var(--t-muted);
+    transition: color 0.3s ease;
+}
+
+.process-card:hover .process-card__icon {
+    color: #e6e117;
+}
+
+/* Title */
+.process-card__title {
+    font: normal 300 4.4rem var(--_font-accent);
+    color: var(--t-bright);
+    margin-bottom: 2rem;
+    line-height: 1.1;
+}
+
+@media only screen and (min-width: 1200px) {
+    .process-card__title {
+        font-size: 5rem;
+    }
+}
+
+@media only screen and (min-width: 1400px) {
+    .process-card__title {
+        font-size: 5.6rem;
+    }
+}
+
+/* Subtitle — styled like tagline-chapter */
+.process-card__subtitle {
+    display: inline-block;
+    font: normal var(--font-weight-medium) 1.6rem var(--_font-default);
+    color: #e6e117;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 2rem;
+    padding: 0.6rem 1.4rem;
+    border: 1px solid #e6e117;
+    border-radius: 2rem;
+    opacity: 0.85;
+}
+
+/* Description */
+.process-card__desc {
+    color: var(--t-medium);
+    max-width: 75%;
+    line-height: 1.8;
+}
+
+@media only screen and (max-width: 767px) {
+    .process-card__desc {
+        max-width: 100%;
+    }
+}
+
+/* ------------------------------------------------*/
+/* Secondary Navbar (Inner Pages) */
+/* ------------------------------------------------*/
+
+/* Desktop: slash separator between Home and current page */
+.inner-nav__separator {
+    display: none;
+}
+
+@media only screen and (min-width: 1200px) {
+    .inner-nav__separator {
+        display: inline-flex;
+        align-items: center;
+        padding: 0 0.5rem;
+    }
+
+    .inner-nav__slash {
+        font: normal 300 1.6rem var(--_font-default);
+        color: var(--t-muted);
+        line-height: 4rem;
+    }
+}
+
+@media only screen and (min-width: 1400px) {
+    .inner-nav__slash {
+        line-height: 5rem;
+    }
+}
+
+/* Active page label in desktop nav */
+.menu__link.active .menu__caption {
+    color: var(--t-bright);
+    -moz-background-size: 0 1px, 100% 1px;
+    background-size: 0 1px, 100% 1px;
+}
+
+/* Mobile dropdown: active item styling */
+.inner-nav__active-item {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--t-bright) !important;
+    font-weight: 500;
+}
+
+.inner-nav__check {
+    font-size: 1.4rem;
+    color: #e6e117;
+    margin-left: auto;
+    padding-left: 1rem;
+}
+
+/* ================================================ */
+/* SERVICE DETAIL PAGE                              */
+/* ================================================ */
+
+/* ── Hero icon ──────────────────────────────────── */
+#service-detail .service-icon {
+    font-size: 7rem;
+    display: block;
+    margin-bottom: 1.25rem;
+    color: var(--t-muted);
+    line-height: 1;
+}
+
+/* ── Body copy ──────────────────────────────────── */
+#service-detail .service-body {
+    margin-top: 2.5rem;
+    padding-bottom: 6rem;
+    border-bottom: 1px solid var(--stroke-elements);
+}
+
+#service-detail .service-body p {
+    color: var(--t-medium);
+    line-height: 1.6;
+    margin-bottom: 1.75rem;
+    max-width: 75%;
+}
+
+#service-detail .service-body p:last-child {
+    margin-bottom: 0;
+}
+
+@media only screen and (max-width: 767px) {
+    #service-detail .service-body p {
+        max-width: 100%;
+    }
+}
+
+/* ── Covers wrapper ─────────────────────────────── */
+#service-detail .service-covers {
+    padding-top: 6rem;
+    padding-bottom: 6rem;
+    border-bottom: 1px solid var(--stroke-elements);
+}
+
+#service-detail .service-covers .block__subtitle {
+    margin-bottom: 1.5rem;
+}
+
+#service-detail .service-covers__groups {
+    display: flex;
+    flex-direction: column;
+    gap: 4rem;
+    margin-top: 0;
+}
+
+/* ── Group label ────────────────────────────────── */
+#service-detail .service-covers__group-header {
+    margin-bottom: 1.25rem;
+}
+
+#service-detail .service-covers__capsule {
+    display: inline-block;
+    font: normal var(--font-weight-medium) 1.4rem var(--_font-default);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--t-muted);
+    border: 1px solid var(--stroke-elements);
+    border-radius: var(--_radius);
+    padding: 0.5rem 1.4rem;
+    background: none;
+}
+
+/* ── Items list — 2 columns, no underline ───────── */
+#service-detail .service-covers__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0 4rem;
+}
+
+@media only screen and (max-width: 767px) {
+    #service-detail .service-covers__list {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ── Single item — no border ────────────────────── */
+#service-detail .service-covers__item {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    padding: 1.2rem 0;
+    border-bottom: none;
+    color: var(--t-medium);
+    font: normal var(--font-weight-base) 1.8rem/1.4 var(--_font-default);
+    transition: color var(--_animspeed-medium) var(--_animbezier);
+}
+
+#service-detail .service-covers__item:first-child {
+    border-top: none;
+}
+
+.no-touch #service-detail .service-covers__item:hover {
+    color: var(--t-bright);
+}
+
+#service-detail .service-covers__arrow {
+    font-size: 1.2rem;
+    color: var(--t-muted);
+    flex-shrink: 0;
+    transition: transform var(--_animspeed-medium) var(--_animbezier),
+    color var(--_animspeed-medium) var(--_animbezier);
+}
+
+.no-touch #service-detail .service-covers__item:hover .service-covers__arrow {
+    transform: translateX(3px);
+    color: var(--t-bright);
+}
+
+/* ── Process section ────────────────────────────── */
+#service-detail .service-process {
+    padding-top: 6rem;
+    padding-bottom: 6rem;
+}
+
+#service-detail .service-process .block__subtitle {
+    margin-bottom: 4rem;
+}
+
+/* ── Process grid — no boxes, vertical list ─────── */
+#service-detail .process-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border-top: none;
+}
+
+/* ── Process card — no borders, left aligned ────── */
+#service-detail .process-card {
+    padding: 0;
+    border: none;
+    background: transparent;
+    border-radius: 0;
+    box-shadow: none;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-bottom: 5rem;
+    border-bottom: 1px solid var(--stroke-elements);
+}
+
+#service-detail .process-card:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+#service-detail .process-card:not(:first-child) {
+    padding-left: 0;
+}
+
+/* Icon first */
+#service-detail .process-card__top {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+#service-detail .process-card__number {
+    font: normal var(--font-weight-base) 1.4rem/1 var(--_font-default);
+    letter-spacing: 0.18em;
+    color: var(--t-muted);
+}
+
+#service-detail .process-card__icon {
+    font-size: 2.8rem;
+    color: var(--t-muted);
+    line-height: 1;
+}
+
+/* Phase label */
+#service-detail .process-card__phase {
+    font: normal 400 2.8rem/1.2 var(--_font-accent);
+    color: var(--t-bright);
+    margin: 0 0 0.6rem;
+    text-align: left;
+}
+
+@media only screen and (min-width: 1400px) {
+    #service-detail .process-card__phase {
+        font-size: 3.2rem;
+    }
+}
+
+/* Subtitle */
+#service-detail .process-card__subtitle {
+    display: block;
+    font: normal var(--font-weight-base) 1.4rem/1 var(--_font-default);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--t-muted);
+    margin: 0 0 2rem;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: none;
+    text-align: left;
+}
+
+/* Rule */
+#service-detail .process-card__rule {
+    width: 2.4rem;
+    height: 1px;
+    background: var(--stroke-elements);
+    margin-bottom: 2rem;
+}
+
+/* Body text — constrained width for readability */
+#service-detail .process-card__body {
+    font: normal var(--font-weight-base) 1.6rem/1.85 var(--_font-default);
+    color: var(--t-medium);
+    margin: 0;
+    max-width: 65rem;
+}
+
+@media only screen and (min-width: 1400px) {
+    #service-detail .process-card__body {
+        font-size: 1.8rem;
+        max-width: 70rem;
+    }
+}
+
+@media only screen and (max-width: 991px) {
+    #service-detail .process-card__body {
+        max-width: 100%;
+    }
+}
+
+/* Note aside */
+#service-detail .process-card__note {
+    margin-top: 2rem;
+    padding: 1.2rem 1.6rem;
+    border-left: 2px solid var(--stroke-elements);
+    font: normal var(--font-weight-base) 1.5rem/1.8 var(--_font-default);
+    font-style: italic;
+    color: var(--t-muted);
+    max-width: 65rem;
+}
+
+
+
+/* ── CTA block ──────────────────────────────────── */
+#service-detail .svc-cta-block {
+    padding-top: 6rem;
+    margin-bottom: 6rem;
+    border-top: 1px solid var(--stroke-elements);
+}
+
+/* ================================================ */
+/* END SERVICE DETAIL                               */
+/* ================================================ */

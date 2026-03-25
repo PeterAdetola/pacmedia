@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 26.0.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 16 16" style="enable-background:new 0 0 16 16;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:url(#SVGID_1_);}
+</style>
+<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="0.5" y1="8" x2="15.5" y2="8">
+	<stop  offset="4.469274e-02" style="stop-color:#FFFC94"/>
+	<stop  offset="0.1797" style="stop-color:#F7F057"/>
+	<stop  offset="0.3005" style="stop-color:#F0E728"/>
+	<stop  offset="0.3927" style="stop-color:#ECE10B"/>
+	<stop  offset="0.4453" style="stop-color:#EBDF00"/>
+	<stop  offset="0.5028" style="stop-color:#E6DA00"/>
+	<stop  offset="0.5749" style="stop-color:#D6CB00"/>
+	<stop  offset="0.6549" style="stop-color:#BCB300"/>
+	<stop  offset="0.7406" style="stop-color:#999100"/>
+	<stop  offset="0.8308" style="stop-color:#6B6500"/>
+	<stop  offset="0.9233" style="stop-color:#343100"/>
+	<stop  offset="1" style="stop-color:#000000"/>
+</linearGradient>
+<circle class="st0" cx="8" cy="8" r="7.5"/>
+</svg>
