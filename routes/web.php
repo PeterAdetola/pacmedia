@@ -8,6 +8,10 @@ use App\Http\Controllers\ServiceController;
 //    return view('index');
 //});
 
+Route::get('/error/{code}', function ($code) {
+    return app(\App\Http\Controllers\ErrorController::class)->show((int) $code);
+})->where('code', '[0-9]+');
+
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index']);
 
 Route::get('/faqs', [App\Http\Controllers\FaqController::class, 'index'])->name('faqs');
@@ -43,6 +47,20 @@ Route::get('/services/performance-engineering', [ServiceController::class, 'show
 Route::get('/services/intelligent-automation', [ServiceController::class, 'show'])
     ->defaults('slug', 'intelligent-automation')
     ->name('service.automation');
+
+// ── Legal Pages ───────────────────────────────────────────────
+// Add these two lines to your routes/web.php
+
+Route::get('/terms', [App\Http\Controllers\LegalController::class, 'terms'])
+    ->name('terms');
+
+Route::get('/privacy', [App\Http\Controllers\LegalController::class, 'privacy'])
+    ->name('privacy');
+
+// ── Contact Form ─────────────────────────────────────────────────────────────
+Route::post('/contact', [App\Http\Controllers\ContactController::class, 'submit'])
+    ->name('contact.submit')
+    ->middleware('throttle:6,1'); // extra layer: 6 requests per minute via Laravel's built-in throttle
 
 
 

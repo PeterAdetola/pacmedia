@@ -46,7 +46,7 @@
                                         </div>
                                         <div class="about-info__item animate-in-up">
                                             <h6>
-                                                <a class="link-inline text-link" href="#contact">Command Center</a>
+                                                <a class="link-inline text-link  start-engagement-btn" href="#!">Command Center</a>
                                             </h6>
                                         </div>
                                     </div>
@@ -78,8 +78,8 @@
                                                 {{ $aboutQuote }}
                                             </blockquote>
                                             {{-- Attribution paragraph — pulled from about.md (content after second ---) --}}
-                                            <p style="margin-top: 1em; opacity: 0.8;">{{ $aboutAttribution }}</p>
-                                            <p style="margin-top: 1em; font-style: italic;">— Pacmedia</p>
+                                            <p class="about-descr__attribution" style="margin-top: 1em; opacity: 0.8;">{{ $aboutAttribution }}</p>
+                                            <p style="margin-top: 1em; font-style: italic;">— The Pacmedia</p>
                                         </div>
                                     </div>
 

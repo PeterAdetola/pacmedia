@@ -10,9 +10,18 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
-    ->withMiddleware(function (Middleware $middleware): void {
+    ->withMiddleware(function (Middleware $middleware) {
         //
     })
-    ->withExceptions(function (Exceptions $exceptions): void {
-        //
+    ->withExceptions(function (Exceptions $exceptions) {
+
+        $exceptions->renderable(function (\Symfony\Component\HttpKernel\Exception\HttpException $e, $request) {
+            $code = $e->getStatusCode();
+            $supported = [403, 404, 419, 500, 503];
+
+            if (in_array($code, $supported)) {
+                return app(\App\Http\Controllers\ErrorController::class)->show($code);
+            }
+        });
+
     })->create();

@@ -1,20 +1,53 @@
 <?php
 
-use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 
 define('LARAVEL_START', microtime(true));
 
-// Determine if the application is in maintenance mode...
-if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php')) {
+/*
+|--------------------------------------------------------------------------
+| Smart Path Detection
+|--------------------------------------------------------------------------
+| We check for the 'pacmedia' folder first (Production).
+| If not found, we assume standard structure (Local/Dev).
+*/
+$laravelRoot = is_dir(__DIR__.'/../pacmedia')
+    ? __DIR__.'/../pacmedia'
+    : __DIR__.'/..';
+
+/*
+|--------------------------------------------------------------------------
+| Maintenance Mode
+|--------------------------------------------------------------------------
+*/
+if (file_exists($maintenance = $laravelRoot.'/storage/framework/maintenance.php')) {
     require $maintenance;
 }
 
-// Register the Composer autoloader...
-require __DIR__.'/../vendor/autoload.php';
+/*
+|--------------------------------------------------------------------------
+| Register Autoloader & Boot App
+|--------------------------------------------------------------------------
+*/
+require $laravelRoot.'/vendor/autoload.php';
 
-// Bootstrap Laravel and handle the request...
-/** @var Application $app */
-$app = require_once __DIR__.'/../bootstrap/app.php';
+// Capture the App instance from bootstrap/app.php
+$app = require_once $laravelRoot.'/bootstrap/app.php';
 
+/*
+|--------------------------------------------------------------------------
+| Fix Public Path for Production
+|--------------------------------------------------------------------------
+| This ensures that even when the core is in /pacmedia,
+| Laravel knows this specific folder is the 'public' root.
+*/
+$app->bind('path.public', function() {
+    return __DIR__;
+});
+
+/*
+|--------------------------------------------------------------------------
+| Handle Request
+|--------------------------------------------------------------------------
+*/
 $app->handleRequest(Request::capture());

@@ -47,17 +47,20 @@
 
                                         {{-- Top row: number + icon --}}
                                         <div class="process-card__top">
-            <span class="process-card__number">
-                {{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}.
-            </span>
+        <span class="process-card__number">
+            {{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}.
+        </span>
                                             <i class="ph-thin {{ $processIcons[$index] ?? 'ph-circle' }} process-card__icon"></i>
                                         </div>
 
                                         {{-- Title --}}
                                         <h3 class="process-card__title">{{ $process['title'] }}</h3>
 
-                                        {{-- Subtitle --}}
-                                        <p class="process-card__subtitle">{{ $process['subtitle'] }}</p>
+                                        {{-- Subtitle + animated rule --}}
+                                        <div class="process-card__subtitle-wrap">
+                                            <p class="process-card__subtitle">{{ $process['subtitle'] }}</p>
+                                            <span class="process-card__rule"></span>
+                                        </div>
 
                                         {{-- Description --}}
                                         <p class="process-card__desc type-basic-160lh">{{ $process['description'] }}</p>

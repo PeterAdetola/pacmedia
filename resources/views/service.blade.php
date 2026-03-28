@@ -28,10 +28,10 @@
                         <div class="inner__content">
 
                             {{-- ── Service icon + title ─────────────── --}}
-                            <div class="content__block section-text-title">
+                            <div class="content__block grid-block section-tagline-title">
                                 <div class="block__descr">
                                     <i class="{{ $service['icon'] }} service-icon animate-in-up"></i>
-                                    <h2 class="reveal-type animate-in-up">
+                                    <h2 class="heading-two reveal-type animate-in-up">
                                         {!! $service['title'] !!}
                                     </h2>
                                 </div>

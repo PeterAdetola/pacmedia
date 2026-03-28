@@ -33,61 +33,7 @@
                                     <p class="reply__title">Message Received</p>
                                     <span class="reply__text">Transmission successful. Stand by for response.</span>
                                 </div>
-                                <form class="form contact-form" id="contact-form">
-                                    <input type="hidden" name="project_name" value="Pacmedia Briefing Request"/>
-                                    <input type="hidden" name="admin_email" value="reach@thepacmedia.com"/>
-                                    <input type="hidden" name="form_subject" value="New Let's talk Request"/>
-                                    <div class="container-fluid p-0">
-                                        <div class="row gx-0">
-                                            <div class="col-12 col-md-6 form__item animate-in-up">
-                                                <input type="text" name="Name" placeholder="Your Name*" required/>
-                                            </div>
-                                            <div class="col-12 col-md-6 form__item animate-in-up">
-                                                <input type="text" name="Company" placeholder="Company / Brand"/>
-                                            </div>
-                                            <div class="col-12 col-md-6 form__item animate-in-up">
-                                                <input type="email" name="E-mail" placeholder="Email*" required/>
-                                            </div>
-                                            <div class="col-12 col-md-6 form__item animate-in-up">
-                                                <input type="tel" name="location"
-                                                       placeholder="Location"/>
-                                            </div>
-                                            <p class="h2__text text-twothirds type-basic-160lh animate-in-up">
-                                                Select your operation
-                                            </p>
-                                            <div class="demo-section form__item animate-in-up">
-                                                <label class="checkbox-container link-small-160lh">
-                                                    <input type="checkbox" name="Service_Strategy">
-                                                    <span class="custom-checkbox"></span>
-                                                    <span class="checkbox-label">Visual Brand Architecture</span>
-                                                </label>
-                                                <label class="checkbox-container">
-                                                    <input type="checkbox" name="Service_Automation">
-                                                    <span class="custom-checkbox"></span>
-                                                    <span class="checkbox-label">Web Design & Development</span>
-                                                </label>
-                                                <label class="checkbox-container">
-                                                    <input type="checkbox" name="Service_Web">
-                                                    <span class="custom-checkbox"></span>
-                                                    <span class="checkbox-label">Other</span>
-                                                </label>
-                                            </div>
-                                            <div class="col-12 form__item animate-in-up">
-                                                  <textarea
-                                                      name="Message"
-                                                      placeholder="Tell us about your project*"
-                                                      required
-                                                  ></textarea>
-                                            </div>
-                                            <div class="btn-group about-descr__btnholder form__item animate-in-up">
-                                                <button class="btn btn-default hover-default" type="submit">
-                                                    <em></em>
-                                                    <span class="btn-caption">Deploy Request →</span>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </form>
+                                <x-contact-form />
                             </div>
                         </div>
 
@@ -147,11 +93,21 @@
                                                         <p class="contact-data__text small type-basic-160lh">
                                                             @if(request()->is('/'))
                                                                 <a class="link-small-160lh animate-in-up" href="#about">About</a><br/>
+                                                                <a class="link-small-160lh animate-in-up" href="#process">Process</a><br/>
                                                                 <a class="link-small-160lh animate-in-up" href="#services">Capability</a><br/>
+                                                                <a class="link-small-160lh animate-in-up" href="#faqs">FAQs</a><br/>
                                                             @else
                                                                 <a class="link-small-160lh animate-in-up" href="/">Home</a><br/>
+                                                                @foreach($services as $service)
+                                                                    <a class="link-small-160lh animate-in-up"
+                                                                       href="{{ route('service.show', ['slug' => $service['slug']]) }}">
+                                                                        {{ $service['title_plain'] }}
+                                                                    </a><br/>
+                                                                @endforeach
+                                                                <br/>
+                                                                <a class="link-small-160lh animate-in-up" href="{{ route('faqs') }}">FAQs</a><br/>
                                                             @endif
-                                                            <a class="link-small-160lh animate-in-up" href="#contact">Let's talk</a>
+                                                            <a class="link-small-160lh animate-in-up" href="#contact">Contact Us</a>
                                                         </p>
                                                     </div>
                                                     <div
@@ -159,9 +115,9 @@
                                                         <p class="contact-data__title tagline-chapter animate-in-up">
                                                             Copyright & Terms</p>
                                                         <p class="contact-data__text small type-basic-160lh">
-                                                            <a class="link-small-160lh animate-in-up" href="#">Terms
+                                                            <a class="link-small-160lh animate-in-up" href="{{ route('terms') }}">Terms
                                                                 & Conditions</a><br/>
-                                                            <a class="link-small-160lh animate-in-up" href="#">Privacy
+                                                            <a class="link-small-160lh animate-in-up" href="{{ route('privacy') }}">Privacy
                                                                 policy</a>
                                                         </p><br/>
                                                         <p class="contact-data__text small type-basic-160lh">
