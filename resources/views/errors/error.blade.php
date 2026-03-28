@@ -92,8 +92,8 @@
             width: 9rem;
             height: 9rem;
             border-radius: 50%;
-            background: var(--base-tint);
-            border: 1px solid var(--stroke-elements);
+            /*background: var(--base-tint);*/
+            /*border: 1px solid var(--stroke-elements);*/
             display: flex;
             align-items: center;
             justify-content: center;

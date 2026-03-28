@@ -96,156 +96,156 @@
                         <!-- More FAQs Link End -->
 
                         <!-- Content Block - Testimonials Start -->
-                        <div class="content__block pre-offcanvas-text-block">
-                            <!-- Section Subtitle Start -->
-                            <div class="block__subtitle">
-                                <p class="tagline-chapter animate-in-up">
-                                    My client's stories
-                                </p>
-                            </div>
-                            <!-- Section Subtitle End -->
+{{--                        <div class="content__block pre-offcanvas-text-block">--}}
+{{--                            <!-- Section Subtitle Start -->--}}
+{{--                            <div class="block__subtitle">--}}
+{{--                                <p class="tagline-chapter animate-in-up">--}}
+{{--                                    My client's stories--}}
+{{--                                </p>--}}
+{{--                            </div>--}}
+{{--                            <!-- Section Subtitle End -->--}}
 
-                            <!-- Testimonials Slider Start -->
-                            <div class="testimonials-slider">
-                                <!-- slider main container -->
-                                <div class="swiper-testimonials">
-                                    <!-- additional required wrapper -->
-                                    <div class="swiper-wrapper">
-                                        <!-- single slide -->
-                                        <div class="swiper-slide">
-                                            <div class="testimonials-card animate-in-up">
-                                                <div class="container-fluid p-0 fullheight-l">
-                                                    <div class="row g-0 d-flex align-items-stretch fullheight-l">
-                                                        <div class="col-12 col-lg-6 testimonials-card__tdata">
-                                                            <div class="testimonials-card__tauthor d-flex">
-                                                                <div class="tauthor__avatar animate-in-up">
-                                                                    <img
-                                                                        src="https://dummyimage.com/400x400/4d4d4d/636363"
-                                                                        alt="Review Author"/>
-                                                                </div>
-                                                                <div class="tauthor__info d-flex flex-column justify-content-center">
-                                                                    <h4 class="tauthor__name animate-in-up">
-                                                                        Alex Tomato
-                                                                    </h4>
-                                                                    <p class="tauthor__position small animate-in-up">
-                                                                        Brand Manager in
-                                                                        <a class="link-small-underline" href="#">Instant Design</a>
-                                                                    </p>
-                                                                    <div class="tauthor__rating d-flex animate-in-up">
-                                                                        <i class="ph-fill ph-star"></i>
-                                                                        <i class="ph-fill ph-star"></i>
-                                                                        <i class="ph-fill ph-star"></i>
-                                                                        <i class="ph-fill ph-star"></i>
-                                                                        <i class="ph-fill ph-star"></i>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="testimonials-card__descr animate-in-up">
-                                                                <p class="type-basic-160lh">
-                                                                    Lorem ipsum dolor sit amet, consectetuer
-                                                                    adipiscing elit, sed diam nonummy nibh
-                                                                    euismod tincidunt ut laoreet dolore
-                                                                    magna aliquam erat volutpat. Ut wisi
-                                                                    enim ad minim veniam, quis nostrud.
-                                                                </p>
-                                                            </div>
-                                                            <div class="testimonials-card__btnholder animate-in-up">
-                                                                <a class="btn btn-line icon-right slide-right" href="#0">
-                                                                    <span class="btn-caption">Project page</span>
-                                                                    <i class="ph ph-arrow-right"></i>
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-12 col-lg-6 testimonials-card__timage fullheight-l">
-                                                            <div class="timage__inner fullheight-l animate-in-up">
-                                                                <img
-                                                                    src="https://dummyimage.com/1400x1200/4d4d4d/636363"
-                                                                    alt="Testimonials Image"/>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!-- single slide -->
-                                        <div class="swiper-slide">
-                                            <div class="testimonials-card animate-in-up">
-                                                <div class="container-fluid p-0 fullheight-l">
-                                                    <div class="row g-0 d-flex align-items-stretch fullheight-l">
-                                                        <div class="col-12 col-lg-6 testimonials-card__tdata">
-                                                            <div class="testimonials-card__tauthor d-flex">
-                                                                <div class="tauthor__avatar animate-in-up">
-                                                                    <img
-                                                                        src="https://dummyimage.com/400x400/4d4d4d/636363"
-                                                                        alt="Review Author"/>
-                                                                </div>
-                                                                <div class="tauthor__info d-flex flex-column justify-content-center">
-                                                                    <h4 class="tauthor__name animate-in-up">
-                                                                        Jenny Lemon
-                                                                    </h4>
-                                                                    <p class="tauthor__position small animate-in-up">
-                                                                        SEO in
-                                                                        <a class="link-small-underline" href="#">Creative People</a>
-                                                                    </p>
-                                                                    <div class="tauthor__rating d-flex animate-in-up">
-                                                                        <i class="ph-fill ph-star"></i>
-                                                                        <i class="ph-fill ph-star"></i>
-                                                                        <i class="ph-fill ph-star"></i>
-                                                                        <i class="ph-fill ph-star"></i>
-                                                                        <i class="ph-fill ph-star"></i>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="testimonials-card__descr animate-in-up">
-                                                                <p class="type-basic-160lh">
-                                                                    Lorem ipsum dolor sit amet, consectetuer
-                                                                    adipiscing elit, sed diam nonummy nibh
-                                                                    euismod tincidunt ut laoreet dolore
-                                                                    magna aliquam erat volutpat. Ut wisi
-                                                                    enim ad minim veniam, quis nostrud.
-                                                                </p>
-                                                            </div>
-                                                            <div class="testimonials-card__btnholder animate-in-up">
-                                                                <a class="btn btn-line icon-right slide-right" href="#0">
-                                                                    <span class="btn-caption">Project page</span>
-                                                                    <i class="ph ph-arrow-right"></i>
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-12 col-lg-6 testimonials-card__timage fullheight-l">
-                                                            <div class="timage__inner fullheight-l animate-in-up">
-                                                                <img
-                                                                    src="https://dummyimage.com/1400x1200/4d4d4d/636363"
-                                                                    alt="Testimonials Image"/>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+{{--                            <!-- Testimonials Slider Start -->--}}
+{{--                            <div class="testimonials-slider">--}}
+{{--                                <!-- slider main container -->--}}
+{{--                                <div class="swiper-testimonials">--}}
+{{--                                    <!-- additional required wrapper -->--}}
+{{--                                    <div class="swiper-wrapper">--}}
+{{--                                        <!-- single slide -->--}}
+{{--                                        <div class="swiper-slide">--}}
+{{--                                            <div class="testimonials-card animate-in-up">--}}
+{{--                                                <div class="container-fluid p-0 fullheight-l">--}}
+{{--                                                    <div class="row g-0 d-flex align-items-stretch fullheight-l">--}}
+{{--                                                        <div class="col-12 col-lg-6 testimonials-card__tdata">--}}
+{{--                                                            <div class="testimonials-card__tauthor d-flex">--}}
+{{--                                                                <div class="tauthor__avatar animate-in-up">--}}
+{{--                                                                    <img--}}
+{{--                                                                        src="https://dummyimage.com/400x400/4d4d4d/636363"--}}
+{{--                                                                        alt="Review Author"/>--}}
+{{--                                                                </div>--}}
+{{--                                                                <div class="tauthor__info d-flex flex-column justify-content-center">--}}
+{{--                                                                    <h4 class="tauthor__name animate-in-up">--}}
+{{--                                                                        Alex Tomato--}}
+{{--                                                                    </h4>--}}
+{{--                                                                    <p class="tauthor__position small animate-in-up">--}}
+{{--                                                                        Brand Manager in--}}
+{{--                                                                        <a class="link-small-underline" href="#">Instant Design</a>--}}
+{{--                                                                    </p>--}}
+{{--                                                                    <div class="tauthor__rating d-flex animate-in-up">--}}
+{{--                                                                        <i class="ph-fill ph-star"></i>--}}
+{{--                                                                        <i class="ph-fill ph-star"></i>--}}
+{{--                                                                        <i class="ph-fill ph-star"></i>--}}
+{{--                                                                        <i class="ph-fill ph-star"></i>--}}
+{{--                                                                        <i class="ph-fill ph-star"></i>--}}
+{{--                                                                    </div>--}}
+{{--                                                                </div>--}}
+{{--                                                            </div>--}}
+{{--                                                            <div class="testimonials-card__descr animate-in-up">--}}
+{{--                                                                <p class="type-basic-160lh">--}}
+{{--                                                                    Lorem ipsum dolor sit amet, consectetuer--}}
+{{--                                                                    adipiscing elit, sed diam nonummy nibh--}}
+{{--                                                                    euismod tincidunt ut laoreet dolore--}}
+{{--                                                                    magna aliquam erat volutpat. Ut wisi--}}
+{{--                                                                    enim ad minim veniam, quis nostrud.--}}
+{{--                                                                </p>--}}
+{{--                                                            </div>--}}
+{{--                                                            <div class="testimonials-card__btnholder animate-in-up">--}}
+{{--                                                                <a class="btn btn-line icon-right slide-right" href="#0">--}}
+{{--                                                                    <span class="btn-caption">Project page</span>--}}
+{{--                                                                    <i class="ph ph-arrow-right"></i>--}}
+{{--                                                                </a>--}}
+{{--                                                            </div>--}}
+{{--                                                        </div>--}}
+{{--                                                        <div class="col-12 col-lg-6 testimonials-card__timage fullheight-l">--}}
+{{--                                                            <div class="timage__inner fullheight-l animate-in-up">--}}
+{{--                                                                <img--}}
+{{--                                                                    src="https://dummyimage.com/1400x1200/4d4d4d/636363"--}}
+{{--                                                                    alt="Testimonials Image"/>--}}
+{{--                                                            </div>--}}
+{{--                                                        </div>--}}
+{{--                                                    </div>--}}
+{{--                                                </div>--}}
+{{--                                            </div>--}}
+{{--                                        </div>--}}
+{{--                                        <!-- single slide -->--}}
+{{--                                        <div class="swiper-slide">--}}
+{{--                                            <div class="testimonials-card animate-in-up">--}}
+{{--                                                <div class="container-fluid p-0 fullheight-l">--}}
+{{--                                                    <div class="row g-0 d-flex align-items-stretch fullheight-l">--}}
+{{--                                                        <div class="col-12 col-lg-6 testimonials-card__tdata">--}}
+{{--                                                            <div class="testimonials-card__tauthor d-flex">--}}
+{{--                                                                <div class="tauthor__avatar animate-in-up">--}}
+{{--                                                                    <img--}}
+{{--                                                                        src="https://dummyimage.com/400x400/4d4d4d/636363"--}}
+{{--                                                                        alt="Review Author"/>--}}
+{{--                                                                </div>--}}
+{{--                                                                <div class="tauthor__info d-flex flex-column justify-content-center">--}}
+{{--                                                                    <h4 class="tauthor__name animate-in-up">--}}
+{{--                                                                        Jenny Lemon--}}
+{{--                                                                    </h4>--}}
+{{--                                                                    <p class="tauthor__position small animate-in-up">--}}
+{{--                                                                        SEO in--}}
+{{--                                                                        <a class="link-small-underline" href="#">Creative People</a>--}}
+{{--                                                                    </p>--}}
+{{--                                                                    <div class="tauthor__rating d-flex animate-in-up">--}}
+{{--                                                                        <i class="ph-fill ph-star"></i>--}}
+{{--                                                                        <i class="ph-fill ph-star"></i>--}}
+{{--                                                                        <i class="ph-fill ph-star"></i>--}}
+{{--                                                                        <i class="ph-fill ph-star"></i>--}}
+{{--                                                                        <i class="ph-fill ph-star"></i>--}}
+{{--                                                                    </div>--}}
+{{--                                                                </div>--}}
+{{--                                                            </div>--}}
+{{--                                                            <div class="testimonials-card__descr animate-in-up">--}}
+{{--                                                                <p class="type-basic-160lh">--}}
+{{--                                                                    Lorem ipsum dolor sit amet, consectetuer--}}
+{{--                                                                    adipiscing elit, sed diam nonummy nibh--}}
+{{--                                                                    euismod tincidunt ut laoreet dolore--}}
+{{--                                                                    magna aliquam erat volutpat. Ut wisi--}}
+{{--                                                                    enim ad minim veniam, quis nostrud.--}}
+{{--                                                                </p>--}}
+{{--                                                            </div>--}}
+{{--                                                            <div class="testimonials-card__btnholder animate-in-up">--}}
+{{--                                                                <a class="btn btn-line icon-right slide-right" href="#0">--}}
+{{--                                                                    <span class="btn-caption">Project page</span>--}}
+{{--                                                                    <i class="ph ph-arrow-right"></i>--}}
+{{--                                                                </a>--}}
+{{--                                                            </div>--}}
+{{--                                                        </div>--}}
+{{--                                                        <div class="col-12 col-lg-6 testimonials-card__timage fullheight-l">--}}
+{{--                                                            <div class="timage__inner fullheight-l animate-in-up">--}}
+{{--                                                                <img--}}
+{{--                                                                    src="https://dummyimage.com/1400x1200/4d4d4d/636363"--}}
+{{--                                                                    alt="Testimonials Image"/>--}}
+{{--                                                            </div>--}}
+{{--                                                        </div>--}}
+{{--                                                    </div>--}}
+{{--                                                </div>--}}
+{{--                                            </div>--}}
+{{--                                        </div>--}}
+{{--                                    </div>--}}
 
-                                    <!-- Navigation Buttons -->
-                                    <div class="swiper-button-prev mxd-slider-btn mxd-slider-btn-square-prev animate-in-up">
-                                        <a class="btn btn-line icon-left slide-left" href="#0">
-                                            <i class="ph ph-arrow-left"></i>
-                                            <span class="btn-caption">Prev</span>
-                                        </a>
-                                    </div>
-                                    <div class="swiper-button-next mxd-slider-btn mxd-slider-btn-square-next animate-in-up">
-                                        <a class="btn btn-line icon-right slide-right" href="#0">
-                                            <span class="btn-caption">Next</span>
-                                            <i class="ph ph-arrow-right"></i>
-                                        </a>
-                                    </div>
+{{--                                    <!-- Navigation Buttons -->--}}
+{{--                                    <div class="swiper-button-prev mxd-slider-btn mxd-slider-btn-square-prev animate-in-up">--}}
+{{--                                        <a class="btn btn-line icon-left slide-left" href="#0">--}}
+{{--                                            <i class="ph ph-arrow-left"></i>--}}
+{{--                                            <span class="btn-caption">Prev</span>--}}
+{{--                                        </a>--}}
+{{--                                    </div>--}}
+{{--                                    <div class="swiper-button-next mxd-slider-btn mxd-slider-btn-square-next animate-in-up">--}}
+{{--                                        <a class="btn btn-line icon-right slide-right" href="#0">--}}
+{{--                                            <span class="btn-caption">Next</span>--}}
+{{--                                            <i class="ph ph-arrow-right"></i>--}}
+{{--                                        </a>--}}
+{{--                                    </div>--}}
 
-                                    <!-- Pagination -->
-                                    <div class="swiper-pagination mxd-swiper-pagination-fraction"></div>
-                                </div>
-                            </div>
-                            <!-- Testimonials Slider End -->
+{{--                                    <!-- Pagination -->--}}
+{{--                                    <div class="swiper-pagination mxd-swiper-pagination-fraction"></div>--}}
+{{--                                </div>--}}
+{{--                            </div>--}}
+{{--                            <!-- Testimonials Slider End -->--}}
 
-                        </div>
+{{--                        </div>--}}
                         <!-- Content Block - Testimonials End -->
 
                     </div>
