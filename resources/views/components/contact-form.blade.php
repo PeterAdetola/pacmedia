@@ -76,7 +76,6 @@
                 <textarea
                     name="message"
                     placeholder="Tell us about your project*"
-                    required
                 ></textarea>
             </div>
 
