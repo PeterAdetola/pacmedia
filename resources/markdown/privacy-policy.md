@@ -1,6 +1,6 @@
 # Privacy Policy
 
-## How Pacmedia collects, uses, and protects your personal information.
+## How The Pacmedia collects, uses, and protects your personal information.
 
 Effective Date: March 2026
 thepacmedia.com · reach@thepacmedia.com · Lagos, Nigeria
@@ -9,9 +9,9 @@ thepacmedia.com · reach@thepacmedia.com · Lagos, Nigeria
 
 ## 1. Introduction
 
-Pacmedia ("we", "us", "the Studio") is committed to protecting your privacy. This Privacy Policy explains what personal data we collect, how we use it, and your rights in relation to it.
+The Pacmedia ("we", "us", "the Studio") is committed to protecting your privacy. This Privacy Policy explains what personal data we collect, how we use it, and your rights in relation to it.
 
-This Policy applies to all individuals who visit thepacmedia.com, submit an enquiry, or engage Pacmedia for services — including prospective clients, active clients, and website visitors.
+This Policy applies to all individuals who visit thepacmedia.com, submit an enquiry, or engage The Pacmedia for services — including prospective clients, active clients, and website visitors.
 
 By using our website or engaging our services, you acknowledge that you have read and understood this Privacy Policy.
 
@@ -19,7 +19,7 @@ By using our website or engaging our services, you acknowledge that you have rea
 
 ## 2. Who We Are
 
-Pacmedia is a brand and digital studio operating from Lagos, Nigeria, serving clients globally. We are the data controller for all personal information collected in connection with our services.
+The Pacmedia is a brand and digital studio operating from Lagos, Nigeria, serving clients globally. We are the data controller for all personal information collected in connection with our services.
 
 - Studio name: The Pacmedia
 - Website: thepacmedia.com
@@ -164,7 +164,7 @@ No method of transmission over the internet or electronic storage is 100% secure
 
 ## 11. International Data Transfers
 
-Pacmedia is based in Nigeria and serves clients globally. When you provide us with personal data, it may be stored and processed in Nigeria or in other countries where our service providers operate.
+The Pacmedia is based in Nigeria and serves clients globally. When you provide us with personal data, it may be stored and processed in Nigeria or in other countries where our service providers operate.
 
 We take steps to ensure that international transfers of data are handled with appropriate protections in place, consistent with applicable privacy law. For clients based in the EU or UK, we rely on appropriate transfer mechanisms where required.
 
@@ -200,4 +200,4 @@ For any privacy-related questions, requests, or concerns, contact us at:
 
 If you are based in the EU or UK and believe we have not handled your data in accordance with applicable law, you have the right to lodge a complaint with your local data protection authority.
 
-> This Privacy Policy was prepared for the operational needs of Pacmedia. It is not a substitute for independent legal advice. Clients with specific data protection concerns in their jurisdiction are encouraged to seek qualified legal counsel.
+> This Privacy Policy was prepared for the operational needs of The Pacmedia. It is not a substitute for independent legal advice. Clients with specific data protection concerns in their jurisdiction are encouraged to seek qualified legal counsel.
