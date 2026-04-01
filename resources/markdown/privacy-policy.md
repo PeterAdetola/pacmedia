@@ -21,7 +21,7 @@ By using our website or engaging our services, you acknowledge that you have rea
 
 Pacmedia is a brand and digital studio operating from Lagos, Nigeria, serving clients globally. We are the data controller for all personal information collected in connection with our services.
 
-- Studio name: Pacmedia
+- Studio name: The Pacmedia
 - Website: thepacmedia.com
 - Email: reach@thepacmedia.com
 - Location: Lagos, Nigeria
