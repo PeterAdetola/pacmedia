@@ -18,7 +18,7 @@ class LegalController extends Controller
             'pageTitle'     => 'Terms & Conditions',
             'pageIcon'      => 'ph-thin ph-scroll',
             'effectiveDate' => 'March 2026',
-            'tagline'       => 'Governing the engagement between Pacmedia and its clients worldwide.',
+            'tagline'       => 'Governing the engagement between The Pacmedia and its clients worldwide.',
         ]), [
             'pageTitle' => 'Terms & Conditions',
             'pageIcon'  => 'ph ph-scroll',
@@ -36,7 +36,7 @@ class LegalController extends Controller
             'pageTitle'     => 'Privacy Policy',
             'pageIcon'      => 'ph-thin ph-shield-check',
             'effectiveDate' => 'March 2026',
-            'tagline'       => 'How Pacmedia collects, uses, and protects your personal information.',
+            'tagline'       => 'How The Pacmedia collects, uses, and protects your personal information.',
         ]), [
             'pageTitle' => 'Privacy Policy',
             'pageIcon'  => 'ph ph-shield-check',
