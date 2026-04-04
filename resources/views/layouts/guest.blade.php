@@ -165,6 +165,10 @@
         .auth-btn:focus  { outline: none; box-shadow: 0 0 0 3px rgba(36,86,36,0.35); }
         .auth-btn[disabled] { pointer-events: none; opacity: 0.7; }
 
+        /* Social icon buttons */
+
+        .auth-social-btn svg { width: 1.8rem; height: 1.8rem; display: block; }
+
         /* Button spinner */
         .auth-spinner {
             display: none;
