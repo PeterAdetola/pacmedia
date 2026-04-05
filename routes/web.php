@@ -62,7 +62,28 @@ Route::post('/contact', [App\Http\Controllers\ContactController::class, 'submit'
     ->name('contact.submit')
     ->middleware('throttle:6,1'); // extra layer: 6 requests per minute via Laravel's built-in throttle
 
+Route::get('/add-social-columns', function() {
+    Schema::table('users', function (Illuminate\Database\Schema\Blueprint $table) {
+        if (!Schema::hasColumn('users', 'google_id')) {
+            $table->string('google_id')->nullable()->unique()->after('username');
+        }
+        if (!Schema::hasColumn('users', 'linkedin_id')) {
+            $table->string('linkedin_id')->nullable()->unique()->after('google_id');
+        }
+        if (!Schema::hasColumn('users', 'github_id')) {
+            $table->string('github_id')->nullable()->unique()->after('linkedin_id');
+        }
+        if (!Schema::hasColumn('users', 'password') || !Schema::getColumnType('users', 'password') === 'string') {
+            $table->string('password')->nullable()->change();
+        }
+    });
 
+    return [
+        'google_id'   => Schema::hasColumn('users', 'google_id')   ? '✓ added' : '✗ failed',
+        'linkedin_id' => Schema::hasColumn('users', 'linkedin_id') ? '✓ added' : '✗ failed',
+        'github_id'   => Schema::hasColumn('users', 'github_id')   ? '✓ added' : '✗ failed',
+    ];
+});
 
 
 

@@ -5,18 +5,20 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 
 class SocialAuthController extends Controller
 {
     /**
-     * Supported providers and their matching user table column.
+     * Map route param → [db column, socialite driver]
+     * LinkedIn's socialite driver is 'linkedin-openid' in Socialite v5+
      */
     protected array $providers = [
-        'google'   => 'google_id',
-        'linkedin' => 'linkedin_id',
-        'github'   => 'github_id',
+        'google'   => ['column' => 'google_id',   'driver' => 'google'],
+        'linkedin' => ['column' => 'linkedin_id',  'driver' => 'linkedin-openid'],
+        'github'   => ['column' => 'github_id',    'driver' => 'github'],
     ];
 
     /**
@@ -26,7 +28,9 @@ class SocialAuthController extends Controller
     {
         $this->abortIfUnsupported($provider);
 
-        return Socialite::driver($provider)->redirect();
+        $driver = $this->providers[$provider]['driver'];
+
+        return Socialite::driver($driver)->redirect();
     }
 
     /**
@@ -36,14 +40,18 @@ class SocialAuthController extends Controller
     {
         $this->abortIfUnsupported($provider);
 
+        $driver   = $this->providers[$provider]['driver'];
+        $idColumn = $this->providers[$provider]['column'];
+
         try {
-            $socialUser = Socialite::driver($provider)->user();
+            $socialUser = Socialite::driver($driver)->user();
         } catch (\Exception $e) {
+            \Log::error(ucfirst($provider) . ' OAuth error: ' . $e->getMessage());
+
             return redirect()->route('login')
                 ->withErrors(['email' => ucfirst($provider) . ' sign-in failed. Please try again.']);
         }
 
-        $idColumn = $this->providers[$provider];
         $socialId = $socialUser->getId();
         $email    = $socialUser->getEmail();
         $name     = $socialUser->getName() ?? $socialUser->getNickname() ?? 'User';
@@ -71,14 +79,16 @@ class SocialAuthController extends Controller
             }
         }
 
-        // 3. Create a brand new user
-        // GitHub can have no public email — handle that gracefully
+        // 3. No email returned (can happen with GitHub private email setting)
         if (!$email) {
             return redirect()->route('login')
-                ->withErrors(['email' => 'No email address returned from ' . ucfirst($provider) . '. Please ensure your ' . ucfirst($provider) . ' account has a public email address.']);
+                ->withErrors(['email' =>
+                    ucfirst($provider) . ' did not return an email address. ' .
+                    'Please make your email public on ' . ucfirst($provider) . ' and try again.'
+                ]);
         }
 
-        // Auto-generate a unique username from their name
+        // 4. Create a brand new user
         $baseUsername = Str::slug(Str::lower($name), '_');
         $username     = $baseUsername;
         $counter      = 1;
@@ -92,8 +102,8 @@ class SocialAuthController extends Controller
             'username'          => $username,
             'email'             => $email,
             $idColumn           => $socialId,
-            'email_verified_at' => now(), // Provider already verified the email
-            'password'          => null,
+            'email_verified_at' => now(),
+            'password'          => Hash::make(Str::random(32)), // ✅ Never null
         ]);
 
         Auth::login($user, true);
