@@ -76,7 +76,7 @@
                     </div>
 
                     {{-- Actions row: social icons on the left, Log In button on the right --}}
-                    <div class="row pl-5 pr-5" style="margin-bottom:0;">
+                    <div class="row pl-4 pr-5" style="margin-bottom:0;">
                         <div class="col s12" style="display:flex; align-items:center; justify-content:space-between;">
 
                             {{-- Social icon buttons --}}

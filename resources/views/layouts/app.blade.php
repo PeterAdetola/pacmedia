@@ -93,22 +93,35 @@
 <div id="loader" class="loader">
     <div class="loader__wrapper">
         <div class="loader__content">
-            <div class="loader__count">
-                <span class="count__text">0</span>
-                <span class="count__percent">%</span>
+
+            {{-- Logo (inline SVG — zero external requests) --}}
+            <svg class="loader__logo" version="1.0" xmlns="http://www.w3.org/2000/svg"
+                 viewBox="0 0 119 119" xml:space="preserve" aria-hidden="true" focusable="false">
+                <path d="M0,0v119h119V0H0z M56.7,109.9L33.2,87.8V62.8h23.5V109.9z
+                         M56.7,58H33.2V30.8l23.5-5.9V58z M85.3,81.9l-23.5,2.9V62.8h23.5V81.9z
+                         M85.3,58H61.8V34.6l23.5,3.7V58z"/>
+            </svg>
+
+            {{-- Progress bar --}}
+            <div class="loader__bar-wrap">
+                <div class="loader__bar" id="loader-bar"></div>
             </div>
+
+            {{-- Percentage label --}}
+            <span class="loader__percent" id="loader-percent">0%</span>
+
         </div>
     </div>
 </div>
-{{--<div id="loader" class="loading-wrap">--}}
+{{--<div id="loader" class="loader">--}}
 {{--    <div class="loader__wrapper">--}}
-{{--        <div class="loader__count">--}}
-{{--            <span class="count__text">0</span>--}}
+{{--        <div class="loader__content">--}}
+{{--            <div class="loader__count">--}}
+{{--                <span class="count__text">0</span>--}}
+{{--                <span class="count__percent">%</span>--}}
+{{--            </div>--}}
 {{--        </div>--}}
 {{--    </div>--}}
-{{--    <div class="loading__item"></div>--}}
-{{--    <div class="loading__item"></div>--}}
-{{--    <div class="loading__item"></div>--}}
 {{--</div>--}}
 
 {{-- ================================================ --}}
@@ -289,6 +302,82 @@
             }
         }
     });
+</script>
+<script>
+    (function () {
+        var bar      = document.getElementById('loader-bar');
+        var label    = document.getElementById('loader-percent');
+        var loader   = document.getElementById('loader');
+        var current  = 0;
+        var target   = 0;
+        var raf      = null;
+        var done     = false;
+
+        /* Hard timeout — force-dismiss after 5 s regardless of load state */
+        var hardTimeout = setTimeout(function () { finish(); }, 5000);
+
+        /* Simulate progress in incremental steps so the bar always moves */
+        function simulateProgress() {
+            if (done) return;
+            /* advance target by a random chunk, capped at 90 before real load */
+            var step = Math.random() * 12 + 4;
+            target = Math.min(target + step, 90);
+            easeToTarget();
+        }
+
+        var simInterval = setInterval(simulateProgress, 400);
+
+        /* Smooth easing toward current target */
+        function easeToTarget() {
+            if (raf) cancelAnimationFrame(raf);
+            function step() {
+                if (current < target) {
+                    current += (target - current) * 0.12;
+                    if (current > target - 0.5) current = target;
+                    setUI(Math.round(current));
+                    raf = requestAnimationFrame(step);
+                }
+            }
+            raf = requestAnimationFrame(step);
+        }
+
+        function setUI(val) {
+            if (bar)   bar.style.width = val + '%';
+            if (label) label.textContent = val + '%';
+        }
+
+        function finish() {
+            if (done) return;
+            done = true;
+            clearInterval(simInterval);
+            clearTimeout(hardTimeout);
+
+            /* Rush bar to 100% */
+            target = 100;
+            current = 100;
+            setUI(100);
+
+            /* Short pause at 100%, then fade out */
+            setTimeout(function () {
+                if (loader) loader.classList.add('loaded');
+                /* Remove from DOM after transition to free memory */
+                setTimeout(function () {
+                    if (loader && loader.parentNode) loader.parentNode.removeChild(loader);
+                }, 700);
+            }, 300);
+        }
+
+        /* Dismiss on real page load — whichever fires first */
+        if (document.readyState === 'complete') {
+            finish();
+        } else {
+            window.addEventListener('load', finish, { once: true });
+            /* DOMContentLoaded as secondary trigger on slow connections */
+            document.addEventListener('DOMContentLoaded', function () {
+                setTimeout(finish, 800);
+            }, { once: true });
+        }
+    })();
 </script>
 
 @stack('scripts')

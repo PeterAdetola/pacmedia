@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\Auth\SocialAuthController;
 
 //Route::get('/', function () {
 //    return view('index');
@@ -105,8 +106,8 @@ Route::get('/auth/{provider}', [SocialAuthController::class, 'redirect'])
     ->where('provider', 'google|linkedin|github');
 
 // Provider redirects back here after authentication
-Route::get('/auth/{provider}/callback', [SocialAuthController::class, 'callback'])
-    ->name('auth.social.callback')
-    ->where('provider', 'google|linkedin|github');
+//Route::get('/auth/{provider}', [SocialAuthController::class, 'redirect']);
+Route::get('/auth/{provider}/callback', [SocialAuthController::class, 'callback']);
+
 
 require __DIR__.'/auth.php';
