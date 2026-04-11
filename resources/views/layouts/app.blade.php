@@ -95,9 +95,17 @@
         <div class="loader__content">
 
             {{-- Logo (inline SVG — zero external requests) --}}
-            <svg class="loader__logo" version="1.0" xmlns="http://www.w3.org/2000/svg"
-                 viewBox="0 0 119 119" xml:space="preserve" aria-hidden="true" focusable="false">
-                <path d="M0,0v119h119V0H0z M56.7,109.9L33.2,87.8V62.8h23.5V109.9z
+            {{-- fill-rule="evenodd" is critical: the outer rect acts as the background  --}}
+            {{-- and the inner subpaths punch through it as transparent windows.         --}}
+            {{-- Without it the outer rect renders as a solid filled black square.      --}}
+            <svg class="loader__logo"
+                 xmlns="http://www.w3.org/2000/svg"
+                 viewBox="0 0 119 119"
+                 width="119" height="119"
+                 aria-hidden="true" focusable="false"
+                 style="display:block; overflow:hidden;">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                      d="M0,0v119h119V0H0z M56.7,109.9L33.2,87.8V62.8h23.5V109.9z
                          M56.7,58H33.2V30.8l23.5-5.9V58z M85.3,81.9l-23.5,2.9V62.8h23.5V81.9z
                          M85.3,58H61.8V34.6l23.5,3.7V58z"/>
             </svg>
