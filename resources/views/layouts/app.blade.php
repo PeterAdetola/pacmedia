@@ -94,35 +94,17 @@
     <div class="loader__wrapper">
         <div class="loader__content">
 
-            {{-- Logo: four explicit polygons matching the original Pacmedia mark.        --}}
-            {{-- fill is set inline on each polygon — highest specificity, beats any      --}}
-            {{-- global CSS cascade. JS swaps to light-mode colour if needed on load.    --}}
-{{--            <svg class="loader__logo"--}}
-{{--                 xmlns="http://www.w3.org/2000/svg"--}}
-{{--                 viewBox="0 0 119 119"--}}
-{{--                 width="119" height="119"--}}
-{{--                 aria-hidden="true" focusable="false"--}}
-{{--                 style="display:block; overflow:hidden;">--}}
-{{--                --}}{{-- top-left panel --}}
-{{--                <polygon fill="#6b6e78" points="56.7,24.9 33.2,30.8 33.2,58 56.7,58"/>--}}
-{{--                --}}{{-- bottom-left panel --}}
-{{--                <polygon fill="#6b6e78" points="33.2,62.8 33.2,87.8 56.7,109.9 56.7,62.8"/>--}}
-{{--                --}}{{-- top-right panel --}}
-{{--                <polygon fill="#6b6e78" points="61.8,34.6 61.8,58 85.3,58 85.3,38.3"/>--}}
-{{--                --}}{{-- bottom-right panel --}}
-{{--                <polygon fill="#6b6e78" points="61.8,62.8 61.8,84.8 85.3,81.9 85.3,62.8"/>--}}
-{{--            </svg>--}}
+            {{-- Logo: four explicit polygons — no compound path, no fill-rule dependency --}}
+            {{-- Size forced inline — Chrome iOS ignores CSS width/height on SVG elements --}}
             <svg class="loader__logo"
                  xmlns="http://www.w3.org/2000/svg"
                  viewBox="0 0 119 119"
-                 width="119" height="119"
                  aria-hidden="true" focusable="false"
-                 style="display:block; overflow:hidden;">
-                <path fill="#6b6e78"
-                      fill-rule="evenodd"
-                      d="M0,0v119h119V0H0z M56.7,109.9L33.2,87.8V62.8h23.5V109.9z
-             M56.7,58H33.2V30.8l23.5-5.9V58z M85.3,81.9l-23.5,2.9V62.8h23.5V81.9z
-             M85.3,58H61.8V34.6l23.5,3.7V58z"/>
+                 style="display:block; overflow:hidden; width:clamp(80px,18vw,120px); height:clamp(80px,18vw,120px); margin:0 auto clamp(14px,3vw,20px);">
+                <polygon fill="#6b6e78" points="56.7,24.9 33.2,30.8 33.2,58 56.7,58"/>
+                <polygon fill="#6b6e78" points="33.2,62.8 33.2,87.8 56.7,109.9 56.7,62.8"/>
+                <polygon fill="#6b6e78" points="61.8,34.6 61.8,58 85.3,58 85.3,38.3"/>
+                <polygon fill="#6b6e78" points="61.8,62.8 61.8,84.8 85.3,81.9 85.3,62.8"/>
             </svg>
 
             {{-- Progress bar --}}
