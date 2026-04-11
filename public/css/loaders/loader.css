@@ -17,13 +17,62 @@
 /* Loader Styles Start */
 /* ------------------------------------------------*/
 
+/*
+ * Hide all loading__fade elements before the loader finishes.
+ * The JS adds .page-ready to <body> on loader dismiss,
+ * which triggers the reveal animation exactly once.
+ * This prevents the navbar flash-on-paint before the loader is active.
+ */
+.loading__fade {
+    opacity: 0;
+    -webkit-transform: translateY(20px);
+    transform: translateY(20px);
+    /* no animation here — controlled by .page-ready below */
+}
+
+body.page-ready .loading__fade {
+    -webkit-animation: loadingFadeIn 0.6s ease-in-out forwards;
+    animation: loadingFadeIn 0.6s ease-in-out forwards;
+}
+
+@-webkit-keyframes loadingFadeIn {
+    from {
+        opacity: 0;
+        -webkit-transform: translateY(20px);
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        -webkit-transform: translateY(0);
+        transform: translateY(0);
+    }
+}
+
+@keyframes loadingFadeIn {
+    from {
+        opacity: 0;
+        -webkit-transform: translateY(20px);
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        -webkit-transform: translateY(0);
+        transform: translateY(0);
+    }
+}
+
 .loader {
     position: fixed;
     top: 0;
     right: 0;
     bottom: 0;
     left: 0;
+    /* iOS Safari: prevent clipping behind browser chrome */
+    width: 100%;
+    height: 100vh;
+    height: -webkit-fill-available;
     z-index: 9999;
+    -webkit-transition: opacity 0.6s ease, visibility 0.6s ease;
     transition: opacity 0.6s ease, visibility 0.6s ease;
 }
 
@@ -35,10 +84,20 @@
 
 .loader__wrapper {
     position: absolute;
-    inset: 0;
-    background: #1a1a1a; /* dark brand default */
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    /* inset shorthand avoided — not reliable in older iOS Safari */
+    background: #1a1a1a;
+    display: -webkit-box;
+    display: -webkit-flex;
     display: flex;
+    -webkit-box-pack: center;
+    -webkit-justify-content: center;
     justify-content: center;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
     align-items: center;
 }
 
@@ -58,8 +117,15 @@
 }
 
 .loader__content {
+    display: -webkit-box;
+    display: -webkit-flex;
     display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
     flex-direction: column;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
     align-items: center;
     gap: 0;
     width: 100%;
@@ -69,11 +135,12 @@
 /* ---- Logo ---- */
 .loader__logo {
     width: clamp(80px, 18vw, 140px);
-    height: auto;
-    aspect-ratio: 1;
+    /* explicit height required — iOS Safari ignores aspect-ratio on SVG */
+    height: clamp(80px, 18vw, 140px);
     display: block;
     margin-bottom: clamp(14px, 3vw, 22px);
     opacity: 0.85;
+    overflow: visible;
 }
 
 /* dark mode default: brighter logo so it reads on the dark bg */

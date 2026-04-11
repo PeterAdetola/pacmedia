@@ -360,6 +360,10 @@
             /* Short pause at 100%, then fade out */
             setTimeout(function () {
                 if (loader) loader.classList.add('loaded');
+
+                /* Reveal nav/logo elements AFTER loader starts fading — no flash */
+                document.body.classList.add('page-ready');
+
                 /* Remove from DOM after transition to free memory */
                 setTimeout(function () {
                     if (loader && loader.parentNode) loader.parentNode.removeChild(loader);

@@ -7436,9 +7436,9 @@ form textarea:required:valid {
   margin-right: 0.5em;
 }
 /* Animation classes */
-.loading__fade {
-  animation: fadeIn 0.6s ease-in-out;
-}
+/*.loading__fade {*/
+/*  animation: fadeIn 0.6s ease-in-out;*/
+/*}*/
 
 @keyframes fadeIn {
   from {
