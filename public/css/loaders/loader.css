@@ -159,9 +159,12 @@ body.page-ready .logo.loading__fade {
     -webkit-box-align: center;
     -webkit-align-items: center;
     align-items: center;
-    gap: 0;
+    -webkit-box-pack: center;
+    -webkit-justify-content: center;
+    justify-content: center;
     width: 100%;
     padding: 0 1.5rem;
+    /* gap avoided — use margins on children instead for iOS Safari compat */
 }
 
 /* ---- Logo ---- */
@@ -198,7 +201,7 @@ body.page-ready .logo.loading__fade {
 /* ---- Progress Bar ---- */
 .loader__bar-wrap {
     position: relative;
-    width: clamp(120px, 28vw, 200px);
+    width: clamp(120px, 28vw, 140px);
     height: 3px;
     border-radius: 99px;
     background: rgba(0, 0, 0, 0.12);
@@ -234,7 +237,7 @@ body.page-ready .logo.loading__fade {
 /* ---- Percentage Text ---- */
 .loader__percent {
     font-family: "Urbanist", sans-serif;
-    font-size: clamp(0.85rem, 2vw, 1rem);
+    font-size: clamp(0.85rem, 2vw, 1.5rem);
     font-weight: 500;
     letter-spacing: 0.06em;
     color: #f2f5fc; /* bright on dark bg by default */
