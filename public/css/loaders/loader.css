@@ -149,11 +149,8 @@ body.page-ready .logo.loading__fade {
 }
 
 .loader__content {
-    /* block + text-align: center is bulletproof across all mobile browsers    */
-    /* flex-direction: column collapses unpredictably on Chrome iOS and old    */
-    /* Android WebView — block layout with auto margins is universally stable. */
-    display: block;
-    text-align: center;
+    display: block !important;
+    text-align: center !important;
     width: 100%;
     padding: 0 1.5rem;
     box-sizing: border-box;
@@ -161,13 +158,10 @@ body.page-ready .logo.loading__fade {
 
 /* ---- Logo ---- */
 .loader__logo {
-    /* Size and margin set inline on the SVG element for Chrome iOS compat.   */
-    /* These rules are a fallback only.                                        */
-    display: block;
-    margin: 0 auto clamp(14px, 3vw, 20px);
+    display: block !important;
+    margin: 0 auto clamp(14px, 3vw, 20px) !important;
     opacity: 0.85;
     overflow: hidden;
-    flex-shrink: 0;
 }
 
 /* dark mode default: brighter logo so it reads on the dark bg */
@@ -227,12 +221,14 @@ body.page-ready .logo.loading__fade {
 
 /* ---- Percentage Text ---- */
 .loader__percent {
+    display: block !important;
     font-family: "Urbanist", sans-serif;
-    font-size: clamp(0.85rem, 2vw, 1.5rem);
+    font-size: clamp(0.85rem, 2vw, 1rem);
     font-weight: 500;
     letter-spacing: 0.06em;
-    color: #f2f5fc; /* bright on dark bg by default */
+    color: #f2f5fc;
     line-height: 1;
+    -webkit-user-select: none;
     user-select: none;
     margin-top: clamp(6px, 1.2vw, 10px);
 }
