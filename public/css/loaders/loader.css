@@ -22,17 +22,38 @@
  * The JS adds .page-ready to <body> on loader dismiss,
  * which triggers the reveal animation exactly once.
  * This prevents the navbar flash-on-paint before the loader is active.
+ *
+ * IMPORTANT: transform: translateY() must NOT be applied to position:fixed
+ * elements — it creates a new stacking context that breaks fixed positioning
+ * entirely (the element behaves like position:relative). The .header and
+ * .nav-container are fixed, so they get opacity-only treatment via the
+ * specific overrides below.
  */
 .loading__fade {
     opacity: 0;
     -webkit-transform: translateY(20px);
     transform: translateY(20px);
-    /* no animation here — controlled by .page-ready below */
+}
+
+/* Fixed-position elements: opacity only — no transform */
+.header.loading__fade,
+.nav-container.loading__fade,
+.logo.loading__fade {
+    -webkit-transform: none;
+    transform: none;
 }
 
 body.page-ready .loading__fade {
     -webkit-animation: loadingFadeIn 0.6s ease-in-out forwards;
     animation: loadingFadeIn 0.6s ease-in-out forwards;
+}
+
+/* Fixed elements get a simpler fade — no translateY */
+body.page-ready .header.loading__fade,
+body.page-ready .nav-container.loading__fade,
+body.page-ready .logo.loading__fade {
+    -webkit-animation: loadingFadeInFixed 0.6s ease-in-out forwards;
+    animation: loadingFadeInFixed 0.6s ease-in-out forwards;
 }
 
 @-webkit-keyframes loadingFadeIn {
@@ -59,6 +80,17 @@ body.page-ready .loading__fade {
         -webkit-transform: translateY(0);
         transform: translateY(0);
     }
+}
+
+/* Opacity-only variant for fixed-position elements */
+@-webkit-keyframes loadingFadeInFixed {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes loadingFadeInFixed {
+    from { opacity: 0; }
+    to   { opacity: 1; }
 }
 
 .loader {
@@ -135,12 +167,13 @@ body.page-ready .loading__fade {
 /* ---- Logo ---- */
 .loader__logo {
     width: clamp(80px, 18vw, 140px);
-    /* explicit height required — iOS Safari ignores aspect-ratio on SVG */
+    /* explicit height mirrors width — iOS Safari ignores aspect-ratio on SVG */
     height: clamp(80px, 18vw, 140px);
     display: block;
+    overflow: hidden; /* never let the outer rect bleed outside the box */
+    flex-shrink: 0;
     margin-bottom: clamp(14px, 3vw, 22px);
     opacity: 0.85;
-    overflow: visible;
 }
 
 /* dark mode default: brighter logo so it reads on the dark bg */
