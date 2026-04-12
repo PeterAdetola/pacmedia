@@ -143,12 +143,12 @@ body.page-ready .logo.loading__fade {
    Logo SVG — shared sizing for both animated and
    CSS-only (Chrome iOS) versions.
    ------------------------------------------------ */
-/*.loader__logo {*/
-/*    display: block;*/
-/*    width: 60px;*/
-/*    height: 98px;*/
-/*    margin: 0 auto 24px;*/
-/*}*/
+.loader__logo {
+    display: block;
+    width: 60px;
+    height: 98px;
+    margin: 0 auto 24px;
+}
 
 /* ------------------------------------------------
    Animated SVG logo — JS RAF morph (non Chrome iOS)
