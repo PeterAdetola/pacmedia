@@ -1,6 +1,6 @@
 /*! ------------------------------------------------
  * Project Name: Pacmedia - Forging Identity. Engineering Digital Infrastructure.
- * Version: 3.0.0
+ * Version: 3.1.0
  * Last Update: April 2026
  * Author: Pacmedia Creatives
  * Author URI: https://thepacmedia.com
@@ -39,6 +39,7 @@ body.page-ready .nav-container.loading__fade,
 body.page-ready .logo.loading__fade {
     -webkit-animation: loadingFadeInFixed 0.6s ease-in-out forwards;
     animation: loadingFadeInFixed 0.6s ease-in-out forwards;
+    will-change: auto;
 }
 
 @-webkit-keyframes loadingFadeIn {
@@ -61,10 +62,9 @@ body.page-ready .logo.loading__fade {
 
 /* ------------------------------------------------
    Loader outer shell
-   Uses height: 0 -> 100% trick (from mil-loader).
-   No opacity/visibility on outer wrapper = no iOS
-   position:fixed stacking context issues. Works on
-   every browser including Chrome iOS.
+   height: 0 → 100% open / collapse trick.
+   No opacity/visibility on outer wrapper — avoids
+   iOS position:fixed stacking context bugs.
    ------------------------------------------------ */
 .loader {
     pointer-events: none;
@@ -140,8 +140,8 @@ body.page-ready .logo.loading__fade {
 }
 
 /* ------------------------------------------------
-   Logo SVG — animated version (non Chrome iOS)
-   3/4 of original: 80px wide → 60px, 130px tall → 98px
+   Logo SVG — shared sizing for both animated and
+   CSS-only (Chrome iOS) versions.
    ------------------------------------------------ */
 .loader__logo {
     display: block;
@@ -150,6 +150,9 @@ body.page-ready .logo.loading__fade {
     margin: 0 auto 24px;
 }
 
+/* ------------------------------------------------
+   Animated SVG logo — JS RAF morph (non Chrome iOS)
+   ------------------------------------------------ */
 .loader__logo polygon {
     fill: #6b6e78;
 }
@@ -161,26 +164,70 @@ body.page-ready .logo.loading__fade {
 [color-scheme="light"] .loader__logo polygon { fill: #888b95; }
 
 /* ------------------------------------------------
-   Static fallback logo (Chrome iOS)
-   Plain SVG — no inline polygon sizing issues.
-   CSS handles all sizing. Gentle breathe animation.
+   CSS-only logo — Option C: cross-fade panels
+   Diagonal pair A = top-left + bottom-right (.poly-a)
+   Diagonal pair B = top-right + bottom-left (.poly-b)
+   They alternate: A dims while B brightens, then swap.
+   Pure CSS keyframes — zero JS, works on Chrome iOS.
+
+   Usage: add class="loader__logo loader__logo--css"
+   to the SVG and class="poly-a" / "poly-b" to polygons.
    ------------------------------------------------ */
-#loader-logo-fallback {
-    width: 60px;
-    height: 98px;
-    margin: 0 auto 24px;
-    -webkit-animation: logoBreathe 2s ease-in-out infinite;
-    animation: logoBreathe 2s ease-in-out infinite;
+.loader__logo--css .poly-a,
+.loader__logo--css .poly-b {
+    fill: #6b6e78;
+    -webkit-animation-duration: 1.6s;
+    animation-duration: 1.6s;
+    -webkit-animation-timing-function: ease-in-out;
+    animation-timing-function: ease-in-out;
+    -webkit-animation-iteration-count: infinite;
+    animation-iteration-count: infinite;
+    /* GPU-composited — opacity only, no layout */
+    will-change: opacity;
 }
 
-@-webkit-keyframes logoBreathe {
-    0%,100% { opacity: 0.5; -webkit-transform: scale(0.96); transform: scale(0.96); }
-    50%      { opacity: 0.85; -webkit-transform: scale(1.04); transform: scale(1.04); }
+@media (prefers-color-scheme: light) {
+    .loader__logo--css .poly-a,
+    .loader__logo--css .poly-b { fill: #888b95; }
 }
-@keyframes logoBreathe {
-    0%,100% { opacity: 0.5; -webkit-transform: scale(0.96); transform: scale(0.96); }
-    50%      { opacity: 0.85; -webkit-transform: scale(1.04); transform: scale(1.04); }
+[color-scheme="dark"]  .loader__logo--css .poly-a,
+[color-scheme="dark"]  .loader__logo--css .poly-b { fill: #6b6e78; }
+[color-scheme="light"] .loader__logo--css .poly-a,
+[color-scheme="light"] .loader__logo--css .poly-b { fill: #888b95; }
+
+/* Pair A starts bright, fades to dim at 50%, back to bright */
+.loader__logo--css .poly-a {
+    -webkit-animation-name: pac-cross-a;
+    animation-name: pac-cross-a;
 }
+
+/* Pair B starts dim, brightens at 50%, back to dim — exact inverse */
+.loader__logo--css .poly-b {
+    -webkit-animation-name: pac-cross-b;
+    animation-name: pac-cross-b;
+}
+
+@-webkit-keyframes pac-cross-a {
+    0%,  100% { opacity: 0.85; }
+    50%        { opacity: 0.2;  }
+}
+@keyframes pac-cross-a {
+    0%,  100% { opacity: 0.85; }
+    50%        { opacity: 0.2;  }
+}
+
+@-webkit-keyframes pac-cross-b {
+    0%,  100% { opacity: 0.2;  }
+    50%        { opacity: 0.85; }
+}
+@keyframes pac-cross-b {
+    0%,  100% { opacity: 0.2;  }
+    50%        { opacity: 0.85; }
+}
+
+/* ------------------------------------------------
+   Progress bar
+   ------------------------------------------------ */
 .loader__bar-wrap {
     width: 160px;
     height: 2px;
@@ -214,7 +261,7 @@ body.page-ready .logo.loading__fade {
 .loader__percent {
     display: block;
     font-family: "Urbanist", sans-serif;
-    font-size: 1.1rem;
+    font-size: 0.9rem;
     font-weight: 500;
     letter-spacing: 0.06em;
     color: #f2f5fc;

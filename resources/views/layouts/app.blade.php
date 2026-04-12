@@ -93,27 +93,24 @@
 <div id="loader" class="loader active">
     <div class="loader__content">
 
-        {{-- Animated SVG logo (all browsers except Chrome iOS) --}}
-        <svg id="loader-logo" class="loader__logo"
+        {{--
+            Single SVG logo used by ALL browsers.
+            - On capable browsers: JS RAF morph animates the points.
+            - On Chrome iOS (CriOS): JS point-morphing is skipped;
+              the CSS cross-fade animation on .poly-a / .poly-b runs
+              instead. No separate fallback element needed.
+        --}}
+        <svg id="loader-logo"
+             class="loader__logo loader__logo--css"
              viewBox="0 0 219.1 354"
              xmlns="http://www.w3.org/2000/svg"
              aria-hidden="true" focusable="false">
-            <polygon id="l-tl" fill="#6b6e78"/>
-            <polygon id="l-bl" fill="#6b6e78"/>
-            <polygon id="l-tr" fill="#6b6e78"/>
-            <polygon id="l-br" fill="#6b6e78"/>
-        </svg>
-
-        {{-- Static breathe fallback (Chrome iOS only) — hidden by default --}}
-        <svg id="loader-logo-fallback" class="loader__logo"
-             viewBox="0 0 219.1 354"
-             xmlns="http://www.w3.org/2000/svg"
-             style="display:none;"
-             aria-hidden="true" focusable="false">
-            <polygon fill="#6b6e78" points="2.6,57.5 99,57.4 99,138.3 2.6,138.3"/>
-            <polygon fill="#6b6e78" points="2.6,158.2 99,158.2 99,236.2 2.6,236.5"/>
-            <polygon fill="#6b6e78" points="216.5,57.4 216.5,138.3 120.2,138.3 120.2,57.3"/>
-            <polygon fill="#6b6e78" points="120.2,158.2 216.5,158.2 216.5,236.3 120.2,236.2"/>
+            {{-- poly-a = diagonal pair: top-left + bottom-right --}}
+            <polygon id="l-tl" class="poly-a" fill="#6b6e78"/>
+            <polygon id="l-br" class="poly-a" fill="#6b6e78"/>
+            {{-- poly-b = diagonal pair: top-right + bottom-left --}}
+            <polygon id="l-tr" class="poly-b" fill="#6b6e78"/>
+            <polygon id="l-bl" class="poly-b" fill="#6b6e78"/>
         </svg>
 
         <div class="loader__bar-wrap" id="loader-bar-wrap">
@@ -316,28 +313,32 @@
 </script>
 <script>
     (function () {
+        /* CriOS = Chrome on iOS — reliable, no false positives */
         var isChromeIOS = /CriOS/i.test(navigator.userAgent);
         window._loaderChromeIOS = isChromeIOS;
 
-        if (isChromeIOS) {
-            var svg      = document.getElementById('loader-logo');
-            var fallback = document.getElementById('loader-logo-fallback');
-            if (svg)      svg.style.display = 'none';
-            if (fallback) fallback.style.display = 'block';
+        /* Apply light-mode fill to all logo polygons regardless of browser */
+        var scheme = document.documentElement.getAttribute('color-scheme')
+            || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
 
+        if (scheme === 'light') {
+            var polys = document.querySelectorAll('#loader-logo polygon');
+            for (var i = 0; i < polys.length; i++) {
+                polys[i].setAttribute('fill', '#888b95');
+            }
+        }
+
+        if (isChromeIOS) {
+            /*
+             * On Chrome iOS the JS RAF polygon-morph is unreliable.
+             * We skip it entirely — the CSS cross-fade animation
+             * (.loader__logo--css .poly-a / .poly-b) runs automatically.
+             * Hide the progress bar and percent: they flicker on CriOS.
+             */
             var barWrap = document.getElementById('loader-bar-wrap');
             var pct     = document.getElementById('loader-percent');
             if (barWrap) barWrap.style.display = 'none';
             if (pct)     pct.style.display     = 'none';
-        } else {
-            var scheme = document.documentElement.getAttribute('color-scheme')
-                || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
-            if (scheme === 'light') {
-                var polys = document.querySelectorAll('#loader-logo polygon, #loader-logo-fallback polygon');
-                for (var i = 0; i < polys.length; i++) {
-                    polys[i].setAttribute('fill', '#888b95');
-                }
-            }
         }
     })();
 </script>
@@ -373,8 +374,8 @@
             br: document.getElementById('l-br')
         };
 
-        var bar   = document.getElementById('loader-bar');
-        var label = document.getElementById('loader-percent');
+        var bar    = document.getElementById('loader-bar');
+        var label  = document.getElementById('loader-percent');
         var loader = document.getElementById('loader');
 
         /* ── Helpers ── */
@@ -422,7 +423,8 @@
 
         function setBar(to) {
             var from = barCur; barCur = to;
-            bar.style.width = to + '%';
+            if (bar)   bar.style.width = to + '%';
+            if (!label) return;
             var start = null;
             if (barRaf) cancelAnimationFrame(barRaf);
             (function count(ts) {
@@ -438,22 +440,16 @@
 
         function openClose() {
             if (!animating) return;
-            /* Open: F1 → F2 → F3, simultaneously, 480ms each */
             morphAll(F[0], F[1], 480, function () {
                 if (!animating) return;
                 morphAll(F[1], F[2], 480, function () {
                     if (!animating) return;
-                    /* Hold open 600ms */
                     setTimeout(function () {
                         if (!animating) return;
-                        /* Close: F3 → F2 → F1 */
                         morphAll(F[2], F[1], 380, function () {
                             if (!animating) return;
                             morphAll(F[1], F[0], 380, function () {
-                                /* Hold closed 400ms then loop */
-                                setTimeout(function () {
-                                    openClose();
-                                }, 400);
+                                setTimeout(function () { openClose(); }, 400);
                             });
                         });
                     }, 600);
@@ -475,21 +471,13 @@
             simDone   = true;
             clearInterval(simInterval);
 
-            /* Snap to 100% */
             setBar(100);
 
-            /* Brief pause at 100%, then collapse the loader */
             setTimeout(function () {
-                /* Snap logo back to closed frame cleanly */
                 setFrame(F[0]);
-
-                /* Remove .active — height collapses to 0 */
                 loader.classList.remove('active');
-
-                /* Reveal navbars */
                 document.body.classList.add('page-ready');
 
-                /* Remove from DOM after transition */
                 setTimeout(function () {
                     if (loader && loader.parentNode) {
                         loader.parentNode.removeChild(loader);
@@ -498,17 +486,19 @@
             }, 350);
         }
 
-        /* Start animation — skipped on Chrome iOS (static fallback shown instead) */
+        /* Set initial frame always */
         setFrame(F[0]);
+
+        /*
+         * Only run the RAF morph loop on non-Chrome iOS.
+         * Chrome iOS uses the CSS cross-fade animation instead —
+         * it runs automatically via .loader__logo--css in loader.css.
+         */
         if (!window._loaderChromeIOS) {
             openClose();
         }
 
-        /* ── Dismissal logic ──
-           Two conditions must BOTH be true before finish() fires:
-           1. window has fully loaded (all resources ready)
-           2. at least 1500ms have elapsed (minimum display time)
-           This prevents instant collapse on cached/fast loads.      */
+        /* ── Dismissal: both window.load AND 1.5s minimum must pass ── */
         var pageLoaded  = false;
         var minTimeDone = false;
         var dismissed   = false;
@@ -520,16 +510,13 @@
             }
         }
 
-        /* Minimum display time — 1.5s */
         setTimeout(function () {
             minTimeDone = true;
             tryFinish();
         }, 1500);
 
-        /* Window fully loaded */
         if (document.readyState === 'complete') {
             pageLoaded = true;
-            /* don't call tryFinish here — wait for minTime too */
         } else {
             window.addEventListener('load', function () {
                 pageLoaded = true;
