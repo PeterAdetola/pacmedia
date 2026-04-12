@@ -93,16 +93,29 @@
 <div id="loader" class="loader active">
     <div class="loader__content">
 
-        {{-- Animated logo — 4 polygons morphing through your 3 frames --}}
-        <svg id="loader-logo" class="loader__logo"
-             viewBox="0 0 219.1 354"
-             xmlns="http://www.w3.org/2000/svg"
-             aria-hidden="true" focusable="false">
-            <polygon id="l-tl" fill="#6b6e78"/>
-            <polygon id="l-bl" fill="#6b6e78"/>
-            <polygon id="l-tr" fill="#6b6e78"/>
-            <polygon id="l-br" fill="#6b6e78"/>
-        </svg>
+        {{-- Logo: Chrome iOS gets static img (inline SVG ignores CSS dimensions) --}}
+        {{-- All other browsers get the full polygon morph animation              --}}
+        <div id="loader-logo-wrap">
+
+            {{-- Animated SVG — shown by default, hidden for Chrome iOS via JS --}}
+            <svg id="loader-logo" class="loader__logo"
+                 viewBox="0 0 219.1 354"
+                 xmlns="http://www.w3.org/2000/svg"
+                 aria-hidden="true" focusable="false">
+                <polygon id="l-tl" fill="#6b6e78"/>
+                <polygon id="l-bl" fill="#6b6e78"/>
+                <polygon id="l-tr" fill="#6b6e78"/>
+                <polygon id="l-br" fill="#6b6e78"/>
+            </svg>
+
+            {{-- Static fallback img — hidden by default, shown for Chrome iOS --}}
+            <img id="loader-logo-fallback"
+                 src="{{ asset('img/logo.png') }}"
+                 alt=""
+                 aria-hidden="true"
+                 style="display:none; width:80px; height:auto; margin:0 auto 24px; opacity:0.85;">
+
+        </div>
 
         {{-- Progress bar --}}
         <div class="loader__bar-wrap">
@@ -306,14 +319,31 @@
 </script>
 <script>
     (function () {
-        var scheme = document.documentElement.getAttribute('color-scheme')
-            || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
-        if (scheme === 'light') {
-            var polys = document.querySelectorAll('#loader-logo polygon');
-            for (var i = 0; i < polys.length; i++) {
-                polys[i].setAttribute('fill', '#888b95');
+        /* ── Chrome iOS detection ──
+           Chrome on iOS uses "CriOS" in its UA string — unique to it.
+           No other browser on any platform uses this string.         */
+        var isChromeIOS = /CriOS/i.test(navigator.userAgent);
+
+        if (isChromeIOS) {
+            /* Hide animated SVG, show static PNG fallback */
+            var svg = document.getElementById('loader-logo');
+            var img = document.getElementById('loader-logo-fallback');
+            if (svg) svg.style.display = 'none';
+            if (img) img.style.display = 'block';
+        } else {
+            /* Non-Chrome: apply light mode colour swap to SVG polygons */
+            var scheme = document.documentElement.getAttribute('color-scheme')
+                || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+            if (scheme === 'light') {
+                var polys = document.querySelectorAll('#loader-logo polygon');
+                for (var i = 0; i < polys.length; i++) {
+                    polys[i].setAttribute('fill', '#888b95');
+                }
             }
         }
+
+        /* Expose flag for the animation script below */
+        window._loaderChromeIOS = isChromeIOS;
     })();
 </script>
 <script>
@@ -478,9 +508,11 @@
             }, 350);
         }
 
-        /* Start animation immediately */
+        /* Start animation — skipped on Chrome iOS (static fallback shown instead) */
         setFrame(F[0]);
-        openClose();
+        if (!window._loaderChromeIOS) {
+            openClose();
+        }
 
         /* Dismiss on window load — ONLY when page is fully ready */
         if (document.readyState === 'complete') {
