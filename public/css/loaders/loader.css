@@ -137,12 +137,13 @@ body.page-ready .logo.loading__fade {
 }
 
 /* ------------------------------------------------
-   Logo SVG animation
+   Logo SVG — animated version (non Chrome iOS)
+   3/4 of original: 80px wide → 60px, 130px tall → 98px
    ------------------------------------------------ */
 .loader__logo {
     display: block;
-    width: 80px;
-    height: 130px;
+    width: 60px;
+    height: 98px;
     margin: 0 auto 24px;
 }
 
@@ -157,8 +158,26 @@ body.page-ready .logo.loading__fade {
 [color-scheme="light"] .loader__logo polygon { fill: #888b95; }
 
 /* ------------------------------------------------
-   Progress bar
+   Static fallback logo (Chrome iOS)
+   Plain SVG — no inline polygon sizing issues.
+   CSS handles all sizing. Gentle breathe animation.
    ------------------------------------------------ */
+#loader-logo-fallback {
+    width: 60px;
+    height: 98px;
+    margin: 0 auto 24px;
+    -webkit-animation: logoBreathe 2s ease-in-out infinite;
+    animation: logoBreathe 2s ease-in-out infinite;
+}
+
+@-webkit-keyframes logoBreathe {
+    0%,100% { opacity: 0.5; -webkit-transform: scale(0.96); transform: scale(0.96); }
+    50%      { opacity: 0.85; -webkit-transform: scale(1.04); transform: scale(1.04); }
+}
+@keyframes logoBreathe {
+    0%,100% { opacity: 0.5; -webkit-transform: scale(0.96); transform: scale(0.96); }
+    50%      { opacity: 0.85; -webkit-transform: scale(1.04); transform: scale(1.04); }
+}
 .loader__bar-wrap {
     width: 160px;
     height: 2px;

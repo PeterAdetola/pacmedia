@@ -108,12 +108,17 @@
                 <polygon id="l-br" fill="#6b6e78"/>
             </svg>
 
-            {{-- Static fallback img — hidden by default, shown for Chrome iOS --}}
-            <img id="loader-logo-fallback"
-                 src="{{ asset('img/logo.png') }}"
-                 alt=""
-                 aria-hidden="true"
-                 style="display:none; width:80px; height:auto; margin:0 auto 24px; opacity:0.85;">
+            {{-- Static SVG fallback for Chrome iOS — hidden by default, shown via JS --}}
+            <svg id="loader-logo-fallback"
+                 viewBox="0 0 219.1 354"
+                 xmlns="http://www.w3.org/2000/svg"
+                 aria-hidden="true" focusable="false"
+                 style="display:none;">
+                <polygon fill="#6b6e78" points="2.6,57.5 99,57.4 99,138.3 2.6,138.3"/>
+                <polygon fill="#6b6e78" points="2.6,158.2 99,158.2 99,236.2 2.6,236.5"/>
+                <polygon fill="#6b6e78" points="216.5,57.4 216.5,138.3 120.2,138.3 120.2,57.3"/>
+                <polygon fill="#6b6e78" points="120.2,158.2 216.5,158.2 216.5,236.3 120.2,236.2"/>
+            </svg>
 
         </div>
 
@@ -319,19 +324,23 @@
 </script>
 <script>
     (function () {
-        /* ── Chrome iOS detection ──
-           Chrome on iOS uses "CriOS" in its UA string — unique to it.
-           No other browser on any platform uses this string.         */
+        /* CriOS = Chrome on iOS — unique UA string, no false positives */
         var isChromeIOS = /CriOS/i.test(navigator.userAgent);
 
         if (isChromeIOS) {
-            /* Hide animated SVG, show static PNG fallback */
+            /* Show static SVG fallback, hide animated SVG */
             var svg = document.getElementById('loader-logo');
-            var img = document.getElementById('loader-logo-fallback');
+            var fallback = document.getElementById('loader-logo-fallback');
             if (svg) svg.style.display = 'none';
-            if (img) img.style.display = 'block';
+            if (fallback) fallback.style.display = 'block';
+
+            /* Hide bar and percent — layout breaks on Chrome iOS */
+            var barWrap = document.querySelector('.loader__bar-wrap');
+            var pct     = document.getElementById('loader-percent');
+            if (barWrap) barWrap.style.display = 'none';
+            if (pct)     pct.style.display     = 'none';
         } else {
-            /* Non-Chrome: apply light mode colour swap to SVG polygons */
+            /* Non-Chrome: apply light mode colour swap to animated SVG polygons */
             var scheme = document.documentElement.getAttribute('color-scheme')
                 || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
             if (scheme === 'light') {
@@ -339,10 +348,14 @@
                 for (var i = 0; i < polys.length; i++) {
                     polys[i].setAttribute('fill', '#888b95');
                 }
+                /* Light mode fallback SVG too */
+                var fpolys = document.querySelectorAll('#loader-logo-fallback polygon');
+                for (var j = 0; j < fpolys.length; j++) {
+                    fpolys[j].setAttribute('fill', '#888b95');
+                }
             }
         }
 
-        /* Expose flag for the animation script below */
         window._loaderChromeIOS = isChromeIOS;
     })();
 </script>
