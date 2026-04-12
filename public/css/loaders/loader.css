@@ -173,57 +173,57 @@ body.page-ready .logo.loading__fade {
    Usage: add class="loader__logo loader__logo--css"
    to the SVG and class="poly-l" / "poly-r" to polygons.
    ------------------------------------------------ */
-.loader__logo--css .poly-l,
-.loader__logo--css .poly-r {
-    fill: #6b6e78;
-    -webkit-animation-duration: 1.6s;
-    animation-duration: 1.6s;
-    -webkit-animation-timing-function: ease-in-out;
-    animation-timing-function: ease-in-out;
-    -webkit-animation-iteration-count: infinite;
-    animation-iteration-count: infinite;
-    /* GPU-composited — opacity only, no layout */
-    will-change: opacity;
-}
+/*.loader__logo--css .poly-l,*/
+/*.loader__logo--css .poly-r {*/
+/*    fill: #6b6e78;*/
+/*    -webkit-animation-duration: 1.6s;*/
+/*    animation-duration: 1.6s;*/
+/*    -webkit-animation-timing-function: ease-in-out;*/
+/*    animation-timing-function: ease-in-out;*/
+/*    -webkit-animation-iteration-count: infinite;*/
+/*    animation-iteration-count: infinite;*/
+/*    !* GPU-composited — opacity only, no layout *!*/
+/*    will-change: opacity;*/
+/*}*/
 
-@media (prefers-color-scheme: light) {
-    .loader__logo--css .poly-l,
-    .loader__logo--css .poly-r { fill: #888b95; }
-}
-[color-scheme="dark"]  .loader__logo--css .poly-l,
-[color-scheme="dark"]  .loader__logo--css .poly-r { fill: #6b6e78; }
-[color-scheme="light"] .loader__logo--css .poly-l,
-[color-scheme="light"] .loader__logo--css .poly-r { fill: #888b95; }
+/*@media (prefers-color-scheme: light) {*/
+/*    .loader__logo--css .poly-l,*/
+/*    .loader__logo--css .poly-r { fill: #888b95; }*/
+/*}*/
+/*[color-scheme="dark"]  .loader__logo--css .poly-l,*/
+/*[color-scheme="dark"]  .loader__logo--css .poly-r { fill: #6b6e78; }*/
+/*[color-scheme="light"] .loader__logo--css .poly-l,*/
+/*[color-scheme="light"] .loader__logo--css .poly-r { fill: #888b95; }*/
 
-/* Left column starts bright, dims at 50%, back to bright */
-.loader__logo--css .poly-l {
-    -webkit-animation-name: pac-vert-l;
-    animation-name: pac-vert-l;
-}
+/*!* Left column starts bright, dims at 50%, back to bright *!*/
+/*.loader__logo--css .poly-l {*/
+/*    -webkit-animation-name: pac-vert-l;*/
+/*    animation-name: pac-vert-l;*/
+/*}*/
 
-/* Right column starts dim, brightens at 50%, back to dim — exact inverse */
-.loader__logo--css .poly-r {
-    -webkit-animation-name: pac-vert-r;
-    animation-name: pac-vert-r;
-}
+/*!* Right column starts dim, brightens at 50%, back to dim — exact inverse *!*/
+/*.loader__logo--css .poly-r {*/
+/*    -webkit-animation-name: pac-vert-r;*/
+/*    animation-name: pac-vert-r;*/
+/*}*/
 
-@-webkit-keyframes pac-vert-l {
-    0%,  100% { opacity: 0.85; }
-    50%        { opacity: 0.15; }
-}
-@keyframes pac-vert-l {
-    0%,  100% { opacity: 0.85; }
-    50%        { opacity: 0.15; }
-}
+/*@-webkit-keyframes pac-vert-l {*/
+/*    0%,  100% { opacity: 0.85; }*/
+/*    50%        { opacity: 0.15; }*/
+/*}*/
+/*@keyframes pac-vert-l {*/
+/*    0%,  100% { opacity: 0.85; }*/
+/*    50%        { opacity: 0.15; }*/
+/*}*/
 
-@-webkit-keyframes pac-vert-r {
-    0%,  100% { opacity: 0.15; }
-    50%        { opacity: 0.85; }
-}
-@keyframes pac-vert-r {
-    0%,  100% { opacity: 0.15; }
-    50%        { opacity: 0.85; }
-}
+/*@-webkit-keyframes pac-vert-r {*/
+/*    0%,  100% { opacity: 0.15; }*/
+/*    50%        { opacity: 0.85; }*/
+/*}*/
+/*@keyframes pac-vert-r {*/
+/*    0%,  100% { opacity: 0.15; }*/
+/*    50%        { opacity: 0.85; }*/
+/*}*/
 
 /* ------------------------------------------------
    Progress bar
