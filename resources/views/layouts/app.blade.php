@@ -476,15 +476,8 @@
 
         /* Set initial frame always */
         setFrame(F[0]);
+        openClose();
 
-        /*
-         * Only run the RAF morph loop on non-Chrome iOS.
-         * Chrome iOS uses the CSS cross-fade animation instead —
-         * it runs automatically via .loader__logo--css in loader.css.
-         */
-        if (!window._loaderChromeIOS) {
-            openClose();
-        }
 
         /* ── Dismissal: both window.load AND 1.5s minimum must pass ── */
         var pageLoaded  = false;
