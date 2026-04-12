@@ -93,43 +93,47 @@
 <div id="loader" class="loader active">
     <div class="loader__content">
 
-        {{-- Logo: Chrome iOS gets static img (inline SVG ignores CSS dimensions) --}}
-        {{-- All other browsers get the full polygon morph animation              --}}
-        <div id="loader-logo-wrap">
+        {{-- Animated SVG logo — hidden on Chrome iOS, shown on all other browsers --}}
+        <svg id="loader-logo" class="loader__logo"
+             viewBox="0 0 219.1 354"
+             xmlns="http://www.w3.org/2000/svg"
+             aria-hidden="true" focusable="false">
+            <polygon id="l-tl" fill="#6b6e78"/>
+            <polygon id="l-bl" fill="#6b6e78"/>
+            <polygon id="l-tr" fill="#6b6e78"/>
+            <polygon id="l-br" fill="#6b6e78"/>
+        </svg>
 
-            {{-- Animated SVG — shown by default, hidden for Chrome iOS via JS --}}
-            <svg id="loader-logo" class="loader__logo"
+        {{-- Progress bar — hidden on Chrome iOS --}}
+        <div class="loader__bar-wrap" id="loader-bar-wrap">
+            <div class="loader__bar" id="loader-bar"></div>
+        </div>
+
+        {{-- Percentage — hidden on Chrome iOS --}}
+        <span class="loader__percent" id="loader-percent">0%</span>
+
+    </div>
+</div>
+
+{{-- Chrome iOS fallback — original working preloader structure --}}
+{{-- Hidden by default, shown only for Chrome iOS via JS         --}}
+<div id="loader-fallback" class="loader-fallback" style="display:none;">
+    <div class="loader-fallback__wrapper">
+        <div class="loader-fallback__content">
+            <svg class="loader-fallback__logo"
                  viewBox="0 0 219.1 354"
                  xmlns="http://www.w3.org/2000/svg"
                  aria-hidden="true" focusable="false">
-                <polygon id="l-tl" fill="#6b6e78"/>
-                <polygon id="l-bl" fill="#6b6e78"/>
-                <polygon id="l-tr" fill="#6b6e78"/>
-                <polygon id="l-br" fill="#6b6e78"/>
-            </svg>
-
-            {{-- Static SVG fallback for Chrome iOS — hidden by default, shown via JS --}}
-            <svg id="loader-logo-fallback"
-                 viewBox="0 0 219.1 354"
-                 xmlns="http://www.w3.org/2000/svg"
-                 aria-hidden="true" focusable="false"
-                 style="display:none;">
                 <polygon fill="#6b6e78" points="2.6,57.5 99,57.4 99,138.3 2.6,138.3"/>
                 <polygon fill="#6b6e78" points="2.6,158.2 99,158.2 99,236.2 2.6,236.5"/>
                 <polygon fill="#6b6e78" points="216.5,57.4 216.5,138.3 120.2,138.3 120.2,57.3"/>
                 <polygon fill="#6b6e78" points="120.2,158.2 216.5,158.2 216.5,236.3 120.2,236.2"/>
             </svg>
-
+            <div class="loader-fallback__count">
+                <span class="loader-fallback__text" id="fallback-percent">0</span>
+                <span class="loader-fallback__symbol">%</span>
+            </div>
         </div>
-
-        {{-- Progress bar --}}
-        <div class="loader__bar-wrap">
-            <div class="loader__bar" id="loader-bar"></div>
-        </div>
-
-        {{-- Percentage --}}
-        <span class="loader__percent" id="loader-percent">0%</span>
-
     </div>
 </div>
 {{--<div id="loader" class="loader">--}}
@@ -328,30 +332,21 @@
         var isChromeIOS = /CriOS/i.test(navigator.userAgent);
 
         if (isChromeIOS) {
-            /* Show static SVG fallback, hide animated SVG */
-            var svg = document.getElementById('loader-logo');
-            var fallback = document.getElementById('loader-logo-fallback');
-            if (svg) svg.style.display = 'none';
-            if (fallback) fallback.style.display = 'block';
+            /* Hide the new animated loader entirely */
+            var mainLoader = document.getElementById('loader');
+            if (mainLoader) mainLoader.style.display = 'none';
 
-            /* Hide bar and percent — layout breaks on Chrome iOS */
-            var barWrap = document.querySelector('.loader__bar-wrap');
-            var pct     = document.getElementById('loader-percent');
-            if (barWrap) barWrap.style.display = 'none';
-            if (pct)     pct.style.display     = 'none';
+            /* Show the original working fallback loader */
+            var fallback = document.getElementById('loader-fallback');
+            if (fallback) fallback.style.display = 'block';
         } else {
-            /* Non-Chrome: apply light mode colour swap to animated SVG polygons */
+            /* Non Chrome iOS — apply light mode colour swap to animated SVG */
             var scheme = document.documentElement.getAttribute('color-scheme')
                 || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
             if (scheme === 'light') {
                 var polys = document.querySelectorAll('#loader-logo polygon');
                 for (var i = 0; i < polys.length; i++) {
                     polys[i].setAttribute('fill', '#888b95');
-                }
-                /* Light mode fallback SVG too */
-                var fpolys = document.querySelectorAll('#loader-logo-fallback polygon');
-                for (var j = 0; j < fpolys.length; j++) {
-                    fpolys[j].setAttribute('fill', '#888b95');
                 }
             }
         }
@@ -481,11 +476,15 @@
 
         /* ── Simulated progress ── */
         var simDone = false;
+        var fallbackPct = document.getElementById('fallback-percent');
         var simInterval = setInterval(function () {
             if (simDone) return;
             var step = Math.random() * 10 + 4;
             barCur = Math.min(barCur + step, 90);
-            setBar(Math.round(barCur));
+            var rounded = Math.round(barCur);
+            setBar(rounded);
+            /* Update fallback counter for Chrome iOS */
+            if (fallbackPct) fallbackPct.textContent = rounded;
         }, 450);
 
         function finish() {
@@ -496,23 +495,29 @@
             /* Snap to 100% */
             setBar(100);
 
-            /* Brief pause at 100%, then collapse the loader */
             setTimeout(function () {
-                /* Snap logo back to closed frame cleanly */
                 setFrame(F[0]);
 
-                /* Remove .active — height collapses to 0 */
-                loader.classList.remove('active');
+                /* Dismiss main animated loader */
+                var mainLoader = document.getElementById('loader');
+                if (mainLoader) {
+                    mainLoader.classList.remove('active');
+                    setTimeout(function () {
+                        if (mainLoader.parentNode) mainLoader.parentNode.removeChild(mainLoader);
+                    }, 600);
+                }
+
+                /* Dismiss fallback loader (Chrome iOS) */
+                var fallback = document.getElementById('loader-fallback');
+                if (fallback) {
+                    fallback.classList.add('loader-fallback--hidden');
+                    setTimeout(function () {
+                        if (fallback.parentNode) fallback.parentNode.removeChild(fallback);
+                    }, 600);
+                }
 
                 /* Reveal navbars */
                 document.body.classList.add('page-ready');
-
-                /* Remove from DOM after transition */
-                setTimeout(function () {
-                    if (loader && loader.parentNode) {
-                        loader.parentNode.removeChild(loader);
-                    }
-                }, 600);
             }, 350);
         }
 
