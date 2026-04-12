@@ -17,6 +17,7 @@
     opacity: 0;
     -webkit-transform: translateY(20px);
     transform: translateY(20px);
+    will-change: opacity, transform;
 }
 
 .header.loading__fade,
@@ -24,11 +25,13 @@
 .logo.loading__fade {
     -webkit-transform: none;
     transform: none;
+    will-change: opacity;
 }
 
 body.page-ready .loading__fade {
     -webkit-animation: loadingFadeIn 0.6s ease-in-out forwards;
     animation: loadingFadeIn 0.6s ease-in-out forwards;
+    will-change: auto;
 }
 
 body.page-ready .header.loading__fade,
@@ -211,7 +214,7 @@ body.page-ready .logo.loading__fade {
 .loader__percent {
     display: block;
     font-family: "Urbanist", sans-serif;
-    font-size: 0.9rem;
+    font-size: 1.1rem;
     font-weight: 500;
     letter-spacing: 0.06em;
     color: #f2f5fc;
