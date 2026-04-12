@@ -313,14 +313,12 @@
 </script>
 <script>
     (function () {
-        /* CriOS = Chrome on iOS — reliable, no false positives */
         var isChromeIOS = /CriOS/i.test(navigator.userAgent);
         window._loaderChromeIOS = isChromeIOS;
 
-        /* Apply light-mode fill to all logo polygons regardless of browser */
+        /* Light mode fill — all browsers */
         var scheme = document.documentElement.getAttribute('color-scheme')
             || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
-
         if (scheme === 'light') {
             var polys = document.querySelectorAll('#loader-logo polygon');
             for (var i = 0; i < polys.length; i++) {
@@ -328,18 +326,7 @@
             }
         }
 
-        if (isChromeIOS) {
-            /*
-             * On Chrome iOS the JS RAF polygon-morph is unreliable.
-             * We skip it entirely — the CSS cross-fade animation
-             * (.loader__logo--css .poly-a / .poly-b) runs automatically.
-             * Hide the progress bar and percent: they flicker on CriOS.
-             */
-            var barWrap = document.getElementById('loader-bar-wrap');
-            var pct     = document.getElementById('loader-percent');
-            if (barWrap) barWrap.style.display = 'none';
-            if (pct)     pct.style.display     = 'none';
-        }
+        /* No hiding of bar/percent — let everything run on Chrome iOS too */
     })();
 </script>
 <script>
@@ -494,9 +481,11 @@
          * Chrome iOS uses the CSS cross-fade animation instead —
          * it runs automatically via .loader__logo--css in loader.css.
          */
-        if (!window._loaderChromeIOS) {
-            openClose();
-        }
+        // if (!window._loaderChromeIOS) {
+        //     openClose();
+        // }
+
+        openClose();
 
         /* ── Dismissal: both window.load AND 1.5s minimum must pass ── */
         var pageLoaded  = false;
