@@ -488,14 +488,9 @@
             setBar(Math.round(barCur));
         }, 450);
 
-        /* ── Dismiss — fires ONLY when window is fully loaded ── */
-        var dismissed = false;
-
         function finish() {
-            if (dismissed) return;
-            dismissed = true;
-            animating  = false;
-            simDone    = true;
+            animating = false;
+            simDone   = true;
             clearInterval(simInterval);
 
             /* Snap to 100% */
@@ -527,15 +522,43 @@
             openClose();
         }
 
-        /* Dismiss on window load — ONLY when page is fully ready */
+        /* ── Dismissal logic ──
+           Two conditions must BOTH be true before finish() fires:
+           1. window has fully loaded (all resources ready)
+           2. at least 1500ms have elapsed (minimum display time)
+           This prevents instant collapse on cached/fast loads.      */
+        var pageLoaded  = false;
+        var minTimeDone = false;
+        var dismissed   = false;
+
+        function tryFinish() {
+            if (!dismissed && pageLoaded && minTimeDone) {
+                dismissed = true;
+                finish();
+            }
+        }
+
+        /* Minimum display time — 1.5s */
+        setTimeout(function () {
+            minTimeDone = true;
+            tryFinish();
+        }, 1500);
+
+        /* Window fully loaded */
         if (document.readyState === 'complete') {
-            finish();
+            pageLoaded = true;
+            /* don't call tryFinish here — wait for minTime too */
         } else {
-            window.addEventListener('load', finish, { once: true });
+            window.addEventListener('load', function () {
+                pageLoaded = true;
+                tryFinish();
+            }, { once: true });
         }
 
         /* Hard fallback — 12s max for very slow connections */
-        setTimeout(finish, 12000);
+        setTimeout(function () {
+            if (!dismissed) { dismissed = true; finish(); }
+        }, 12000);
 
     })();
 </script>
