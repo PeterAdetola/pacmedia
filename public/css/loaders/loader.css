@@ -164,17 +164,17 @@ body.page-ready .logo.loading__fade {
 [color-scheme="light"] .loader__logo polygon { fill: #888b95; }
 
 /* ------------------------------------------------
-   CSS-only logo — Option C: cross-fade panels
-   Diagonal pair A = top-left + bottom-right (.poly-a)
-   Diagonal pair B = top-right + bottom-left (.poly-b)
-   They alternate: A dims while B brightens, then swap.
+   CSS-only logo — Option D: vertical column cross-fade
+   Left column  = top-left + bottom-left (.poly-l)
+   Right column = top-right + bottom-right (.poly-r)
+   Left brightens while right dims, then swap.
    Pure CSS keyframes — zero JS, works on Chrome iOS.
 
    Usage: add class="loader__logo loader__logo--css"
-   to the SVG and class="poly-a" / "poly-b" to polygons.
+   to the SVG and class="poly-l" / "poly-r" to polygons.
    ------------------------------------------------ */
-.loader__logo--css .poly-a,
-.loader__logo--css .poly-b {
+.loader__logo--css .poly-l,
+.loader__logo--css .poly-r {
     fill: #6b6e78;
     -webkit-animation-duration: 1.6s;
     animation-duration: 1.6s;
@@ -187,41 +187,41 @@ body.page-ready .logo.loading__fade {
 }
 
 @media (prefers-color-scheme: light) {
-    .loader__logo--css .poly-a,
-    .loader__logo--css .poly-b { fill: #888b95; }
+    .loader__logo--css .poly-l,
+    .loader__logo--css .poly-r { fill: #888b95; }
 }
-[color-scheme="dark"]  .loader__logo--css .poly-a,
-[color-scheme="dark"]  .loader__logo--css .poly-b { fill: #6b6e78; }
-[color-scheme="light"] .loader__logo--css .poly-a,
-[color-scheme="light"] .loader__logo--css .poly-b { fill: #888b95; }
+[color-scheme="dark"]  .loader__logo--css .poly-l,
+[color-scheme="dark"]  .loader__logo--css .poly-r { fill: #6b6e78; }
+[color-scheme="light"] .loader__logo--css .poly-l,
+[color-scheme="light"] .loader__logo--css .poly-r { fill: #888b95; }
 
-/* Pair A starts bright, fades to dim at 50%, back to bright */
-.loader__logo--css .poly-a {
-    -webkit-animation-name: pac-cross-a;
-    animation-name: pac-cross-a;
-}
-
-/* Pair B starts dim, brightens at 50%, back to dim — exact inverse */
-.loader__logo--css .poly-b {
-    -webkit-animation-name: pac-cross-b;
-    animation-name: pac-cross-b;
+/* Left column starts bright, dims at 50%, back to bright */
+.loader__logo--css .poly-l {
+    -webkit-animation-name: pac-vert-l;
+    animation-name: pac-vert-l;
 }
 
-@-webkit-keyframes pac-cross-a {
+/* Right column starts dim, brightens at 50%, back to dim — exact inverse */
+.loader__logo--css .poly-r {
+    -webkit-animation-name: pac-vert-r;
+    animation-name: pac-vert-r;
+}
+
+@-webkit-keyframes pac-vert-l {
     0%,  100% { opacity: 0.85; }
-    50%        { opacity: 0.2;  }
+    50%        { opacity: 0.15; }
 }
-@keyframes pac-cross-a {
+@keyframes pac-vert-l {
     0%,  100% { opacity: 0.85; }
-    50%        { opacity: 0.2;  }
+    50%        { opacity: 0.15; }
 }
 
-@-webkit-keyframes pac-cross-b {
-    0%,  100% { opacity: 0.2;  }
+@-webkit-keyframes pac-vert-r {
+    0%,  100% { opacity: 0.15; }
     50%        { opacity: 0.85; }
 }
-@keyframes pac-cross-b {
-    0%,  100% { opacity: 0.2;  }
+@keyframes pac-vert-r {
+    0%,  100% { opacity: 0.15; }
     50%        { opacity: 0.85; }
 }
 

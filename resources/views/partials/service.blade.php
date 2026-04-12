@@ -1,6 +1,11 @@
 {{-- ================================================ --}}
 {{-- SERVICES SECTION --}}
 {{-- ================================================ --}}
+@php
+    function lqipKey(string $path): string {
+        return preg_replace('/[^a-zA-Z0-9]/', '_', $path);
+    }
+@endphp
 <section id="services" class="inner inner-grid-bottom services">
     <div class="inner__wrapper">
         <div class="container-fluid p-0">
@@ -59,8 +64,11 @@
 
                                                 <div class="cards__image d-flex animate-in-up">
                                                     <img
-                                                        src="{{ asset('img/services/' . $service['image']) }}"
-                                                        alt="{{ $service['title'] }}"/>
+                                                        src="{{ $lqip[lqipKey('img/services/' . $service['image'])] ?? asset('img/services/' . $service['image']) }}"
+                                                        data-src="{{ asset('img/services/' . $service['image']) }}"
+                                                        alt="{{ $service['title'] }}"
+                                                        class="lazyload"
+                                                    />
                                                 </div>
 
                                             </div>

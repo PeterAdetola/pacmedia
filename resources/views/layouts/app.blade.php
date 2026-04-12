@@ -83,7 +83,7 @@
     <meta http-equiv="X-Frame-Options" content="SAMEORIGIN"/>
     <meta http-equiv="X-XSS-Protection" content="1; mode=block"/>
     <meta name="referrer" content="strict-origin-when-cross-origin"/>
-
+    @include('partials.lqip')
     @stack('head')
 </head>
 
@@ -105,12 +105,12 @@
              viewBox="0 0 219.1 354"
              xmlns="http://www.w3.org/2000/svg"
              aria-hidden="true" focusable="false">
-            {{-- poly-a = diagonal pair: top-left + bottom-right --}}
-            <polygon id="l-tl" class="poly-a" fill="#6b6e78"/>
-            <polygon id="l-br" class="poly-a" fill="#6b6e78"/>
-            {{-- poly-b = diagonal pair: top-right + bottom-left --}}
-            <polygon id="l-tr" class="poly-b" fill="#6b6e78"/>
-            <polygon id="l-bl" class="poly-b" fill="#6b6e78"/>
+            {{-- poly-l = left column: top-left + bottom-left --}}
+            <polygon id="l-tl" class="poly-l" fill="#6b6e78"/>
+            <polygon id="l-bl" class="poly-l" fill="#6b6e78"/>
+            {{-- poly-r = right column: top-right + bottom-right --}}
+            <polygon id="l-tr" class="poly-r" fill="#6b6e78"/>
+            <polygon id="l-br" class="poly-r" fill="#6b6e78"/>
         </svg>
 
         <div class="loader__bar-wrap" id="loader-bar-wrap">
@@ -246,6 +246,7 @@
 {{-- Engagement Modal --}}
 <x-engagement-modal />
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.3.2/lazysizes.min.js" async></script>
 <script src="{{ asset('js/libs.min.js') }}"></script>
 <script src="{{ asset('js/modal.js') }}"></script>
 <script src="{{ asset('js/gallery-init.js') }}"></script>
@@ -481,11 +482,9 @@
          * Chrome iOS uses the CSS cross-fade animation instead —
          * it runs automatically via .loader__logo--css in loader.css.
          */
-        // if (!window._loaderChromeIOS) {
-        //     openClose();
-        // }
-
-        openClose();
+        if (!window._loaderChromeIOS) {
+            openClose();
+        }
 
         /* ── Dismissal: both window.load AND 1.5s minimum must pass ── */
         var pageLoaded  = false;
