@@ -90,35 +90,28 @@
 <body>
 
 <!-- Loader -->
-<div id="loader" class="loader">
-    <div class="loader__wrapper">
+<div id="loader" class="loader active">
+    <div class="loader__content">
 
-        {{-- Centre using absolute positioning — works on every browser including Chrome iOS --}}
-        <div class="loader__content">
+        {{-- Animated logo — 4 polygons morphing through your 3 frames --}}
+        <svg id="loader-logo" class="loader__logo"
+             viewBox="0 0 219.1 354"
+             xmlns="http://www.w3.org/2000/svg"
+             aria-hidden="true" focusable="false">
+            <polygon id="l-tl" fill="#6b6e78"/>
+            <polygon id="l-bl" fill="#6b6e78"/>
+            <polygon id="l-tr" fill="#6b6e78"/>
+            <polygon id="l-br" fill="#6b6e78"/>
+        </svg>
 
-            {{-- SVG sized in px only — no clamp(), no CSS width/height, Chrome iOS safe --}}
-            <svg class="loader__logo"
-                 xmlns="http://www.w3.org/2000/svg"
-                 viewBox="0 0 119 119"
-                 width="119" height="119"
-                 aria-hidden="true" focusable="false"
-                 style="display:block; overflow:hidden;">
-                <path fill="#6b6e78"
-                      fill-rule="evenodd"
-                      d="M0,0v119h119V0H0z M56.7,109.9L33.2,87.8V62.8h23.5V109.9z
-             M56.7,58H33.2V30.8l23.5-5.9V58z M85.3,81.9l-23.5,2.9V62.8h23.5V81.9z
-             M85.3,58H61.8V34.6l23.5,3.7V58z"/>
-            </svg>
-
-            {{-- Progress bar --}}
-            <div class="loader__bar-wrap">
-                <div class="loader__bar" id="loader-bar"></div>
-            </div>
-
-            {{-- Percentage label --}}
-            <span class="loader__percent" id="loader-percent">0%</span>
-
+        {{-- Progress bar --}}
+        <div class="loader__bar-wrap">
+            <div class="loader__bar" id="loader-bar"></div>
         </div>
+
+        {{-- Percentage --}}
+        <span class="loader__percent" id="loader-percent">0%</span>
+
     </div>
 </div>
 {{--<div id="loader" class="loader">--}}
@@ -316,91 +309,189 @@
         var scheme = document.documentElement.getAttribute('color-scheme')
             || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
         if (scheme === 'light') {
-            var polygons = document.querySelectorAll('.loader__logo polygon');
-            for (var i = 0; i < polygons.length; i++) {
-                polygons[i].setAttribute('fill', '#888b95');
+            var polys = document.querySelectorAll('#loader-logo polygon');
+            for (var i = 0; i < polys.length; i++) {
+                polys[i].setAttribute('fill', '#888b95');
             }
         }
     })();
 </script>
 <script>
     (function () {
-        var bar      = document.getElementById('loader-bar');
-        var label    = document.getElementById('loader-percent');
-        var loader   = document.getElementById('loader');
-        var current  = 0;
-        var target   = 0;
-        var raf      = null;
-        var done     = false;
 
-        /* Hard timeout — force-dismiss after 5 s regardless of load state */
-        var hardTimeout = setTimeout(function () { finish(); }, 5000);
-
-        /* Simulate progress in incremental steps so the bar always moves */
-        function simulateProgress() {
-            if (done) return;
-            /* advance target by a random chunk, capped at 90 before real load */
-            var step = Math.random() * 12 + 4;
-            target = Math.min(target + step, 90);
-            easeToTarget();
-        }
-
-        var simInterval = setInterval(simulateProgress, 400);
-
-        /* Smooth easing toward current target */
-        function easeToTarget() {
-            if (raf) cancelAnimationFrame(raf);
-            function step() {
-                if (current < target) {
-                    current += (target - current) * 0.12;
-                    if (current > target - 0.5) current = target;
-                    setUI(Math.round(current));
-                    raf = requestAnimationFrame(step);
-                }
+        /* ── SVG frame data — exact Illustrator coordinates ── */
+        var F = [
+            { /* Frame 1 — closed */
+                tl: [[2.6,57.5],[99,57.4],[99,138.3],[2.6,138.3]],
+                bl: [[2.6,158.2],[99,158.2],[99,236.2],[2.6,236.5]],
+                tr: [[216.5,57.4],[216.5,138.3],[120.2,138.3],[120.2,57.3]],
+                br: [[120.2,158.2],[216.5,158.2],[216.5,236.3],[120.2,236.2]]
+            },
+            { /* Frame 2 — opening */
+                tl: [[2.6,57.5],[99,57.4],[99,138.3],[2.6,138.3]],
+                bl: [[2.6,158.2],[99,158.2],[99,236.2],[2.6,236.5]],
+                tr: [[216.5,57.4],[216.5,138.3],[120.2,138.3],[120.2,42.3]],
+                br: [[120.2,158.2],[216.5,158.2],[216.5,236.3],[120.2,261.2]]
+            },
+            { /* Frame 3 — fully open */
+                tl: [[2.6,26.5],[99,2.4],[99,138.3],[2.6,138.3]],
+                bl: [[2.6,158.2],[99,158.2],[99,351.2],[2.6,260.5]],
+                tr: [[216.5,57.4],[216.5,138.3],[120.2,138.3],[120.2,42.3]],
+                br: [[120.2,158.2],[216.5,158.2],[216.5,236.3],[120.2,248.2]]
             }
-            raf = requestAnimationFrame(step);
+        ];
+
+        var els = {
+            tl: document.getElementById('l-tl'),
+            bl: document.getElementById('l-bl'),
+            tr: document.getElementById('l-tr'),
+            br: document.getElementById('l-br')
+        };
+
+        var bar   = document.getElementById('loader-bar');
+        var label = document.getElementById('loader-percent');
+        var loader = document.getElementById('loader');
+
+        /* ── Helpers ── */
+        function pts(arr) {
+            return arr.map(function (p) { return p[0].toFixed(2) + ',' + p[1].toFixed(2); }).join(' ');
         }
 
-        function setUI(val) {
-            if (bar)   bar.style.width = val + '%';
-            if (label) label.textContent = val + '%';
+        function lerp2(a, b, t) {
+            return a.map(function (p, i) {
+                return [a[i][0] + (b[i][0] - a[i][0]) * t,
+                    a[i][1] + (b[i][1] - a[i][1]) * t];
+            });
         }
+
+        function eio(t) { return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t; }
+
+        function setFrame(f) {
+            els.tl.setAttribute('points', pts(f.tl));
+            els.bl.setAttribute('points', pts(f.bl));
+            els.tr.setAttribute('points', pts(f.tr));
+            els.br.setAttribute('points', pts(f.br));
+        }
+
+        /* All 4 panels morph simultaneously */
+        function morphAll(fA, fB, dur, done) {
+            var start = null;
+            function step(ts) {
+                if (!start) start = ts;
+                var t = Math.min((ts - start) / dur, 1);
+                var e = eio(t);
+                setFrame({
+                    tl: lerp2(fA.tl, fB.tl, e),
+                    bl: lerp2(fA.bl, fB.bl, e),
+                    tr: lerp2(fA.tr, fB.tr, e),
+                    br: lerp2(fA.br, fB.br, e)
+                });
+                if (t < 1) requestAnimationFrame(step);
+                else if (done) done();
+            }
+            requestAnimationFrame(step);
+        }
+
+        /* ── Bar & percent ── */
+        var barCur = 0, barRaf = null;
+
+        function setBar(to) {
+            var from = barCur; barCur = to;
+            bar.style.width = to + '%';
+            var start = null;
+            if (barRaf) cancelAnimationFrame(barRaf);
+            (function count(ts) {
+                if (!start) start = ts;
+                var p = Math.min((ts - start) / 500, 1);
+                label.textContent = Math.round(from + (to - from) * (1 - Math.pow(1 - p, 3))) + '%';
+                if (p < 1) barRaf = requestAnimationFrame(count);
+            })(performance.now());
+        }
+
+        /* ── Animation loop ── */
+        var animating = true;
+
+        function openClose() {
+            if (!animating) return;
+            /* Open: F1 → F2 → F3, simultaneously, 480ms each */
+            morphAll(F[0], F[1], 480, function () {
+                if (!animating) return;
+                morphAll(F[1], F[2], 480, function () {
+                    if (!animating) return;
+                    /* Hold open 600ms */
+                    setTimeout(function () {
+                        if (!animating) return;
+                        /* Close: F3 → F2 → F1 */
+                        morphAll(F[2], F[1], 380, function () {
+                            if (!animating) return;
+                            morphAll(F[1], F[0], 380, function () {
+                                /* Hold closed 400ms then loop */
+                                setTimeout(function () {
+                                    openClose();
+                                }, 400);
+                            });
+                        });
+                    }, 600);
+                });
+            });
+        }
+
+        /* ── Simulated progress ── */
+        var simDone = false;
+        var simInterval = setInterval(function () {
+            if (simDone) return;
+            var step = Math.random() * 10 + 4;
+            barCur = Math.min(barCur + step, 90);
+            setBar(Math.round(barCur));
+        }, 450);
+
+        /* ── Dismiss — fires ONLY when window is fully loaded ── */
+        var dismissed = false;
 
         function finish() {
-            if (done) return;
-            done = true;
+            if (dismissed) return;
+            dismissed = true;
+            animating  = false;
+            simDone    = true;
             clearInterval(simInterval);
-            clearTimeout(hardTimeout);
 
-            /* Rush bar to 100% */
-            target = 100;
-            current = 100;
-            setUI(100);
+            /* Snap to 100% */
+            setBar(100);
 
-            /* Short pause at 100%, then fade out */
+            /* Brief pause at 100%, then collapse the loader */
             setTimeout(function () {
-                if (loader) loader.classList.add('loaded');
+                /* Snap logo back to closed frame cleanly */
+                setFrame(F[0]);
 
-                /* Reveal nav/logo elements AFTER loader starts fading — no flash */
+                /* Remove .active — height collapses to 0 */
+                loader.classList.remove('active');
+
+                /* Reveal navbars */
                 document.body.classList.add('page-ready');
 
-                /* Remove from DOM after transition to free memory */
+                /* Remove from DOM after transition */
                 setTimeout(function () {
-                    if (loader && loader.parentNode) loader.parentNode.removeChild(loader);
-                }, 700);
-            }, 300);
+                    if (loader && loader.parentNode) {
+                        loader.parentNode.removeChild(loader);
+                    }
+                }, 600);
+            }, 350);
         }
 
-        /* Dismiss on real page load — whichever fires first */
+        /* Start animation immediately */
+        setFrame(F[0]);
+        openClose();
+
+        /* Dismiss on window load — ONLY when page is fully ready */
         if (document.readyState === 'complete') {
             finish();
         } else {
             window.addEventListener('load', finish, { once: true });
-            /* DOMContentLoaded as secondary trigger on slow connections */
-            document.addEventListener('DOMContentLoaded', function () {
-                setTimeout(finish, 800);
-            }, { once: true });
         }
+
+        /* Hard fallback — 12s max for very slow connections */
+        setTimeout(finish, 12000);
+
     })();
 </script>
 

@@ -1,41 +1,24 @@
 /*! ------------------------------------------------
  * Project Name: Pacmedia - Forging Identity. Engineering Digital Infrastructure.
- * Project Description: Pacmedia is a brand and digital studio operating from Lagos, Nigeria.
- * Version: 2.0.0
- * Build Date: December 2025
+ * Version: 3.0.0
  * Last Update: April 2026
  * Author: Pacmedia Creatives
- * Author URI: https://thepacmedia.com */
-/*! File name: loader.css
- * ------------------------------------------------
- * Table of Contents
- * ------------------------------------------------
- *  01. Loader Styles
+ * Author URI: https://thepacmedia.com
+ * File: loader.css
  * ------------------------------------------------ */
 
-/* ------------------------------------------------*/
-/* Loader Styles Start */
-/* ------------------------------------------------*/
-
-/*
- * Hide all loading__fade elements before the loader finishes.
- * The JS adds .page-ready to <body> on loader dismiss,
- * which triggers the reveal animation exactly once.
- * This prevents the navbar flash-on-paint before the loader is active.
- *
- * IMPORTANT: transform: translateY() must NOT be applied to position:fixed
- * elements — it creates a new stacking context that breaks fixed positioning
- * entirely (the element behaves like position:relative). The .header and
- * .nav-container are fixed, so they get opacity-only treatment via the
- * specific overrides below.
- */
+/* ------------------------------------------------
+   Loading fade — navbar/logo reveal after loader
+   transform must NOT apply to position:fixed elements
+   (.header, .nav-container, .logo) — it breaks fixed
+   positioning by creating a new stacking context.
+   ------------------------------------------------ */
 .loading__fade {
     opacity: 0;
     -webkit-transform: translateY(20px);
     transform: translateY(20px);
 }
 
-/* Fixed-position elements: opacity only — no transform */
 .header.loading__fade,
 .nav-container.loading__fade,
 .logo.loading__fade {
@@ -48,7 +31,6 @@ body.page-ready .loading__fade {
     animation: loadingFadeIn 0.6s ease-in-out forwards;
 }
 
-/* Fixed elements get a simpler fade — no translateY */
 body.page-ready .header.loading__fade,
 body.page-ready .nav-container.loading__fade,
 body.page-ready .logo.loading__fade {
@@ -57,191 +39,172 @@ body.page-ready .logo.loading__fade {
 }
 
 @-webkit-keyframes loadingFadeIn {
-    from {
-        opacity: 0;
-        -webkit-transform: translateY(20px);
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        -webkit-transform: translateY(0);
-        transform: translateY(0);
-    }
+    from { opacity: 0; -webkit-transform: translateY(20px); transform: translateY(20px); }
+    to   { opacity: 1; -webkit-transform: translateY(0);    transform: translateY(0); }
 }
-
 @keyframes loadingFadeIn {
-    from {
-        opacity: 0;
-        -webkit-transform: translateY(20px);
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        -webkit-transform: translateY(0);
-        transform: translateY(0);
-    }
+    from { opacity: 0; -webkit-transform: translateY(20px); transform: translateY(20px); }
+    to   { opacity: 1; -webkit-transform: translateY(0);    transform: translateY(0); }
 }
 
-/* Opacity-only variant for fixed-position elements */
 @-webkit-keyframes loadingFadeInFixed {
     from { opacity: 0; }
     to   { opacity: 1; }
 }
-
 @keyframes loadingFadeInFixed {
     from { opacity: 0; }
     to   { opacity: 1; }
 }
 
+/* ------------------------------------------------
+   Loader outer shell
+   Uses height: 0 -> 100% trick (from mil-loader).
+   No opacity/visibility on outer wrapper = no iOS
+   position:fixed stacking context issues. Works on
+   every browser including Chrome iOS.
+   ------------------------------------------------ */
 .loader {
+    pointer-events: none;
     position: fixed;
     top: 0;
-    right: 0;
-    bottom: 0;
     left: 0;
-    /* iOS Safari: prevent clipping behind browser chrome */
     width: 100%;
-    height: 100vh;
-    height: -webkit-fill-available;
+    height: 0;
+    background-color: #1a1a1a;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
     z-index: 9999;
-    -webkit-transition: opacity 0.6s ease, visibility 0.6s ease;
-    transition: opacity 0.6s ease, visibility 0.6s ease;
+    overflow: hidden;
+    border-radius: 0 0 100% 100%;
+    -webkit-transition: height 0.5s cubic-bezier(0, 0, 0.3642, 1),
+    border-radius 0.5s cubic-bezier(0, 0, 0.3642, 1);
+    transition: height 0.5s cubic-bezier(0, 0, 0.3642, 1),
+    border-radius 0.5s cubic-bezier(0, 0, 0.3642, 1);
 }
 
-.loader.loaded {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
+.loader.active {
+    pointer-events: all;
+    height: 100%;
+    border-radius: 0;
 }
 
-.loader__wrapper {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    background: #1a1a1a;
-}
-
-/* light mode override */
 @media (prefers-color-scheme: light) {
-    .loader__wrapper {
-        background: #d4d7de;
-    }
+    .loader { background-color: #d4d7de; }
 }
+[color-scheme="dark"]  .loader { background-color: #1a1a1a; }
+[color-scheme="light"] .loader { background-color: #d4d7de; }
 
-[color-scheme="dark"] .loader__wrapper {
-    background: #1a1a1a;
-}
-
-[color-scheme="light"] .loader__wrapper {
-    background: #d4d7de;
-}
-
-/* Absolute centre — works on every browser, no flex, no grid, no clamp */
+/* ------------------------------------------------
+   Loader content — blurs in when active
+   ------------------------------------------------ */
 .loader__content {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    -webkit-transform: translate(-50%, -50%);
-    -ms-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
+    -webkit-filter: blur(15px);
+    filter: blur(15px);
+    -webkit-transform: translateY(40px) scale(0.8);
+    transform: translateY(40px) scale(0.8);
+    opacity: 0;
     text-align: center;
-    width: 160px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-transition: 0.4s cubic-bezier(0, 0, 0.3642, 1);
+    transition: 0.4s cubic-bezier(0, 0, 0.3642, 1);
 }
 
-/* ---- Logo ---- */
+.loader.active .loader__content {
+    -webkit-filter: blur(0);
+    filter: blur(0);
+    -webkit-transform: translateY(0) scale(1);
+    transform: translateY(0) scale(1);
+    opacity: 1;
+}
+
+/* ------------------------------------------------
+   Logo SVG animation
+   ------------------------------------------------ */
 .loader__logo {
     display: block;
-    width: 100px;
-    height: 100px;
-    margin: 0 auto 18px;
-    opacity: 0.85;
-    overflow: hidden;
+    width: 80px;
+    height: 130px;
+    margin: 0 auto 24px;
 }
 
-/* dark mode default */
 .loader__logo polygon {
     fill: #6b6e78;
 }
 
 @media (prefers-color-scheme: light) {
-    .loader__logo polygon {
-        fill: #888b95;
-    }
+    .loader__logo polygon { fill: #888b95; }
 }
+[color-scheme="dark"]  .loader__logo polygon { fill: #6b6e78; }
+[color-scheme="light"] .loader__logo polygon { fill: #888b95; }
 
-[color-scheme="dark"] .loader__logo polygon {
-    fill: #6b6e78;
-}
-
-[color-scheme="light"] .loader__logo polygon {
-    fill: #888b95;
-}
-
-/* ---- Progress Bar ---- */
+/* ------------------------------------------------
+   Progress bar
+   ------------------------------------------------ */
 .loader__bar-wrap {
-    position: relative;
-    width: 105px;
-    height: 3px;
-    border-radius: 99px;
-    background: rgba(0, 0, 0, 0.12);
-    overflow: hidden;
-    margin: 0 auto 10px;
-}
-
-@media (prefers-color-scheme: dark) {
-    .loader__bar-wrap {
-        background: rgba(255, 255, 255, 0.1);
-    }
-}
-
-[color-scheme="dark"] .loader__bar-wrap {
+    width: 160px;
+    height: 2px;
     background: rgba(255, 255, 255, 0.1);
+    border-radius: 99px;
+    overflow: hidden;
+    position: relative;
+    margin: 0 auto 8px;
 }
+
+@media (prefers-color-scheme: light) {
+    .loader__bar-wrap { background: rgba(0, 0, 0, 0.12); }
+}
+[color-scheme="light"] .loader__bar-wrap { background: rgba(0, 0, 0, 0.12); }
 
 .loader__bar {
     position: absolute;
-    top: 0;
-    left: 0;
+    top: 0; left: 0;
     height: 100%;
     width: 0%;
-    border-radius: 99px;
     background: #c8cc00;
-    box-shadow: 0 0 8px 1px rgba(200, 204, 0, 0.55),
-    0 0 2px 0px rgba(200, 204, 0, 0.9);
+    border-radius: 99px;
+    box-shadow: 0 0 8px 2px rgba(200, 204, 0, 0.45);
     -webkit-transition: width 0.55s cubic-bezier(0.22, 1, 0.36, 1);
     transition: width 0.55s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* ---- Percentage Text ---- */
+/* ------------------------------------------------
+   Percentage text
+   ------------------------------------------------ */
 .loader__percent {
     display: block;
     font-family: "Urbanist", sans-serif;
-    font-size: 1.2rem;
+    font-size: 0.9rem;
     font-weight: 500;
     letter-spacing: 0.06em;
     color: #f2f5fc;
     line-height: 1;
     margin-top: 8px;
+    text-align: center;
     -webkit-user-select: none;
     user-select: none;
 }
 
 @media (prefers-color-scheme: light) {
-    .loader__percent {
-        color: #44474a;
-    }
+    .loader__percent { color: #44474a; }
 }
-
-[color-scheme="dark"] .loader__percent {
-    color: #f2f5fc;
-}
-
-[color-scheme="light"] .loader__percent {
-    color: #44474a;
-}
-
-/* ------------------------------------------------*/
-/* Loader Styles End */
-/* ------------------------------------------------*/
+[color-scheme="dark"]  .loader__percent { color: #f2f5fc; }
+[color-scheme="light"] .loader__percent { color: #44474a; }

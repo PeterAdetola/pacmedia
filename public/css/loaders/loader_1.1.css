@@ -1,0 +1,287 @@
+/*! ------------------------------------------------
+ * Project Name: Pacmedia - Forging Identity. Engineering Digital Infrastructure.
+ * Project Description: Pacmedia is a brand and digital studio operating from Lagos, Nigeria.
+ * Version: 2.0.0
+ * Build Date: December 2025
+ * Last Update: April 2026
+ * Author: Pacmedia Creatives
+ * Author URI: https://thepacmedia.com */
+/*! File name: loader.css
+ * ------------------------------------------------
+ * Table of Contents
+ * ------------------------------------------------
+ *  01. Loader Styles
+ * ------------------------------------------------ */
+
+/* ------------------------------------------------*/
+/* Loader Styles Start */
+/* ------------------------------------------------*/
+
+/*
+ * Hide all loading__fade elements before the loader finishes.
+ * The JS adds .page-ready to <body> on loader dismiss,
+ * which triggers the reveal animation exactly once.
+ * This prevents the navbar flash-on-paint before the loader is active.
+ *
+ * IMPORTANT: transform: translateY() must NOT be applied to position:fixed
+ * elements — it creates a new stacking context that breaks fixed positioning
+ * entirely (the element behaves like position:relative). The .header and
+ * .nav-container are fixed, so they get opacity-only treatment via the
+ * specific overrides below.
+ */
+.loading__fade {
+    opacity: 0;
+    -webkit-transform: translateY(20px);
+    transform: translateY(20px);
+}
+
+/* Fixed-position elements: opacity only — no transform */
+.header.loading__fade,
+.nav-container.loading__fade,
+.logo.loading__fade {
+    -webkit-transform: none;
+    transform: none;
+}
+
+body.page-ready .loading__fade {
+    -webkit-animation: loadingFadeIn 0.6s ease-in-out forwards;
+    animation: loadingFadeIn 0.6s ease-in-out forwards;
+}
+
+/* Fixed elements get a simpler fade — no translateY */
+body.page-ready .header.loading__fade,
+body.page-ready .nav-container.loading__fade,
+body.page-ready .logo.loading__fade {
+    -webkit-animation: loadingFadeInFixed 0.6s ease-in-out forwards;
+    animation: loadingFadeInFixed 0.6s ease-in-out forwards;
+}
+
+@-webkit-keyframes loadingFadeIn {
+    from {
+        opacity: 0;
+        -webkit-transform: translateY(20px);
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        -webkit-transform: translateY(0);
+        transform: translateY(0);
+    }
+}
+
+@keyframes loadingFadeIn {
+    from {
+        opacity: 0;
+        -webkit-transform: translateY(20px);
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        -webkit-transform: translateY(0);
+        transform: translateY(0);
+    }
+}
+
+/* Opacity-only variant for fixed-position elements */
+@-webkit-keyframes loadingFadeInFixed {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes loadingFadeInFixed {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.loader {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    /* iOS Safari: prevent clipping behind browser chrome */
+    width: 100%;
+    height: 100vh;
+    height: -webkit-fill-available;
+    z-index: 9999;
+    -webkit-transition: opacity 0.6s ease, visibility 0.6s ease;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+.loader.loaded {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.loader__wrapper {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: #1a1a1a;
+}
+
+/* light mode override */
+@media (prefers-color-scheme: light) {
+    .loader__wrapper {
+        background: #d4d7de;
+    }
+}
+
+[color-scheme="dark"] .loader__wrapper {
+    background: #1a1a1a;
+}
+
+[color-scheme="light"] .loader__wrapper {
+    background: #d4d7de;
+}
+
+/* Absolute centre — works on every browser, no flex, no grid, no clamp */
+.loader__content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    text-align: center;
+    width: 160px;
+}
+
+/* ---- Logo ---- */
+.loader__logo {
+    display: block;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 18px;
+    opacity: 0.85;
+    overflow: hidden;
+}
+
+/* dark mode default */
+.loader__logo polygon {
+    fill: #6b6e78;
+}
+
+@media (prefers-color-scheme: light) {
+    .loader__logo polygon {
+        fill: #888b95;
+    }
+}
+
+[color-scheme="dark"] .loader__logo polygon {
+    fill: #6b6e78;
+}
+
+[color-scheme="light"] .loader__logo polygon {
+    fill: #888b95;
+}
+
+/* ---- Progress Bar ---- */
+.loader__bar-wrap {
+    position: relative;
+    width: 105px;
+    height: 3px;
+    border-radius: 99px;
+    background: rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+    margin: 0 auto 10px;
+}
+
+@media (prefers-color-scheme: dark) {
+    .loader__bar-wrap {
+        background: rgba(255, 255, 255, 0.1);
+    }
+}
+
+[color-scheme="dark"] .loader__bar-wrap {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.loader__bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0%;
+    border-radius: 99px;
+    background: #c8cc00;
+    box-shadow: 0 0 8px 1px rgba(200, 204, 0, 0.55),
+    0 0 2px 0px rgba(200, 204, 0, 0.9);
+    -webkit-transition: width 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: width 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ---- Percentage Text ---- */
+.loader__percent {
+    display: block;
+    font-family: "Urbanist", sans-serif;
+    font-size: 1.2rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    color: #f2f5fc;
+    line-height: 1;
+    margin-top: 8px;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+@media (prefers-color-scheme: light) {
+    .loader__percent {
+        color: #44474a;
+    }
+}
+
+[color-scheme="dark"] .loader__percent {
+    color: #f2f5fc;
+}
+
+[color-scheme="light"] .loader__percent {
+    color: #44474a;
+}
+
+
+
+/* --- Logo Animation Logic --- */
+
+.pl-logo polygon {
+    fill: #6b6e78; /* Matches your gray color composition */
+    animation-duration: 2s; /* Adjust for faster/slower 'forging' feel */
+    animation-iteration-count: infinite;
+    animation-timing-function: step-end; /* Snaps between frames for a mechanical look */
+}
+
+/* Assigning keyframes to each polygon */
+.poly-tl { animation-name: morph-tl; }
+.poly-bl { animation-name: morph-bl; }
+.poly-tr { animation-name: morph-tr; }
+.poly-br { animation-name: morph-br; }
+
+@keyframes morph-tl {
+    0%   { points: "56.7,24.9 33.2,30.8 33.2,58 56.7,58"; }
+    25%  { points: "56.7,11.5 33.2,30.8 33.2,58 56.7,58"; }
+    50%  { points: "56.7,1.1 33.2,30.8 33.2,58 56.7,58"; }
+    75%  { points: "56.7,1.1 11.2,30.8 11.2,58 56.7,58"; }
+}
+
+@keyframes morph-bl {
+    0%   { points: "33.2,62.8 33.2,87.8 56.7,109.9 56.7,62.8"; }
+    25%, 50% { points: "33.2,62.8 33.2,87.8 56.7,109.9 56.7,62.8"; }
+    75%  { points: "11.2,62.8 11.2,87.8 56.7,118.8 56.7,62.8"; }
+}
+
+@keyframes morph-tr {
+    0%   { points: "61.8,34.6 61.8,58 85.3,58 85.3,38.3"; }
+    25%  { points: "61.8,24.3 61.8,58 85.3,58 85.3,28.1"; }
+    50%, 75% { points: "61.8,11.5 61.8,58 108.8,58 108.8,15.2"; }
+}
+
+@keyframes morph-br {
+    0%, 25% { points: "61.8,62.8 61.8,84.8 85.3,81.9 85.3,62.8"; }
+    50%, 75% { points: "61.8,62.8 61.8,104.1 108.8,99.1 108.8,62.8"; }
+}
+/* ------------------------------------------------*/
+/* Loader Styles End */
+/* ------------------------------------------------*/
