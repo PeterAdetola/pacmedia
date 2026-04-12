@@ -74,7 +74,7 @@
 
     <link rel="preload" href="{{ asset('css/main.css') }}" as="style"/>
 
-    <link rel="stylesheet" type="text/css" href="{{ asset('css/loaders/loader.css') }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/loaders/loader.css') }}?v={{ filemtime(public_path('css/loaders/loader.css')) }}"/>
     <link rel="stylesheet" type="text/css" href="{{ asset('css/plugins.css') }}"/>
     <link rel="stylesheet" type="text/css" href="{{ asset('css/main.css') }}"/>
     <link rel="stylesheet" type="text/css" href="{{ asset('css/custom.css') }}"/>
