@@ -239,7 +239,7 @@
     border-left: 2px solid var(--stroke-elements);
     font: normal var(--font-weight-base) 2rem/2 var(--_font-default);
     font-style: italic;
-    color: var(--t-muted);
+    color: var(--t-medium);
 }
 
 /* Add this for small screens */

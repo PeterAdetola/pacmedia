@@ -5,11 +5,23 @@
     <div class="main__intro">
         <div class="intro__background intro-bg-01">
             <div class="intro-bg-01__01" data-speed="0.6">
-                <img src="{{ asset('img/backgrounds/1200x1200_bg01.webp') }}" alt="Background Objects"/>
+{{--                <img src="{{ asset('img/backgrounds/1200x1200_bg01.webp') }}" alt="Background Objects"/>--}}
+                <img
+                    src="{{ $lqip[lqipKey('img/backgrounds/1200x1200_bg01.webp')] ?? asset('img/backgrounds/1200x1200_bg01.webp') }}"
+                    data-src="{{ asset('img/backgrounds/1200x1200_bg01.webp') }}"
+                    alt="Background Objects"
+                    class="lazyload"
+                />
                 <div class="intro-bg__shadow"></div>
             </div>
             <div class="intro-bg-01__02" data-speed="0.8">
-                <img src="{{ asset('img/backgrounds/1200x1200_bg02.webp') }}" alt="Background Objects"/>
+{{--                <img src="{{ asset('img/backgrounds/1200x1200_bg02.webp') }}" alt="Background Objects"/>--}}
+                <img
+                    src="{{ $lqip['img_backgrounds_1200x1200_bg02'] ?? asset('img/backgrounds/1200x1200_bg02.webp')}}"
+                    data-src="{{ asset('img/backgrounds/1200x1200_bg02.webp') }}"
+                    alt="Background"
+                    class="lazyload"
+                />
                 <div class="intro-bg__shadow"></div>
             </div>
         </div>

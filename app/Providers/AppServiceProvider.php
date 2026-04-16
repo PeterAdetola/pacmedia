@@ -75,5 +75,34 @@ class AppServiceProvider extends ServiceProvider
 
             $view->with('services', $services);
         });
+        view()->share('lqip', $this->loadLqip());
+    }
+
+    private function loadLqip(): array
+    {
+        $lqip = [];
+        $path = resource_path('views/partials/lqip.blade.php');
+
+        if (!file_exists($path)) {
+            return $lqip;
+        }
+
+        // Strip Blade directives and eval the PHP
+        $raw = file_get_contents($path);
+        $raw = preg_replace('/@php/', '<?php', $raw);
+        $raw = preg_replace('/@endphp/', '?>', $raw);
+        $raw = preg_replace('/\{\{--.*?--\}\}/s', '', $raw); // strip blade comments
+
+        $tmpFile = tempnam(sys_get_temp_dir(), 'lqip');
+        file_put_contents($tmpFile, $raw);
+
+        ob_start();
+        include $tmpFile;
+        ob_end_clean();
+
+        unlink($tmpFile);
+
+        return $lqip;
     }
 }
+

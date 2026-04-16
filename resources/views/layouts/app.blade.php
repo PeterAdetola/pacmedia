@@ -88,7 +88,6 @@
 </head>
 
 <body>
-
 <!-- Loader -->
 <div id="loader" class="loader active">
     <div class="loader__content">

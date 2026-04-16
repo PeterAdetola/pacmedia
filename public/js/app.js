@@ -802,3 +802,40 @@ if (firstFaqItem) {
 }
 
 
+(function () {
+    var videos = document.querySelectorAll('video.lazyload-video');
+    if (!videos.length) return;
+
+    var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+            if (!entry.isIntersecting) return;
+
+            var video = entry.target;
+
+            // Swap poster to real webp version
+            var realPoster = video.getAttribute('data-poster');
+            if (realPoster) video.poster = realPoster;
+
+            // Swap source src
+            var sources = video.querySelectorAll('source[data-src]');
+            sources.forEach(function (source) {
+                source.src = source.getAttribute('data-src');
+                source.removeAttribute('data-src');
+            });
+
+            // Reload and play
+            video.load();
+            video.play().catch(function () {
+                // Autoplay blocked — poster stays visible, no error thrown
+            });
+
+            observer.unobserve(video);
+        });
+    }, {
+        rootMargin: '200px' // Start loading 200px before it enters viewport
+    });
+
+    videos.forEach(function (video) {
+        observer.observe(video);
+    });
+})();

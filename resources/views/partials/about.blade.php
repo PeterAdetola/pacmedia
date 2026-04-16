@@ -59,9 +59,14 @@
                                     <div class="row g-0">
                                         <div class="col-12">
                                             <div class="divider divider-video">
-                                                <video class="bg-video" autoplay loop muted playsinline
-                                                       poster="{{ asset('img/fallback.jpg') }}">
-                                                    <source src="{{ asset('video/intro.mp4') }}" type="video/mp4"/>
+                                                <video
+                                                    class="bg-video lazyload-video"
+                                                    autoplay loop muted playsinline
+                                                    preload="none"
+                                                    poster="{{ $lqip[lqipKey('img/video-poster.jpg')] ?? asset('img/video-poster.jpg') }}"
+                                                    data-poster="{{ asset('img/video-poster.webp') }}"
+                                                >
+                                                    <source data-src="{{ asset('video/intro.mp4') }}" type="video/mp4"/>
                                                     Your browser does not support the video tag.
                                                 </video>
                                             </div>
@@ -78,7 +83,7 @@
                                                 {{ $aboutQuote }}
                                             </blockquote>
                                             {{-- Attribution paragraph — pulled from about.md (content after second ---) --}}
-                                            <p class="about-descr__attribution" style="margin-top: 1em; opacity: 0.8;">{{ $aboutAttribution }}</p>
+                                            <p class="about-descr__attribution" style="margin-top: 1em;">{{ $aboutAttribution }}</p>
                                             <p style="margin-top: 1em; font-style: italic;">— The Pacmedia</p>
                                         </div>
                                     </div>
