@@ -1,85 +1,54 @@
-<!DOCTYPE html>
-<html class="loading" lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-textdirection="ltr">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+<x-guest-layout title="Verify Email">
 
-    <meta name="description" content="{{ $metaDescription ?? 'Pacmedia - Tactical Digital Solutions. Brand Strategy, Development & Intelligent Automation.' }}">
-    <meta name="keywords"    content="{{ $metaKeywords ?? 'brand strategy, digital experience design, web development, AI automation systems, brand identity systems, conversion-focused design, custom development, intelligent customer operations, digital presence strategy, tactical digital solutions' }}">
-    <meta name="author"      content="Pacmedia Creatives">
+    <x-auth-card>
 
-    <link rel="apple-touch-icon" href="{{ asset('admin/assets/images/favicon/icon.png') }}">
-    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('admin/assets/images/favicon/icon_bg.png') }}">
+        {{-- Cap: resend confirmation --}}
+        <x-slot name="cap">
+            @if (session('status') == 'verification-link-sent')
+                <div class="pac-status">
+                    A new verification link has been sent to your email address.
+                </div>
+            @endif
+        </x-slot>
 
-    <title>{{ $title ?? 'Authentication' }} | Pacmedia Creatives</title>
+        {{-- Heading --}}
+        <h4 style="font-size: 1.2rem; font-weight: 600; color: var(--pac-ink); margin: 0 0 0.25rem;">
+            Check your Inbox 📬
+        </h4>
+        <p style="font-size: 0.875rem; color: var(--pac-ink-muted); margin: 0 0 1.6rem; line-height: 1.6;">
+            Thanks for signing up! Before you continue, please verify your
+            email address by clicking the link we just sent you. Didn't
+            receive it? We can send another.
+        </p>
 
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="{{ asset('admin/assets/vendors/vendors.min.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('admin/assets/css/themes/vertical-modern-menu-template/materialize.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('admin/assets/css/themes/vertical-modern-menu-template/style.css') }}">
+        {{-- Resend form --}}
+        <form method="POST" action="{{ route('verification.send') }}">
+            @csrf
 
-    {{-- Optional per-page CSS passed via named slot --}}
-    {{ $pageCss ?? '' }}
+            <button class="pac-btn" type="submit" data-pac-submit>
+                <span class="pac-btn-text">Resend Verification Email</span>
+                <span class="pac-spinner">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5">
+                        <circle cx="12" cy="12" r="9" stroke-opacity="0.25"/>
+                        <path d="M12 3a9 9 0 0 1 9 9" stroke-linecap="round"/>
+                    </svg>
+                </span>
+            </button>
 
-    <link rel="stylesheet" type="text/css" href="{{ asset('admin/assets/css/custom/custom.css') }}">
+        </form>
 
-    <style type="text/css">
-        form:invalid button {
-            pointer-events: none;
-        }
+        {{-- Logout --}}
+        <form method="POST" action="{{ route('logout') }}" style="margin-top: 1rem;">
+            @csrf
+            <p style="text-align: center; font-size: 0.8125rem; color: var(--pac-ink-muted); margin: 0;">
+                Wrong account?
+                <button type="submit"
+                        style="background: none; border: none; padding: 0; font-family: inherit; font-size: 0.8125rem; font-weight: 600; color: var(--pac-ink); border-bottom: 1px solid var(--pac-metal-border); cursor: pointer; transition: border-color 0.15s;">
+                    Log out
+                </button>
+            </p>
+        </form>
 
-        /* ── Full-page centering ── */
-        html, body {
-            height: 100%;
-        }
+    </x-auth-card>
 
-        .auth-page-wrapper {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .auth-page-wrapper > .row {
-            width: 100%;
-            margin-bottom: 0;
-        }
-
-        {{ $inlineStyles ?? '' }}
-    </style>
-</head>
-
-<body class="vertical-layout vertical-menu-collapsible page-header-dark vertical-modern-menu preload-transitions 1-column blank-page {{ $bodyClass ?? 'login-bg' }}"
-      data-open="click" data-menu="vertical-modern-menu" data-col="1-column">
-
-<div class="auth-page-wrapper">
-    <div class="row" style="width:100%;">
-        <div class="col s12">
-            <div class="container">
-                {{ $slot }}
-            </div>
-        </div>
-    </div>
-    <div class="content-overlay"></div>
-</div>
-
-<script src="{{ asset('admin/assets/js/vendors.min.js') }}"></script>
-{{ $pageVendorJs ?? '' }}
-<script src="{{ asset('admin/assets/js/plugins.js') }}"></script>
-<script src="{{ asset('admin/assets/js/search.js') }}"></script>
-<script src="{{ asset('admin/assets/js/custom/custom-script.js') }}"></script>
-{{ $pageLevelJs ?? '' }}
-
-<script type="text/javascript">
-    function ShowPreloader() {
-        var el = document.getElementById('preloader');
-        if (el) el.style.display = 'block';
-    }
-    {{ $inlineScripts ?? '' }}
-</script>
-
-</body>
-</html>
+</x-guest-layout>
