@@ -10,8 +10,8 @@ error_reporting(E_ALL);
 set_time_limit(300);
 
 // ── Configuration ────────────────────────────────────────────
-$GITHUB_SECRET = 'kLTfNcDq6TSdk5jD2mx4BB14kU6GVe4mzeS97Uym';         // set this in GitHub webhook settings
-$MANUAL_KEY    = 'updatePacmediaWeb@2026';     // for browser-triggered deploys
+$GITHUB_SECRET = 'kLTfNcDq6TSdk5jD2mx4BB14kU6GVe4mzeS97Uym';
+$MANUAL_KEY    = 'updatePacmediaWeb@2026';
 $LARAVEL_PATH  = '/home/thepacme/domains/thepacmedia.com/pacmedia';
 $PUBLIC_PATH   = '/home/thepacme/domains/thepacmedia.com/public_html';
 $LOG_FILE      = $LARAVEL_PATH . '/storage/logs/deployment.log';
@@ -71,7 +71,6 @@ if (isset($_GET['key'])) {
         logMsg("❌ Signature mismatch");
         respond(403, 'Forbidden');
     }
-    // Only deploy on pushes to main branch
     $data = json_decode($payload, true);
     if (($data['ref'] ?? '') !== "refs/heads/$BRANCH") {
         logMsg("Skipping — not a push to $BRANCH");
@@ -104,18 +103,38 @@ try {
     run("git reset --hard origin/$BRANCH", $LARAVEL_PATH);
     logMsg("✅ Code updated");
 
-    // 3. Composer
+    // 3. Composer — install + dump-autoload ensures helpers.php and all
+    //    new classes (including app/Helpers/AppHelpers.php) are registered
     run('HOME=/tmp composer install --no-dev --no-interaction --optimize-autoloader', $LARAVEL_PATH);
+    run('HOME=/tmp composer dump-autoload --optimize --no-dev', $LARAVEL_PATH);
     logMsg("✅ Composer done");
 
-    // 4. Artisan
+    // 4. Node — compress any new/changed images and regenerate lqip.blade.php
+    //    Skips already-processed files; safe to run on every deploy.
+    //    If node or sharp is unavailable, log a warning but don't abort.
+    $nodeCheck = trim(shell_exec('which node 2>/dev/null'));
+    if ($nodeCheck && file_exists("$LARAVEL_PATH/compress.mjs")) {
+        $nodeResult = run('node compress.mjs', $LARAVEL_PATH);
+        if ($nodeResult === 0) {
+            logMsg("✅ Images compressed + LQIP regenerated");
+        } else {
+            logMsg("⚠️  compress.mjs exited with errors — check output above");
+        }
+    } else {
+        logMsg("⚠️  Skipping image compression — node not found or compress.mjs missing");
+    }
+
+    // 5. Artisan — clear everything before caching to avoid stale compiled views
+    //    that reference old function names or missing variables ($lqip etc.)
     foreach ([
                  'php artisan down --render="errors::503"',
                  'php artisan config:clear',
                  'php artisan cache:clear',
-                 'php artisan view:clear',
+                 'php artisan route:clear',
+                 'php artisan view:clear',          // ← must run BEFORE view:cache
                  'php artisan migrate --force',
                  'php artisan config:cache',
+                 'php artisan route:cache',
                  'php artisan view:cache',
                  'php artisan up',
              ] as $cmd) {
@@ -123,13 +142,12 @@ try {
     }
     logMsg("✅ Artisan done");
 
-    // 5. Sync public folder → public_html
+    // 6. Sync public folder → public_html
     //    Back up the server's index.php (it has custom paths)
-    $idx = $PUBLIC_PATH . '/index.php';
+    $idx    = $PUBLIC_PATH . '/index.php';
     $idxBak = "/tmp/idx_bak_" . time() . ".php";
     if (file_exists($idx)) copy($idx, $idxBak);
 
-    // Sync everything except index.php
     $items = array_diff(scandir("$LARAVEL_PATH/public"), ['.', '..', 'index.php']);
     foreach ($items as $item) {
         $src  = "$LARAVEL_PATH/public/$item";
@@ -151,7 +169,7 @@ try {
     run("chmod -R 755 " . escapeshellarg($PUBLIC_PATH));
     logMsg("✅ Public files synced");
 
-    // 6. Storage permissions
+    // 7. Storage permissions
     run("chmod -R 775 storage bootstrap/cache", $LARAVEL_PATH);
     logMsg("✅ Permissions set");
 

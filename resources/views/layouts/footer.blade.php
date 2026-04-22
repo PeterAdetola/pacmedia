@@ -61,7 +61,7 @@
                                             <div class="container-fluid p-0 contact-data">
                                                 <div class="row g-0">
                                                     <div class="col-12 col-lg-3 contact-data__item grid-item">
-                                                        <a href="#home" class="footer-logo logo-text animate-in-up">
+                                                        <a href="{{url('/')}}" class="footer-logo logo-text animate-in-up">
                                                                 <span
                                                                     style="display: inline-block; width: 8em; padding-left: 0;">
                                                                     <svg xmlns="http://www.w3.org/2000/svg"

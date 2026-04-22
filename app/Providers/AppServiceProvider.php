@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use League\CommonMark\CommonMarkConverter;
@@ -71,6 +72,8 @@ class AppServiceProvider extends ServiceProvider
 
             $view->with($sharedData);
         });
+
+        Blade::component('layouts.admin', 'admin-layout');
     }
 
     private function loadLqip(): array

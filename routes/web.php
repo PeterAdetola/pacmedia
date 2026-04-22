@@ -9,6 +9,8 @@ use App\Http\Controllers\Auth\SocialAuthController;
 //    return view('index');
 //});
 
+Route::middleware(['auth', 'verified'])->prefix('admin')->group(base_path('routes/admin.php'));
+
 Route::get('/error/{code}', function ($code) {
     return app(\App\Http\Controllers\ErrorController::class)->show((int) $code);
 })->where('code', '[0-9]+');
@@ -67,9 +69,12 @@ Route::post('/contact', [App\Http\Controllers\ContactController::class, 'submit'
 
 
 
+Route::get('/pending-approval', function () {
+    return view('auth.verification-notice');
+})->middleware(['auth'])->name('verification.notice');
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    return view('admin.dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -85,6 +90,26 @@ Route::get('/auth/{provider}', [SocialAuthController::class, 'redirect'])
 
 // Provider redirects back here after authentication
 Route::get('/auth/{provider}/callback', [SocialAuthController::class, 'callback']);
+
+
+// ── Contact Form ─────────────────────────────────────────────────────────────
+
+Route::get('/browsershot-check', function () {
+    $checks = [
+        'node'      => trim(shell_exec('which node 2>/dev/null') ?: 'not found'),
+        'chromium'  => trim(shell_exec('which chromium-browser 2>/dev/null') ?: 'not found'),
+        'chrome'    => trim(shell_exec('which google-chrome 2>/dev/null') ?: 'not found'),
+        'puppeteer' => file_exists(base_path('node_modules/puppeteer')) ? 'installed' : 'missing',
+    ];
+    return response()->json($checks);
+});
+Route::get('/server-check', function () {
+    return response()->json([
+        'composer' => trim(shell_exec('which composer 2>/dev/null') ?: shell_exec('find /usr /opt /home -name "composer" -type f 2>/dev/null | head -1')),
+        'php'      => trim(shell_exec('which php')),
+        'php_ver'  => PHP_VERSION,
+    ]);
+});
 
 
 require __DIR__.'/auth.php';

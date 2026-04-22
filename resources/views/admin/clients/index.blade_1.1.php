@@ -1,100 +1,100 @@
 <x-admin-layout title="Clients">
 
     @push('page-css')
-        <style>
-            /* ── Remove DataTables default border/padding that clashes with card ── */
-            .card-datatable .dataTables_wrapper { padding: 0; }
+    <style>
+        /* ── Remove DataTables default border/padding that clashes with card ── */
+        .card-datatable .dataTables_wrapper { padding: 0; }
 
-            /* ── Length select ── */
-            .card-datatable .dataTables_length select {
-                padding: 0.375rem 2rem 0.375rem 0.75rem;
-                font-size: 0.85rem;
-                border-radius: 0.375rem;
-                border: 1px solid var(--bs-border-color);
-                background-color: var(--bs-body-bg);
-                color: var(--bs-body-color);
-                min-width: 70px;
-            }
+        /* ── Length select ── */
+        .card-datatable .dataTables_length select {
+            padding: 0.375rem 2rem 0.375rem 0.75rem;
+            font-size: 0.85rem;
+            border-radius: 0.375rem;
+            border: 1px solid var(--bs-border-color);
+            background-color: var(--bs-body-bg);
+            color: var(--bs-body-color);
+            min-width: 70px;
+        }
 
-            /* ── Search input ── */
-            .card-datatable .dataTables_filter input {
-                padding: 0.375rem 0.75rem;
-                font-size: 0.85rem;
-                border-radius: 0.375rem;
-                border: 1px solid var(--bs-border-color);
-                background-color: var(--bs-body-bg);
-                color: var(--bs-body-color);
-                min-width: 220px;
-            }
-            .card-datatable .dataTables_filter input:focus {
-                outline: none;
-                border-color: var(--pac-peridot);
-                box-shadow: 0 0 0 3px rgba(181,204,24,0.12);
-            }
-            .card-datatable .dataTables_filter label { margin: 0; }
+        /* ── Search input ── */
+        .card-datatable .dataTables_filter input {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.85rem;
+            border-radius: 0.375rem;
+            border: 1px solid var(--bs-border-color);
+            background-color: var(--bs-body-bg);
+            color: var(--bs-body-color);
+            min-width: 220px;
+        }
+        .card-datatable .dataTables_filter input:focus {
+            outline: none;
+            border-color: var(--pac-peridot);
+            box-shadow: 0 0 0 3px rgba(181,204,24,0.12);
+        }
+        .card-datatable .dataTables_filter label { margin: 0; }
 
-            /* ── Info text ── */
-            .card-datatable .dataTables_info {
-                font-size: 0.82rem;
-                color: var(--bs-secondary-color);
-                padding: 0;
-            }
+        /* ── Info text ── */
+        .card-datatable .dataTables_info {
+            font-size: 0.82rem;
+            color: var(--bs-secondary-color);
+            padding: 0;
+        }
 
-            /* ── Pagination ── */
-            .card-datatable .dataTables_paginate .paginate_button {
-                border-radius: 0.375rem !important;
-                padding: 0.25rem 0.625rem !important;
-                font-size: 0.82rem;
-                border: 1px solid transparent !important;
-                margin: 0 2px;
-            }
-            .card-datatable .dataTables_paginate .paginate_button.current,
-            .card-datatable .dataTables_paginate .paginate_button.current:hover {
-                background: var(--pac-peridot) !important;
-                border-color: var(--pac-peridot) !important;
-                color: #111827 !important;
-                font-weight: 600;
-            }
-            .card-datatable .dataTables_paginate .paginate_button:hover:not(.current):not(.disabled) {
-                background: rgba(181,204,24,0.1) !important;
-                border-color: rgba(181,204,24,0.3) !important;
-                color: var(--pac-peridot-dim) !important;
-            }
-            .card-datatable .dataTables_paginate .paginate_button.disabled {
-                color: var(--bs-secondary-color) !important;
-                opacity: 0.5;
-            }
+        /* ── Pagination ── */
+        .card-datatable .dataTables_paginate .paginate_button {
+            border-radius: 0.375rem !important;
+            padding: 0.25rem 0.625rem !important;
+            font-size: 0.82rem;
+            border: 1px solid transparent !important;
+            margin: 0 2px;
+        }
+        .card-datatable .dataTables_paginate .paginate_button.current,
+        .card-datatable .dataTables_paginate .paginate_button.current:hover {
+            background: var(--pac-peridot) !important;
+            border-color: var(--pac-peridot) !important;
+            color: #111827 !important;
+            font-weight: 600;
+        }
+        .card-datatable .dataTables_paginate .paginate_button:hover:not(.current):not(.disabled) {
+            background: rgba(181,204,24,0.1) !important;
+            border-color: rgba(181,204,24,0.3) !important;
+            color: var(--pac-peridot-dim) !important;
+        }
+        .card-datatable .dataTables_paginate .paginate_button.disabled {
+            color: var(--bs-secondary-color) !important;
+            opacity: 0.5;
+        }
 
-            /* ── Table itself ── */
-            .card-datatable table.dataTable thead th {
-                font-size: 0.72rem;
-                font-weight: 700;
-                letter-spacing: 0.06em;
-                text-transform: uppercase;
-                color: var(--bs-secondary-color);
-                border-bottom: 1px solid var(--bs-border-color);
-                padding: 0.75rem 1rem;
-            }
-            .card-datatable table.dataTable tbody td {
-                font-size: 0.84rem;
-                padding: 0.75rem 1rem;
-                vertical-align: middle;
-                border-bottom: 1px solid var(--bs-border-color);
-            }
-            .card-datatable table.dataTable tbody tr:last-child td { border-bottom: none; }
-            .card-datatable table.dataTable tbody tr:hover td {
-                background-color: rgba(181,204,24,0.04);
-            }
+        /* ── Table itself ── */
+        .card-datatable table.dataTable thead th {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--bs-secondary-color);
+            border-bottom: 1px solid var(--bs-border-color);
+            padding: 0.75rem 1rem;
+        }
+        .card-datatable table.dataTable tbody td {
+            font-size: 0.84rem;
+            padding: 0.75rem 1rem;
+            vertical-align: middle;
+            border-bottom: 1px solid var(--bs-border-color);
+        }
+        .card-datatable table.dataTable tbody tr:last-child td { border-bottom: none; }
+        .card-datatable table.dataTable tbody tr:hover td {
+            background-color: rgba(181,204,24,0.04);
+        }
 
-            /* ── Processing overlay ── */
-            .card-datatable .dataTables_processing {
-                background: rgba(255,255,255,0.9);
-                border: 1px solid var(--bs-border-color);
-                border-radius: 0.5rem;
-                font-size: 0.82rem;
-                color: var(--pac-ink);
-            }
-        </style>
+        /* ── Processing overlay ── */
+        .card-datatable .dataTables_processing {
+            background: rgba(255,255,255,0.9);
+            border: 1px solid var(--bs-border-color);
+            border-radius: 0.5rem;
+            font-size: 0.82rem;
+            color: var(--pac-ink);
+        }
+    </style>
     @endpush
 
     {{-- ── Stats Cards ─────────────────────────────────────────────── --}}
@@ -329,80 +329,80 @@
     {{-- ── /Client List Table ───────────────────────────────────────── --}}
 
     @push('page-js')
-        <script>
-            $(function () {
+    <script>
+        $(function () {
 
-                // ── Routes (injected server-side) ─────────────────────────────────
-                const ROUTES = {
-                    data:    '{{ route('admin.clients.data') }}',
-                    store:   '{{ route('admin.clients.store') }}',
-                    show:    '{{ url('admin/clients') }}',   // + /{id}
-                    update:  '{{ url('admin/clients') }}',   // + /{id}  PUT
-                    destroy: '{{ url('admin/clients') }}',   // + /{id}  DELETE
-                    restore: '{{ url('admin/clients') }}',   // + /{id}/restore  PATCH
-                };
+            // ── Routes (injected server-side) ─────────────────────────────────
+            const ROUTES = {
+                data:    '{{ route('admin.clients.data') }}',
+                store:   '{{ route('admin.clients.store') }}',
+                show:    '{{ url('admin/clients') }}',   // + /{id}
+                update:  '{{ url('admin/clients') }}',   // + /{id}  PUT
+                destroy: '{{ url('admin/clients') }}',   // + /{id}  DELETE
+                restore: '{{ url('admin/clients') }}',   // + /{id}/restore  PATCH
+        };
 
-                const csrfToken = '{{ csrf_token() }}';
+            const csrfToken = '{{ csrf_token() }}';
 
-                // ── DataTable ─────────────────────────────────────────────────────
-                let table = $('#clientsTable').DataTable({
-                    processing: true,
-                    serverSide: true,
-                    ajax: {
-                        url: ROUTES.data,
-                        data: function (d) {
-                            d.status       = $('#filterStatus').val();
-                            d.show_deleted = $('#showDeleted').is(':checked') ? '1' : '0';
+            // ── DataTable ─────────────────────────────────────────────────────
+            let table = $('#clientsTable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: ROUTES.data,
+                    data: function (d) {
+                        d.status       = $('#filterStatus').val();
+                        d.show_deleted = $('#showDeleted').is(':checked') ? '1' : '0';
+                    }
+                },
+                columns: [
+                    { data: null, defaultContent: '', orderable: false, searchable: false },
+                    {
+                        data: 'name',
+                        render: function (data, type, row) {
+                            return `<a href="${ROUTES.show}/${row.id}" class="fw-medium text-heading">${data}</a>`;
                         }
                     },
-                    columns: [
-                        { data: null, defaultContent: '', orderable: false, searchable: false },
-                        {
-                            data: 'name',
-                            render: function (data, type, row) {
-                                return `<a href="${ROUTES.show}/${row.id}" class="fw-medium text-heading">${data}</a>`;
+                    { data: 'company' },
+                    { data: 'email' },
+                    { data: 'phone' },
+                    {
+                        data: 'active_invoices',
+                        render: function (data) {
+                            return `<span class="badge bg-label-primary rounded-pill">${data}</span>`;
+                        }
+                    },
+                    {
+                        data: 'outstanding',
+                        render: function (data, type, row) {
+                            if (type === 'sort') return row.outstanding_sort;
+                            let cls = row.mixed_currency ? 'text-warning' : '';
+                            return `<span class="${cls}">${data}</span>`;
+                        }
+                    },
+                    {
+                        data: 'status',
+                        render: function (data, type, row) {
+                            if (row.deleted_at) {
+                                return '<span class="badge bg-label-secondary rounded-pill">Archived</span>';
                             }
-                        },
-                        { data: 'company' },
-                        { data: 'email' },
-                        { data: 'phone' },
-                        {
-                            data: 'active_invoices',
-                            render: function (data) {
-                                return `<span class="badge bg-label-primary rounded-pill">${data}</span>`;
-                            }
-                        },
-                        {
-                            data: 'outstanding',
-                            render: function (data, type, row) {
-                                if (type === 'sort') return row.outstanding_sort;
-                                let cls = row.mixed_currency ? 'text-warning' : '';
-                                return `<span class="${cls}">${data}</span>`;
-                            }
-                        },
-                        {
-                            data: 'status',
-                            render: function (data, type, row) {
-                                if (row.deleted_at) {
-                                    return '<span class="badge bg-label-secondary rounded-pill">Archived</span>';
-                                }
-                                return data === 'active'
-                                    ? '<span class="badge bg-label-success rounded-pill">Active</span>'
-                                    : '<span class="badge bg-label-warning rounded-pill">Inactive</span>';
-                            }
-                        },
-                        {
-                            data: 'id',
-                            orderable: false,
-                            searchable: false,
-                            render: function (data, type, row) {
-                                let actions = `
+                            return data === 'active'
+                                ? '<span class="badge bg-label-success rounded-pill">Active</span>'
+                                : '<span class="badge bg-label-warning rounded-pill">Inactive</span>';
+                        }
+                    },
+                    {
+                        data: 'id',
+                        orderable: false,
+                        searchable: false,
+                        render: function (data, type, row) {
+                            let actions = `
                                     <a href="${ROUTES.show}/${data}" class="btn btn-sm btn-icon btn-text-secondary rounded-pill" title="View">
                                         <i class="ri ri-eye-line"></i>
                                     </a>`;
 
-                                if (!row.deleted_at) {
-                                    actions += `
+                            if (!row.deleted_at) {
+                                actions += `
                                         <button class="btn btn-sm btn-icon btn-text-secondary rounded-pill btn-edit"
                                             data-id="${data}"
                                             data-name="${row.name}"
@@ -418,187 +418,188 @@
                                             data-id="${data}" data-name="${row.name}" title="Archive">
                                             <i class="ri ri-archive-line"></i>
                                         </button>`;
-                                } else {
-                                    actions += `
+                            } else {
+                                actions += `
                                         <button class="btn btn-sm btn-icon btn-text-success rounded-pill btn-restore"
                                             data-id="${data}" data-name="${row.name}" title="Restore">
                                             <i class="ri ri-arrow-go-back-line"></i>
                                         </button>`;
-                                }
-
-                                return `<div class="d-flex align-items-center">${actions}</div>`;
                             }
-                        },
-                    ],
-                    order: [[1, 'asc']],
-                    autoWidth: false,
-                    dom:
-                        '<"d-flex justify-content-between align-items-center px-6 pt-4 pb-3"' +
-                        '<"d-flex align-items-center gap-2"l>' +
-                        '<"dt-search"f>' +
-                        '>' +
-                        'tr' +
-                        '<"d-flex justify-content-between align-items-center px-6 py-4 border-top"' +
-                        '<"dt-info"i>' +
-                        '<"dt-paging"p>' +
-                        '>',
-                    language: {
-                        search:            '',
-                        searchPlaceholder: 'Search clients...',
-                        lengthMenu:        '_MENU_ per page',
-                        info:              'Showing _START_ to _END_ of _TOTAL_ clients',
-                        infoEmpty:         'No clients found',
-                        zeroRecords:       'No matching clients found',
-                        emptyTable:        'No clients yet — add your first one above',
-                    }
-                });
 
-                // Re-draw when filters change
-                $('#filterStatus, #showDeleted').on('change', function () {
-                    table.ajax.reload();
-                });
-
-                // ── Offcanvas: reset to Add mode on open ──────────────────────────
-                $('#offcanvasAddClient').on('show.bs.offcanvas', function () {
-                    if (!$('#clientId').val()) {
-                        resetForm('add');
-                    }
-                });
-
-                $('#offcanvasAddClient').on('hidden.bs.offcanvas', function () {
-                    resetForm('add');
-                });
-
-                function resetForm(mode) {
-                    $('#clientForm')[0].reset();
-                    $('#clientId').val('');
-                    $('#clientActive').prop('checked', true);
-                    $('#offcanvasClientLabel').text(mode === 'edit' ? 'Edit Client' : 'Add Client');
-                    $('#clientSubmitBtn').text('Submit');
-                    clearErrors();
-                }
-
-                // ── Edit button: populate offcanvas ──────────────────────────────
-                $(document).on('click', '.btn-edit', function () {
-                    const btn = $(this);
-                    $('#clientId').val(btn.data('id'));
-                    $('#clientName').val(btn.data('name'));
-                    $('#clientEmail').val(btn.data('email'));
-                    $('#clientPhone').val(btn.data('phone') === '—' ? '' : btn.data('phone'));
-                    $('#clientCompany').val(btn.data('company') === '—' ? '' : btn.data('company'));
-                    $('#clientAddress').val(btn.data('address'));
-                    $('#clientActive').prop('checked', btn.data('active') == 1);
-                    $('#offcanvasClientLabel').text('Edit Client');
-                    $('#clientSubmitBtn').text('Update');
-                    clearErrors();
-
-                    const offcanvas = new bootstrap.Offcanvas(document.getElementById('offcanvasAddClient'));
-                    offcanvas.show();
-                });
-
-                // ── Form submit (store or update) ────────────────────────────────
-                $('#clientForm').on('submit', function () {
-                    clearErrors();
-                    const id      = $('#clientId').val();
-                    const isEdit  = !!id;
-                    const url     = isEdit ? `${ROUTES.update}/${id}` : ROUTES.store;
-                    const method  = isEdit ? 'PUT' : 'POST';
-
-                    const payload = {
-                        _token:  csrfToken,
-                        name:    $('#clientName').val(),
-                        email:   $('#clientEmail').val(),
-                        phone:   $('#clientPhone').val(),
-                        company: $('#clientCompany').val(),
-                        address: $('#clientAddress').val(),
-                        active:  $('#clientActive').is(':checked') ? 1 : 0,
-                    };
-
-                    $.ajax({
-                        url, method,
-                        data: payload,
-                        success: function (res) {
-                            if (res.success) {
-                                bootstrap.Offcanvas.getInstance(document.getElementById('offcanvasAddClient'))?.hide();
-                                table.ajax.reload(null, false);
-                                toastSuccess(res.message);
-                            }
-                        },
-                        error: function (xhr) {
-                            if (xhr.status === 422) {
-                                const errors = xhr.responseJSON.errors;
-                                $.each(errors, function (field, messages) {
-                                    const input = $(`#client${field.charAt(0).toUpperCase() + field.slice(1)}`);
-                                    input.addClass('is-invalid');
-                                    input.closest('.form-floating, .mb-5').append(
-                                        `<div class="invalid-feedback">${messages[0]}</div>`
-                                    );
-                                });
-                            } else {
-                                toastError('Something went wrong. Please try again.');
-                            }
+                            return `<div class="d-flex align-items-center">${actions}</div>`;
                         }
-                    });
-                });
-
-                // ── Delete (soft) ─────────────────────────────────────────────────
-                $(document).on('click', '.btn-delete', function () {
-                    const id   = $(this).data('id');
-                    const name = $(this).data('name');
-                    if (!confirm(`Archive client "${name}"? They can be restored later.`)) return;
-
-                    $.ajax({
-                        url: `${ROUTES.destroy}/${id}`,
-                        method: 'DELETE',
-                        data: { _token: csrfToken },
-                        success: function (res) {
-                            if (res.success) {
-                                table.ajax.reload(null, false);
-                                toastSuccess(res.message);
-                            }
-                        },
-                        error: () => toastError('Could not archive client.')
-                    });
-                });
-
-                // ── Restore ───────────────────────────────────────────────────────
-                $(document).on('click', '.btn-restore', function () {
-                    const id   = $(this).data('id');
-                    const name = $(this).data('name');
-                    if (!confirm(`Restore client "${name}"?`)) return;
-
-                    $.ajax({
-                        url: `${ROUTES.restore}/${id}/restore`,
-                        method: 'PATCH',
-                        data: { _token: csrfToken },
-                        success: function (res) {
-                            if (res.success) {
-                                table.ajax.reload(null, false);
-                                toastSuccess(res.message);
-                            }
-                        },
-                        error: () => toastError('Could not restore client.')
-                    });
-                });
-
-                // ── Helpers ───────────────────────────────────────────────────────
-                function clearErrors() {
-                    $('#clientForm .is-invalid').removeClass('is-invalid');
-                    $('#clientForm .invalid-feedback').remove();
+                    },
+                ],
+                order: [[1, 'asc']],
+                autoWidth: false,
+                dom:
+                    '<"d-flex justify-content-between align-items-center px-6 pt-4 pb-3"' +
+                    '<"d-flex align-items-center gap-2"l>' +
+                    '<"dt-search"f>' +
+                    '>' +
+                    'tr' +
+                    '<"d-flex justify-content-between align-items-center px-6 py-4 border-top"' +
+                    '<"dt-info"i>' +
+                    '<"dt-paging"p>' +
+                    '>',
+                language: {
+                    search:            '',
+                    searchPlaceholder: 'Search clients...',
+                    lengthMenu:        '_MENU_ per page',
+                    info:              'Showing _START_ to _END_ of _TOTAL_ clients',
+                    infoEmpty:         'No clients found',
+                    zeroRecords:       'No matching clients found',
+                    emptyTable:        'No clients yet — add your first one above',
                 }
-
-                function toastSuccess(msg) {
-                    if (typeof toastr !== 'undefined') toastr.success(msg);
-                    else alert(msg);
-                }
-
-                function toastError(msg) {
-                    if (typeof toastr !== 'undefined') toastr.error(msg);
-                    else alert(msg);
-                }
-
             });
-        </script>
+
+            // Re-draw when filters change
+            $('#filterStatus, #showDeleted').on('change', function () {
+                table.ajax.reload();
+            });
+
+            // ── Offcanvas: reset to Add mode on open ──────────────────────────
+            $('#offcanvasAddClient').on('show.bs.offcanvas', function () {
+                if (!$('#clientId').val()) {
+                    resetForm('add');
+                }
+            });
+
+            $('#offcanvasAddClient').on('hidden.bs.offcanvas', function () {
+                resetForm('add');
+            });
+
+            function resetForm(mode) {
+                $('#clientForm')[0].reset();
+                $('#clientId').val('');
+                $('#clientActive').prop('checked', true);
+                $('#offcanvasClientLabel').text(mode === 'edit' ? 'Edit Client' : 'Add Client');
+                $('#clientSubmitBtn').text('Submit');
+                clearErrors();
+            }
+
+            // ── Edit button: populate offcanvas ──────────────────────────────
+            $(document).on('click', '.btn-edit', function () {
+                const btn = $(this);
+                $('#clientId').val(btn.data('id'));
+                $('#clientName').val(btn.data('name'));
+                $('#clientEmail').val(btn.data('email'));
+                $('#clientPhone').val(btn.data('phone') === '—' ? '' : btn.data('phone'));
+                $('#clientCompany').val(btn.data('company') === '—' ? '' : btn.data('company'));
+                $('#clientAddress').val(btn.data('address'));
+                $('#clientActive').prop('checked', btn.data('active') == 1);
+                $('#offcanvasClientLabel').text('Edit Client');
+                $('#clientSubmitBtn').text('Update');
+                clearErrors();
+
+                const el = document.getElementById('offcanvasAddClient');
+                const offcanvas = bootstrap.Offcanvas.getOrCreateInstance(el);
+                offcanvas.show();
+            });
+
+            // ── Form submit (store or update) ────────────────────────────────
+            $('#clientForm').on('submit', function () {
+                clearErrors();
+                const id      = $('#clientId').val();
+                const isEdit  = !!id;
+                const url     = isEdit ? `${ROUTES.update}/${id}` : ROUTES.store;
+                const method  = isEdit ? 'PUT' : 'POST';
+
+                const payload = {
+                    _token:  csrfToken,
+                    name:    $('#clientName').val(),
+                    email:   $('#clientEmail').val(),
+                    phone:   $('#clientPhone').val(),
+                    company: $('#clientCompany').val(),
+                    address: $('#clientAddress').val(),
+                    active:  $('#clientActive').is(':checked') ? 1 : 0,
+                };
+
+                $.ajax({
+                    url, method,
+                    data: payload,
+                    success: function (res) {
+                        if (res.success) {
+                            bootstrap.Offcanvas.getInstance(document.getElementById('offcanvasAddClient'))?.hide();
+                            table.ajax.reload(null, false);
+                            toastSuccess(res.message);
+                        }
+                    },
+                    error: function (xhr) {
+                        if (xhr.status === 422) {
+                            const errors = xhr.responseJSON.errors;
+                            $.each(errors, function (field, messages) {
+                                const input = $(`#client${field.charAt(0).toUpperCase() + field.slice(1)}`);
+                                input.addClass('is-invalid');
+                                input.closest('.form-floating, .mb-5').append(
+                                    `<div class="invalid-feedback">${messages[0]}</div>`
+                                );
+                            });
+                        } else {
+                            toastError('Something went wrong. Please try again.');
+                        }
+                    }
+                });
+            });
+
+            // ── Delete (soft) ─────────────────────────────────────────────────
+            $(document).on('click', '.btn-delete', function () {
+                const id   = $(this).data('id');
+                const name = $(this).data('name');
+                if (!confirm(`Archive client "${name}"? They can be restored later.`)) return;
+
+                $.ajax({
+                    url: `${ROUTES.destroy}/${id}`,
+                    method: 'DELETE',
+                    data: { _token: csrfToken },
+                    success: function (res) {
+                        if (res.success) {
+                            table.ajax.reload(null, false);
+                            toastSuccess(res.message);
+                        }
+                    },
+                    error: () => toastError('Could not archive client.')
+                });
+            });
+
+            // ── Restore ───────────────────────────────────────────────────────
+            $(document).on('click', '.btn-restore', function () {
+                const id   = $(this).data('id');
+                const name = $(this).data('name');
+                if (!confirm(`Restore client "${name}"?`)) return;
+
+                $.ajax({
+                    url: `${ROUTES.restore}/${id}/restore`,
+                    method: 'PATCH',
+                    data: { _token: csrfToken },
+                    success: function (res) {
+                        if (res.success) {
+                            table.ajax.reload(null, false);
+                            toastSuccess(res.message);
+                        }
+                    },
+                    error: () => toastError('Could not restore client.')
+                });
+            });
+
+            // ── Helpers ───────────────────────────────────────────────────────
+            function clearErrors() {
+                $('#clientForm .is-invalid').removeClass('is-invalid');
+                $('#clientForm .invalid-feedback').remove();
+            }
+
+            function toastSuccess(msg) {
+                if (typeof toastr !== 'undefined') toastr.success(msg);
+                else alert(msg);
+            }
+
+            function toastError(msg) {
+                if (typeof toastr !== 'undefined') toastr.error(msg);
+                else alert(msg);
+            }
+
+        });
+    </script>
     @endpush
 
 </x-admin-layout>
