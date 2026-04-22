@@ -95,6 +95,10 @@ Route::get('/auth/{provider}/callback', [SocialAuthController::class, 'callback'
 // ── Debug routes ─────────────────────────────────────────────────────────────
 
 Route::get('/server-check', function () {
+    dd('route is fresh');
+});
+
+Route::get('/server-check', function () {
     return response()->json([
         'composer_which'  => trim(shell_exec('which composer 2>/dev/null')),
         'composer_find'   => trim(shell_exec('find / -name "composer" -o -name "composer.phar" 2>/dev/null | grep -v proc | head -5')),
