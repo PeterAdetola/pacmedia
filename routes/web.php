@@ -101,10 +101,14 @@ Route::get('/show-deploy-log', function () {
 
 Route::get('/server-check', function () {
     return response()->json([
-        'composer' => trim(shell_exec('which composer 2>/dev/null') ?: shell_exec('find /usr /opt /home -name "composer" -type f 2>/dev/null | head -1')),
-        'php'      => trim(shell_exec('which php')),
-        'php_ver'  => PHP_VERSION,
-        'node'     => trim(shell_exec('which node 2>/dev/null') ?: 'not found'),
+        'composer_which'  => trim(shell_exec('which composer 2>/dev/null') ?: 'not found'),
+        'composer_find'   => trim(shell_exec('find /usr /opt /home /root /bin /sbin -name "composer" -o -name "composer.phar" 2>/dev/null | head -5')),
+        'composer_home'   => trim(shell_exec('ls /home/thepacme/bin/ 2>/dev/null') ?: 'no ~/bin'),
+        'composer_local'  => trim(shell_exec('ls /home/thepacme/.config/composer/ 2>/dev/null') ?: 'no .config/composer'),
+        'php'             => trim(shell_exec('which php')),
+        'php_ver'         => PHP_VERSION,
+        'node'            => trim(shell_exec('which node 2>/dev/null') ?: 'not found'),
+        'path_env'        => getenv('PATH'),
     ]);
 });
 
