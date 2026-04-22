@@ -94,6 +94,13 @@ Route::get('/auth/{provider}/callback', [SocialAuthController::class, 'callback'
 
 // ── Debug routes ─────────────────────────────────────────────────────────────
 
+Route::get('/show-deploy-log', function () {
+    $log = '/home/thepacme/domains/thepacmedia.com/pacmedia/storage/logs/deployment.log';
+    $lines = file($log);
+    $last200 = array_slice($lines, -200);
+    return response('<pre>' . implode('', $last200) . '</pre>');
+});
+
 Route::get('/server-check', function () {
     dd('route is fresh');
 });
