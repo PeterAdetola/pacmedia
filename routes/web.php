@@ -69,9 +69,7 @@ Route::post('/contact', [App\Http\Controllers\ContactController::class, 'submit'
 
 
 
-Route::get('/pending-approval', function () {
-    return view('auth.verification-notice');
-})->middleware(['auth'])->name('verification.notice');
+
 
 Route::get('/dashboard', function () {
     return view('admin.dashboard');
@@ -102,9 +100,13 @@ Route::get('/show-deploy-log', function () {
 });
 
 Route::get('/server-check', function () {
-    dd('route is fresh');
+    return response()->json([
+        'composer' => trim(shell_exec('which composer 2>/dev/null') ?: shell_exec('find /usr /opt /home -name "composer" -type f 2>/dev/null | head -1')),
+        'php'      => trim(shell_exec('which php')),
+        'php_ver'  => PHP_VERSION,
+        'node'     => trim(shell_exec('which node 2>/dev/null') ?: 'not found'),
+    ]);
 });
-
 
 Route::get('/browsershot-check', function () {
     $checks = [
