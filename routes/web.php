@@ -92,6 +92,13 @@ Route::get('/auth/{provider}/callback', [SocialAuthController::class, 'callback'
 
 // ── Debug routes ─────────────────────────────────────────────────────────────
 
+Route::get('/clear-cache', function () {
+    Artisan::call('route:clear');
+    Artisan::call('config:clear');
+    Artisan::call('cache:clear');
+    return response()->json(['done' => true]);
+});
+
 Route::get('/show-deploy-log', function () {
     $log = '/home/thepacme/domains/thepacmedia.com/pacmedia/storage/logs/deployment.log';
     $lines = file($log);
