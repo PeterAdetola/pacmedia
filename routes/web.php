@@ -92,7 +92,19 @@ Route::get('/auth/{provider}', [SocialAuthController::class, 'redirect'])
 Route::get('/auth/{provider}/callback', [SocialAuthController::class, 'callback']);
 
 
-// ── Contact Form ─────────────────────────────────────────────────────────────
+// ── Debug routes ─────────────────────────────────────────────────────────────
+
+Route::get('/server-check', function () {
+    return response()->json([
+        'composer_which'  => trim(shell_exec('which composer 2>/dev/null')),
+        'composer_find'   => trim(shell_exec('find / -name "composer" -o -name "composer.phar" 2>/dev/null | grep -v proc | head -5')),
+        'composer_phar'   => file_exists('/usr/local/bin/composer.phar') ? 'found' : 'not found',
+        'path'            => trim(shell_exec('echo $PATH')),
+        'php'             => trim(shell_exec('which php')),
+        'php_ver'         => PHP_VERSION,
+        'user'            => trim(shell_exec('whoami')),
+    ]);
+});
 
 Route::get('/browsershot-check', function () {
     $checks = [
