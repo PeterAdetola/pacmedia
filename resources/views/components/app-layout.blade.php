@@ -188,7 +188,7 @@
 </div>
 
 <main id="page-content" class="page-content">
-    @yield('content')
+    {{ $slot }}
     @include('layouts.footer')
 </main>
 
