@@ -22,19 +22,22 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
 
 // ── Invoices ───────────────────────────────────────────────────────────
 Route::prefix('invoices')->name('admin.invoices.')->group(function () {
-    Route::get('/',             [InvoiceController::class, 'index'])  ->name('index');
-    Route::get('/create',       [InvoiceController::class, 'create']) ->name('create');
-    Route::post('/',            [InvoiceController::class, 'store'])  ->name('store');
-    Route::get('/{invoice}',    [InvoiceController::class, 'show'])   ->name('show');
-    Route::get('/{invoice}/edit',   [InvoiceController::class, 'edit'])   ->name('edit');
-    Route::put('/{invoice}',        [InvoiceController::class, 'update']) ->name('update');
-    Route::delete('/{invoice}',     [InvoiceController::class, 'destroy'])->name('destroy');
+    Route::get('/',           [InvoiceController::class, 'index'])  ->name('index');
+    Route::get('/create',     [InvoiceController::class, 'create']) ->name('create');
+    Route::post('/',          [InvoiceController::class, 'store'])  ->name('store');
+    Route::get('/{invoice}',  [InvoiceController::class, 'show'])   ->name('show');
+    Route::get('/{invoice}/edit',     [InvoiceController::class, 'edit'])   ->name('edit');
+    Route::put('/{invoice}',          [InvoiceController::class, 'update']) ->name('update');
+    Route::delete('/{invoice}',       [InvoiceController::class, 'destroy'])->name('destroy');
 
     // Invoice actions
-    Route::post('/{invoice}/send',      [InvoiceController::class, 'send'])     ->name('send');
-    Route::post('/{invoice}/duplicate', [InvoiceController::class, 'duplicate'])->name('duplicate');
-    Route::get('/{invoice}/pdf',        [InvoiceController::class, 'pdf'])      ->name('pdf');
+    Route::post('/{invoice}/send',      [InvoiceController::class, 'send'])         ->name('send');
+    Route::post('/{invoice}/duplicate', [InvoiceController::class, 'duplicate'])    ->name('duplicate');
+    Route::get('/{invoice}/pdf',        [InvoiceController::class, 'pdf'])          ->name('pdf');
     Route::post('/{invoice}/payment',   [InvoiceController::class, 'recordPayment'])->name('payment');
+
+    // ← ADD THIS: renders the PDF blade as plain HTML in the browser (no Browsershot)
+    Route::get('/{invoice}/preview',    [InvoiceController::class, 'preview'])      ->name('preview');
 });
 
 // ── Clients ────────────────────────────────────────────────────────────

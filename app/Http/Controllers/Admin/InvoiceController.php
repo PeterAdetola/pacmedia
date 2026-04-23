@@ -248,11 +248,32 @@ class InvoiceController extends Controller
     {
         $validated = $request->validate($this->validationRules());
 
+        // The submit button value (sent | draft | preview_draft) overrides
+        // the hidden status select so "Save & Send" always persists as 'sent'.
+        $action = $request->input('status_action', 'draft');
+        $validated['status'] = match($action) {
+            'sent'         => 'sent',
+            'preview_draft'=> 'draft',
+            default        => $validated['status'],
+        };
+
         DB::transaction(function () use ($validated) {
             $invoice = Invoice::create($this->invoiceAttributes($validated));
             $this->saveItems($invoice, $validated);
             $this->_invoice = $invoice;
         });
+
+        // "Save & Send" — dispatch email job
+        if ($action === 'sent') {
+            SendInvoiceEmail::dispatch($this->_invoice);
+        }
+
+        // "Save & Preview" — open the preview page instead of show
+        if ($action === 'preview_draft') {
+            return redirect()
+                ->route('admin.invoices.preview', $this->_invoice)
+                ->with('success', 'Invoice saved as draft.');
+        }
 
         return redirect()
             ->route('admin.invoices.show', $this->_invoice)
@@ -275,6 +296,20 @@ class InvoiceController extends Controller
     }
 
     /* ─────────────────────────────────────────────────────────
+         | PREVIEW
+     ───────────────────────────────────────────────────────── */
+    public function preview(Invoice $invoice)
+    {
+        $invoice->load([
+            'client',
+            'completedItems'    => fn($q) => $q->orderBy('sort_order'),
+            'subscriptionItems' => fn($q) => $q->orderBy('sort_order'),
+            'proposedItems'     => fn($q) => $q->orderBy('sort_order'),
+        ]);
+
+        return view('admin.invoices.pdf', compact('invoice'));
+    }
+    /* ─────────────────────────────────────────────────────────
      | EDIT
      ───────────────────────────────────────────────────────── */
     public function edit(Invoice $invoice)
@@ -289,14 +324,31 @@ class InvoiceController extends Controller
      ───────────────────────────────────────────────────────── */
     public function update(Request $request, Invoice $invoice)
     {
-        $rules              = $this->validationRules();
-        $rules['number']    = 'required|string|unique:invoices,number,' . $invoice->id;
-        $validated          = $request->validate($rules);
+        $rules           = $this->validationRules();
+        $rules['number'] = 'required|string|unique:invoices,number,' . $invoice->id;
+        $validated       = $request->validate($rules);
+
+        $action = $request->input('status_action', 'draft');
+        $validated['status'] = match($action) {
+            'sent'         => 'sent',
+            'preview_draft'=> 'draft',
+            default        => $validated['status'],
+        };
 
         DB::transaction(function () use ($invoice, $validated) {
             $invoice->update($this->invoiceAttributes($validated));
             $this->saveItems($invoice, $validated, deleteFirst: true);
         });
+
+        if ($action === 'sent') {
+            SendInvoiceEmail::dispatch($invoice->fresh());
+        }
+
+        if ($action === 'preview_draft') {
+            return redirect()
+                ->route('admin.invoices.preview', $invoice)
+                ->with('success', 'Invoice saved.');
+        }
 
         return redirect()
             ->route('admin.invoices.show', $invoice)

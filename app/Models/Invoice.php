@@ -26,7 +26,6 @@ class Invoice extends Model
 
     protected $casts = [
         'submitted_at'            => 'date',
-        'due_date'                => 'date',
         'tax_enabled'             => 'boolean',
         'wht_enabled'             => 'boolean',
         'has_proposed'            => 'boolean',
