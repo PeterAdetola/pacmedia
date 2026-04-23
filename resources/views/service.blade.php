@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('components.app-layout')
 @section('content')
 
     {{-- ================================================ --}}
@@ -116,9 +116,9 @@
 
                                                 {{-- Number + icon --}}
                                                 <div class="process-card__top">
-{{--                                                    <span class="process-card__number">--}}
-{{--                                                        {{ str_pad($i + 1, 2, '0', STR_PAD_LEFT) }}.--}}
-{{--                                                    </span>--}}
+                                                    {{--                                                    <span class="process-card__number">--}}
+                                                    {{--                                                        {{ str_pad($i + 1, 2, '0', STR_PAD_LEFT) }}.--}}
+                                                    {{--                                                    </span>--}}
                                                     <i class="ph-thin {{ $processIcons[$i] ?? 'ph-circle' }} process-card__icon"></i>
                                                 </div>
 

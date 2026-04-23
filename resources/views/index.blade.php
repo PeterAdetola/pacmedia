@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('components.app-layout')
 @section('content')
     @include('partials.hero')
     @include('partials.about')

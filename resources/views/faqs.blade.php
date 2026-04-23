@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('components.app-layout')
 @section('content')
 
     {{-- ================================================ --}}
@@ -36,9 +36,9 @@
 
                             {{-- Subtitle --}}
                             <div class="content__block pre-text-items" style="margin-bottom: 2rem;">
-{{--                                <div class="block__subtitle">--}}
-{{--                                    <p class="tagline-chapter animate-in-up">{{ $faqSubtitle }}</p>--}}
-{{--                                </div>--}}
+                                {{--                                <div class="block__subtitle">--}}
+                                {{--                                    <p class="tagline-chapter animate-in-up">{{ $faqSubtitle }}</p>--}}
+                                {{--                                </div>--}}
 
                                 {{-- FAQ Groups --}}
                                 @foreach($groups as $groupName => $faqs)
@@ -58,7 +58,8 @@
                                                 <li class="faq-lines__item">
                                                     <div class="faq-lines__trigger">
                                                         <h4 class="animate-in-up">
-                                                <span style="color: var(--t-muted); font-size: 0.6em; margin-right: 1.5rem; font-weight: 400;">
+                                                <span
+                                                    style="color: var(--t-muted); font-size: 0.6em; margin-right: 1.5rem; font-weight: 400;">
                                                     {{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}.
                                                 </span>
                                                             {{ $faq['question'] }}
@@ -80,7 +81,8 @@
                                 @endforeach
 
                                 {{-- CTA --}}
-                                <div class="content__block animate-in-up" style="margin-top: 2rem; margin-bottom: 6rem;">
+                                <div class="content__block animate-in-up"
+                                     style="margin-top: 2rem; margin-bottom: 6rem;">
                                     <a class="btn btn-default hover-default start-engagement-btn" href="#!">
                                         <em></em>
                                         <span class="btn-caption">Start Engagement →</span>

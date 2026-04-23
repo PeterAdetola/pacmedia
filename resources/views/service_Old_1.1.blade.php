@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('components.app-layout')
 @section('content')
 
     {{-- ================================================ --}}
@@ -28,7 +28,7 @@
                             {{-- Service Index + Title --}}
                             <div class="content__block section-tagline-title">
                                 <div class="block__descr">
-{{--                                    <span class="service-index animate-in-up">{{ $service['index'] }}</span>--}}
+                                    {{--                                    <span class="service-index animate-in-up">{{ $service['index'] }}</span>--}}
                                     <h1 class="reveal-type animate-in-up">
                                         {!! $service['title'] !!}
                                     </h1>
@@ -90,7 +90,8 @@
                                             <li class="faq-lines__item">
                                                 <div class="faq-lines__trigger">
                                                     <h4 class="animate-in-up">
-                                                        <span style="color: var(--t-muted); font-size: 0.6em; margin-right: 1.5rem; font-weight: 400;">
+                                                        <span
+                                                            style="color: var(--t-muted); font-size: 0.6em; margin-right: 1.5rem; font-weight: 400;">
                                                             {{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}.
                                                         </span>
                                                         {{ $step['label'] }} — {{ $step['title'] }}
@@ -186,7 +187,7 @@
             font-size: 0.9rem;
             color: var(--t-body);
             padding: 0.35rem 0;
-            border-bottom: 1px solid var(--border-subtle, rgba(255,255,255,0.06));
+            border-bottom: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
         }
 
         .service-covers__arrow {

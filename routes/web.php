@@ -107,15 +107,12 @@ Route::get('/show-deploy-log', function () {
 });
 
 Route::get('/server-check', function () {
+    $dropdownPath = base_path('resources/views/components/dropdown.blade.php');
     return response()->json([
-        'composer_which'  => trim(shell_exec('which composer 2>/dev/null') ?: 'not found'),
-        'composer_find'   => trim(shell_exec('find /usr /opt /home /root /bin /sbin -name "composer" -o -name "composer.phar" 2>/dev/null | head -5')),
-        'composer_home'   => trim(shell_exec('ls /home/thepacme/bin/ 2>/dev/null') ?: 'no ~/bin'),
-        'composer_local'  => trim(shell_exec('ls /home/thepacme/.config/composer/ 2>/dev/null') ?: 'no .config/composer'),
-        'php'             => trim(shell_exec('which php')),
-        'php_ver'         => PHP_VERSION,
-        'node'            => trim(shell_exec('which node 2>/dev/null') ?: 'not found'),
-        'path_env'        => getenv('PATH'),
+        'git_head'         => trim(shell_exec('cd ' . base_path() . ' && git log --oneline -1 2>/dev/null')),
+        'dropdown_exists'  => file_exists($dropdownPath),
+        'dropdown_content' => file_exists($dropdownPath) ? substr(file_get_contents($dropdownPath), 0, 100) : 'NOT FOUND',
+        'components_dir'   => scandir(base_path('resources/views/components')),
     ]);
 });
 

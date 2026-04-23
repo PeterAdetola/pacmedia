@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('components.app-layout')
 @section('content')
 
     {{-- ================================================ --}}
@@ -121,7 +121,8 @@
 
                                                 {{-- Optional note --}}
                                                 @if (!empty($step['note']))
-                                                    <p class="service-process__note process-card__desc" style="margin-top: 1.25rem;">
+                                                    <p class="service-process__note process-card__desc"
+                                                       style="margin-top: 1.25rem;">
                                                         <em>{{ $step['note'] }}</em>
                                                     </p>
                                                 @endif
@@ -210,7 +211,7 @@
             font-size: 0.9rem;
             color: var(--t-body);
             padding: 0.35rem 0;
-            border-bottom: 1px solid var(--border-subtle, rgba(255,255,255,0.06));
+            border-bottom: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
         }
 
         .service-covers__arrow {
