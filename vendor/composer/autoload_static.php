@@ -98,10 +98,8 @@ class ComposerStaticInit62cecf69e0182edf6245b0e7b2868857
             'Symfony\\Component\\CssSelector\\' => 30,
             'Symfony\\Component\\Console\\' => 26,
             'Symfony\\Component\\Clock\\' => 24,
-            'Spatie\\TemporaryDirectory\\' => 26,
             'Spatie\\LaravelPackageTools\\' => 27,
             'Spatie\\CookieConsent\\' => 21,
-            'Spatie\\Browsershot\\' => 19,
         ),
         'R' => 
         array (
@@ -345,10 +343,6 @@ class ComposerStaticInit62cecf69e0182edf6245b0e7b2868857
         array (
             0 => __DIR__ . '/..' . '/symfony/clock',
         ),
-        'Spatie\\TemporaryDirectory\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/spatie/temporary-directory/src',
-        ),
         'Spatie\\LaravelPackageTools\\' => 
         array (
             0 => __DIR__ . '/..' . '/spatie/laravel-package-tools/src',
@@ -356,10 +350,6 @@ class ComposerStaticInit62cecf69e0182edf6245b0e7b2868857
         'Spatie\\CookieConsent\\' => 
         array (
             0 => __DIR__ . '/..' . '/spatie/laravel-cookie-consent/src',
-        ),
-        'Spatie\\Browsershot\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/spatie/browsershot/src',
         ),
         'Resend\\Laravel\\' => 
         array (
@@ -626,8 +616,10 @@ class ComposerStaticInit62cecf69e0182edf6245b0e7b2868857
         'App\\Http\\Controllers\\ServiceController' => __DIR__ . '/../..' . '/app/Http/Controllers/ServiceController.php',
         'App\\Http\\Requests\\Auth\\LoginRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Auth/LoginRequest.php',
         'App\\Http\\Requests\\ProfileUpdateRequest' => __DIR__ . '/../..' . '/app/Http/Requests/ProfileUpdateRequest.php',
+        'App\\Jobs\\SendInvoiceEmail' => __DIR__ . '/../..' . '/app/Jobs/SendInvoiceEmail.php',
         'App\\Mail\\ContactFormSubmission' => __DIR__ . '/../..' . '/app/Mail/ContactFormSubmission.php',
         'App\\Mail\\InternalContactAlert' => __DIR__ . '/../..' . '/app/Mail/InternalContactAlert.php',
+        'App\\Mail\\InvoiceMail' => __DIR__ . '/../..' . '/app/Mail/InvoiceMail.php',
         'App\\Models\\Client' => __DIR__ . '/../..' . '/app/Models/Client.php',
         'App\\Models\\ContactSubmission' => __DIR__ . '/../..' . '/app/Models/ContactSubmission.php',
         'App\\Models\\Invoice' => __DIR__ . '/../..' . '/app/Models/Invoice.php',
@@ -5958,17 +5950,6 @@ class ComposerStaticInit62cecf69e0182edf6245b0e7b2868857
         'SebastianBergmann\\Type\\UnknownType' => __DIR__ . '/..' . '/sebastian/type/src/type/UnknownType.php',
         'SebastianBergmann\\Type\\VoidType' => __DIR__ . '/..' . '/sebastian/type/src/type/VoidType.php',
         'SebastianBergmann\\Version' => __DIR__ . '/..' . '/sebastian/version/src/Version.php',
-        'Spatie\\Browsershot\\Browsershot' => __DIR__ . '/..' . '/spatie/browsershot/src/Browsershot.php',
-        'Spatie\\Browsershot\\ChromiumResult' => __DIR__ . '/..' . '/spatie/browsershot/src/ChromiumResult.php',
-        'Spatie\\Browsershot\\Enums\\Polling' => __DIR__ . '/..' . '/spatie/browsershot/src/Enums/Polling.php',
-        'Spatie\\Browsershot\\Exceptions\\CouldNotTakeBrowsershot' => __DIR__ . '/..' . '/spatie/browsershot/src/Exceptions/CouldNotTakeBrowsershot.php',
-        'Spatie\\Browsershot\\Exceptions\\ElementNotFound' => __DIR__ . '/..' . '/spatie/browsershot/src/Exceptions/ElementNotFound.php',
-        'Spatie\\Browsershot\\Exceptions\\FileDoesNotExistException' => __DIR__ . '/..' . '/spatie/browsershot/src/Exceptions/FileDoesNotExistException.php',
-        'Spatie\\Browsershot\\Exceptions\\FileUrlNotAllowed' => __DIR__ . '/..' . '/spatie/browsershot/src/Exceptions/FileUrlNotAllowed.php',
-        'Spatie\\Browsershot\\Exceptions\\HtmlIsNotAllowedToContainFile' => __DIR__ . '/..' . '/spatie/browsershot/src/Exceptions/HtmlIsNotAllowedToContainFile.php',
-        'Spatie\\Browsershot\\Exceptions\\RemoteConnectionException' => __DIR__ . '/..' . '/spatie/browsershot/src/Exceptions/RemoteConnectionException.php',
-        'Spatie\\Browsershot\\Exceptions\\UnsuccessfulResponse' => __DIR__ . '/..' . '/spatie/browsershot/src/Exceptions/UnsuccessfulResponse.php',
-        'Spatie\\Browsershot\\ImageManipulations' => __DIR__ . '/..' . '/spatie/browsershot/src/ImageManipulations.php',
         'Spatie\\CookieConsent\\CookieConsentMiddleware' => __DIR__ . '/..' . '/spatie/laravel-cookie-consent/src/CookieConsentMiddleware.php',
         'Spatie\\CookieConsent\\CookieConsentServiceProvider' => __DIR__ . '/..' . '/spatie/laravel-cookie-consent/src/CookieConsentServiceProvider.php',
         'Spatie\\LaravelPackageTools\\Commands\\Concerns\\AskToRunMigrations' => __DIR__ . '/..' . '/spatie/laravel-package-tools/src/Commands/Concerns/AskToRunMigrations.php',
@@ -6005,9 +5986,6 @@ class ComposerStaticInit62cecf69e0182edf6245b0e7b2868857
         'Spatie\\LaravelPackageTools\\Exceptions\\InvalidPackage' => __DIR__ . '/..' . '/spatie/laravel-package-tools/src/Exceptions/InvalidPackage.php',
         'Spatie\\LaravelPackageTools\\Package' => __DIR__ . '/..' . '/spatie/laravel-package-tools/src/Package.php',
         'Spatie\\LaravelPackageTools\\PackageServiceProvider' => __DIR__ . '/..' . '/spatie/laravel-package-tools/src/PackageServiceProvider.php',
-        'Spatie\\TemporaryDirectory\\Exceptions\\InvalidDirectoryName' => __DIR__ . '/..' . '/spatie/temporary-directory/src/Exceptions/InvalidDirectoryName.php',
-        'Spatie\\TemporaryDirectory\\Exceptions\\PathAlreadyExists' => __DIR__ . '/..' . '/spatie/temporary-directory/src/Exceptions/PathAlreadyExists.php',
-        'Spatie\\TemporaryDirectory\\TemporaryDirectory' => __DIR__ . '/..' . '/spatie/temporary-directory/src/TemporaryDirectory.php',
         'Stringable' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Stringable.php',
         'Symfony\\Component\\Clock\\Clock' => __DIR__ . '/..' . '/symfony/clock/Clock.php',
         'Symfony\\Component\\Clock\\ClockAwareTrait' => __DIR__ . '/..' . '/symfony/clock/ClockAwareTrait.php',

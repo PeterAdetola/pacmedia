@@ -4,6 +4,7 @@
         <link rel="stylesheet" href="{{ asset('admin/assets/vendor/libs/flatpickr/flatpickr.css') }}">
         <link rel="stylesheet" href="{{ asset('admin/assets/css/pages/app-invoice.css') }}">
         <style>
+            /* ── Repeater item rows ── */
             .repeater-wrapper { position: relative; }
             .repeater-title {
                 font-size: 0.78rem;
@@ -11,6 +12,8 @@
                 color: #374151;
                 margin-bottom: 0.5rem;
             }
+
+            /* ── Shared section-toggle style ── */
             .pac-section-toggle {
                 display: flex;
                 align-items: center;
@@ -24,6 +27,23 @@
             }
             .pac-section-toggle-label { font-size: 0.83rem; font-weight: 600; }
             .pac-section-toggle-sub   { font-size: 0.72rem; color: #9ca3af; }
+
+            /* ── Completed toggle — orange tint ── */
+            .pac-completed-toggle {
+                background: rgba(234,88,12,0.04);
+                border-color: rgba(234,88,12,0.3);
+                margin-top: 0;
+            }
+            .pac-completed-toggle:hover { background: rgba(234,88,12,0.08); }
+            .pac-completed-toggle .pac-section-toggle-label { color: #c2410c; }
+            .pac-completed-icon {
+                width:34px; height:34px; border-radius:8px;
+                background: rgba(234,88,12,0.12);
+                display:flex; align-items:center; justify-content:center;
+            }
+            .pac-completed-icon i { color:#c2410c; font-size:1.1rem; }
+
+            /* ── Subscription toggle — blue tint ── */
             .pac-subscription-toggle {
                 background: rgba(59,130,246,0.04);
                 border-color: rgba(59,130,246,0.3);
@@ -36,6 +56,8 @@
                 display:flex; align-items:center; justify-content:center;
             }
             .pac-subscription-icon i { color:#1d4ed8; font-size:1.1rem; }
+
+            /* ── Proposed toggle — lime tint ── */
             .pac-proposed-toggle {
                 background: rgba(181,204,24,0.04);
                 border-color: rgba(181,204,24,0.3);
@@ -48,6 +70,8 @@
                 display:flex; align-items:center; justify-content:center;
             }
             .pac-proposed-icon i { color:#96aa12; font-size:1.1rem; }
+
+            /* ── Section dividers ── */
             .pac-section-divider {
                 display: flex; align-items: center; gap: 0.75rem; margin: 1.5rem 0 1rem;
             }
@@ -55,10 +79,14 @@
             .pac-section-badge {
                 font-size: 0.68rem; font-weight: 700; letter-spacing: 0.07em;
                 text-transform: uppercase;
-                border-radius: 100px; padding: 3px 10px; white-space: nowrap; border: 1px solid;
+                border-radius: 100px; padding: 3px 10px; white-space: nowrap;
+                border: 1px solid;
             }
-            .pac-subscription-badge { color:#1d4ed8; background:rgba(59,130,246,0.1); border-color:rgba(59,130,246,0.25); }
-            .pac-proposed-badge     { color:#96aa12; background:rgba(181,204,24,0.1); border-color:rgba(181,204,24,0.25); }
+            .pac-completed-badge    { color:#c2410c; background:rgba(234,88,12,0.1);   border-color:rgba(234,88,12,0.25); }
+            .pac-subscription-badge { color:#1d4ed8; background:rgba(59,130,246,0.1);  border-color:rgba(59,130,246,0.25); }
+            .pac-proposed-badge     { color:#96aa12; background:rgba(181,204,24,0.1);  border-color:rgba(181,204,24,0.25); }
+
+            /* ── Tax panel ── */
             .pac-tax-panel {
                 background: var(--bs-gray-50);
                 border: 1px solid var(--bs-border-color);
@@ -71,8 +99,48 @@
                 gap: 0.75rem;
                 margin-top: 0.75rem;
             }
+
+            /* ── Invoice calculations ── */
             .invoice-calculations { min-inline-size: 200px; }
             .invoice-actions .card { position: sticky; top: 80px; }
+
+            /* ── Submit error banner ── */
+            #pac-submit-error {
+                display: none;
+                background: rgba(239,68,68,0.08);
+                border: 1px solid rgba(239,68,68,0.3);
+                border-radius: 0.5rem;
+                padding: 0.75rem 1rem;
+                font-size: 0.82rem;
+                color: #b91c1c;
+                margin-bottom: 1rem;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            /* ── Toast ── */
+            #pac-toast {
+                position: fixed;
+                bottom: 1.5rem;
+                right: 1.5rem;
+                z-index: 9999;
+                background: #1f2937;
+                color: #fff;
+                border-radius: 0.625rem;
+                padding: 0.875rem 1.25rem;
+                font-size: 0.82rem;
+                display: flex;
+                align-items: center;
+                gap: 0.625rem;
+                box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+                transform: translateY(120%);
+                opacity: 0;
+                transition: transform 0.3s cubic-bezier(.4,0,.2,1), opacity 0.3s ease;
+                max-width: 320px;
+            }
+            #pac-toast.show { transform: translateY(0); opacity: 1; }
+            #pac-toast i { color: #f87171; font-size: 1rem; flex-shrink: 0; }
+
             @media (max-width: 575.98px) {
                 .invoice-edit .invoice-preview-card .invoice-calculations { inline-size: 100%; }
             }
@@ -85,6 +153,12 @@
         </style>
     @endpush
 
+    {{-- Toast --}}
+    <div id="pac-toast">
+        <i class="ri ri-error-warning-line"></i>
+        <span id="pac-toast-msg">Please add at least one item before saving.</span>
+    </div>
+
     <form method="POST"
           action="{{ route('admin.invoices.update', $invoice) }}"
           id="pac-invoice-form">
@@ -93,6 +167,9 @@
 
         <div class="row invoice-edit">
 
+            {{-- ══════════════════════════════════════════════
+                 MAIN INVOICE CARD (col 9)
+            ═══════════════════════════════════════════════ --}}
             <div class="col-lg-9 col-12 mb-lg-0 mb-6">
                 <div class="card invoice-preview-card p-sm-12 p-6">
 
@@ -108,7 +185,6 @@
                                             <path d="M0,0V92.7H92.7V0ZM44.13,85.55,25.84,68.33V48.91H44.13Zm0-40.42H25.84V24l18.29-4.59ZM66.44,63.74,48.15,66V48.91H66.44Zm0-18.61H48.15V26.91l18.29,2.87Z"/>
                                         </svg>
                                     </span>
-{{--                                    <span class="mb-0 app-brand-text demo fw-semibold">The Pacmedia</span>--}}
                                 </div>
                                 <p class="mb-1">Pacmedia Creatives</p>
                                 <p class="mb-0">Lagos, Nigeria</p>
@@ -154,10 +230,12 @@
 
                         </div>
                     </div>
+                    {{-- / header --}}
 
-                    {{-- ── Invoice To + Payment ── --}}
+                    {{-- ── Invoice To + Payment Details ── --}}
                     <div class="card-body py-6 px-0">
                         <div class="row">
+
                             <div class="col-md-6 col-sm-5 col-12 mb-sm-0 mb-6">
                                 <h6>Invoice To:</h6>
                                 <select name="client_id"
@@ -188,9 +266,24 @@
                                            placeholder="e.g. Enamux Branding & Website">
                                 </div>
                             </div>
+
                             <div class="col-md-6 col-sm-7">
                                 <h6>Payment Details:</h6>
                                 <table><tbody>
+                                    <tr>
+                                        <td class="pe-4 text-nowrap align-middle" style="font-size:0.83rem;">Currency:</td>
+                                        <td>
+                                            <select name="currency" id="currency-select" class="form-select form-select-sm">
+                                                @foreach(\App\Models\Invoice::$currencySymbols as $code => $symbol)
+                                                    <option value="{{ $code }}"
+                                                            data-symbol="{{ $symbol }}"
+                                                        {{ old('currency', $invoice->currency ?? 'NGN') == $code ? 'selected' : '' }}>
+                                                        {{ $code }} ({{ $symbol }})
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </td>
+                                    </tr>
                                     <tr>
                                         <td class="pe-4 text-nowrap align-middle" style="font-size:0.83rem;">Bank Name:</td>
                                         <td><input type="text" name="bank_name" class="form-control form-control-sm"
@@ -208,22 +301,132 @@
                                     </tr>
                                     </tbody></table>
                             </div>
+
                         </div>
                     </div>
 
                     <hr class="mt-0 mb-6">
 
                     {{-- ══════════════════════════════════════
-                         SUBSCRIPTION SERVICES  ← NEW
+                         SECTION TOGGLES — all three opt-in
                     ═══════════════════════════════════════ --}}
-                    @php $hasSubOld = old('has_subscription', $invoice->has_subscription); @endphp
-                    <input type="hidden" name="has_subscription" id="has_subscription"
-                           value="{{ $hasSubOld ? '1' : '0' }}">
+
+                    @php
+                        $hasCompOld = old('has_completed',    $invoice->has_completed);
+                        $hasSubOld  = old('has_subscription', $invoice->has_subscription);
+                        $hasPropOld = old('has_proposed',     $invoice->has_proposed);
+                    @endphp
 
                     <div class="card-body py-0 px-0">
 
-                        <div class="pac-section-toggle pac-subscription-toggle"
-                             id="subscription-toggle"
+                        {{-- ── COMPLETED SERVICES ── --}}
+                        {{-- has_completed lives outside the toggle so it always submits --}}
+                        <input type="hidden" name="has_completed" id="has_completed"
+                               value="{{ $hasCompOld ? '1' : '0' }}">
+
+                        <div id="completed-toggle"
+                             class="pac-section-toggle pac-completed-toggle"
+                             style="{{ $hasCompOld ? 'display:none' : 'display:flex' }};">
+                            <div class="pac-completed-icon">
+                                <i class="ri ri-checkbox-circle-line"></i>
+                            </div>
+                            <div>
+                                <div class="pac-section-toggle-label">Add Completed Services</div>
+                                <div class="pac-section-toggle-sub">Work already delivered — ready to invoice</div>
+                            </div>
+                        </div>
+
+                        <div id="completed-section"
+                             style="{{ $hasCompOld ? 'display:block' : 'display:none' }};">
+                            <div class="pac-section-divider">
+                                <hr>
+                                <span class="pac-section-badge pac-completed-badge">Completed Services</span>
+                                <hr>
+                            </div>
+
+                            <div id="completed-items-container" class="mb-4"></div>
+
+                            <div class="d-flex align-items-center gap-3 mb-6">
+                                <button type="button" class="btn btn-primary btn-sm" id="add-completed-item">
+                                    <i class="icon-base ri ri-add-line icon-14px me-1"></i>Add Item
+                                </button>
+                                <button type="button" id="remove-completed" class="btn btn-outline-secondary btn-sm">
+                                    Remove Section
+                                </button>
+                            </div>
+
+                            <div class="row row-gap-4">
+                                <div class="col-md-6 mb-md-0 mb-3">
+                                    <div class="mb-4">
+                                        <label class="fw-medium text-heading mb-1" style="font-size:0.82rem;">Notes:</label>
+                                        <textarea name="completed_notes" class="form-control" rows="2"
+                                                  placeholder="e.g. Outstanding from Logo service is Business card and Letterhead">{{ old('completed_notes', $invoice->completed_notes) }}</textarea>
+                                    </div>
+                                    <div class="row g-2">
+                                        <div class="col-12">
+                                            <label class="form-label mb-1" style="font-size:0.78rem; font-weight:600; color:#374151;">Discount Label</label>
+                                            <input type="text" name="completed_discount_label" id="completed_discount_label"
+                                                   class="form-control form-control-sm"
+                                                   value="{{ old('completed_discount_label', $invoice->completed_discount_label) }}"
+                                                   placeholder="e.g. Early payment discount">
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label mb-1" style="font-size:0.78rem; font-weight:600; color:#374151;">Discount (₦)</label>
+                                            <input type="number" name="completed_discount" id="completed_discount"
+                                                   class="form-control form-control-sm"
+                                                   value="{{ old('completed_discount', $invoice->completed_discount) }}"
+                                                   min="0" step="0.01">
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label mb-1" style="font-size:0.78rem; font-weight:600; color:#374151;">Amount Paid (₦)</label>
+                                            <input type="number" name="paid_amount" id="paid_amount"
+                                                   class="form-control form-control-sm"
+                                                   value="{{ old('paid_amount', $invoice->paid_amount) }}"
+                                                   min="0" step="0.01">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 d-flex justify-content-md-end mt-2">
+                                    <div class="invoice-calculations">
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <span>Subtotal:</span><span class="fw-medium" id="c-subtotal">₦0.00</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-1" id="c-discount-row" style="display:none !important;">
+                                            <span id="c-discount-label-display">Discount:</span>
+                                            <span class="fw-medium text-danger" id="c-discount-display">-₦0.00</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-1" id="c-tax-row" style="display:none !important;">
+                                            <span id="c-tax-label-display">VAT:</span>
+                                            <span class="fw-medium" id="c-tax-display">₦0.00</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-1" id="c-paid-row" style="display:none !important;">
+                                            <span>Paid:</span>
+                                            <span class="fw-medium text-success" id="c-paid-display">-₦0.00</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-1" id="c-wht-row" style="display:none !important;">
+                                            <span id="c-wht-label-display">WHT:</span>
+                                            <span class="fw-medium text-danger" id="c-wht-display">-₦0.00</span>
+                                        </div>
+                                        <hr class="my-2">
+                                        <div class="d-flex justify-content-between">
+                                            <span>Outstanding:</span>
+                                            <span class="fw-bold" id="c-outstanding">₦0.00</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {{-- / completed section --}}
+
+                        <hr class="my-6" id="completed-divider"
+                            style="{{ $hasCompOld ? 'display:block' : 'display:none' }};">
+
+                        {{-- ── SUBSCRIPTION SERVICES ── --}}
+                        <input type="hidden" name="has_subscription" id="has_subscription"
+                               value="{{ $hasSubOld ? '1' : '0' }}">
+
+                        <div id="subscription-toggle"
+                             class="pac-section-toggle pac-subscription-toggle"
                              style="{{ $hasSubOld ? 'display:none' : 'display:flex' }};">
                             <div class="pac-subscription-icon"><i class="ri ri-loop-right-line"></i></div>
                             <div>
@@ -234,7 +437,6 @@
 
                         <div id="subscription-section"
                              style="{{ $hasSubOld ? 'display:block' : 'display:none' }};">
-
                             <div class="pac-section-divider">
                                 <hr>
                                 <span class="pac-section-badge pac-subscription-badge">Subscription / Renewals</span>
@@ -296,95 +498,14 @@
                                     </div>
                                 </div>
                             </div>
-
                         </div>
-                    </div>
+                        {{-- / subscription section --}}
 
-                    <hr class="my-6" id="subscription-divider"
-                        style="{{ $hasSubOld ? 'display:block' : 'display:none' }};">
+                        <hr class="my-6" id="subscription-divider"
+                            style="{{ $hasSubOld ? 'display:block' : 'display:none' }};">
 
-                    {{-- ══════════════════════════════════════
-                         COMPLETED SERVICES
-                    ═══════════════════════════════════════ --}}
-                    <div class="card-body p-0 pb-6">
-                        <h6 class="mb-4">Completed Services</h6>
-                        <div id="completed-items-container" class="mb-4"></div>
-                        <button type="button" class="btn btn-primary btn-sm" id="add-completed-item">
-                            <i class="icon-base ri ri-add-line icon-14px me-1"></i>Add Item
-                        </button>
-                    </div>
-
-                    <hr class="my-1">
-
-                    {{-- Completed notes + summary --}}
-                    <div class="card-body px-0 pb-6">
-                        <div class="row row-gap-4">
-                            <div class="col-md-6 mb-md-0 mb-3">
-                                <div class="mb-4">
-                                    <label class="fw-medium text-heading mb-1" style="font-size:0.82rem;">Notes:</label>
-                                    <textarea name="completed_notes" class="form-control" rows="2"
-                                              placeholder="e.g. Outstanding from Logo service is Business card and Letterhead">{{ old('completed_notes', $invoice->completed_notes) }}</textarea>
-                                </div>
-                                <div class="row g-2">
-                                    <div class="col-12">
-                                        <label class="form-label mb-1" style="font-size:0.78rem; font-weight:600; color:#374151;">Discount Label</label>
-                                        <input type="text" name="completed_discount_label" id="completed_discount_label"
-                                               class="form-control form-control-sm"
-                                               value="{{ old('completed_discount_label', $invoice->completed_discount_label) }}"
-                                               placeholder="e.g. Early payment discount">
-                                    </div>
-                                    <div class="col-6">
-                                        <label class="form-label mb-1" style="font-size:0.78rem; font-weight:600; color:#374151;">Discount (₦)</label>
-                                        <input type="number" name="completed_discount" id="completed_discount"
-                                               class="form-control form-control-sm"
-                                               value="{{ old('completed_discount', $invoice->completed_discount) }}"
-                                               min="0" step="0.01">
-                                    </div>
-                                    <div class="col-6">
-                                        <label class="form-label mb-1" style="font-size:0.78rem; font-weight:600; color:#374151;">Amount Paid (₦)</label>
-                                        <input type="number" name="paid_amount" id="paid_amount"
-                                               class="form-control form-control-sm"
-                                               value="{{ old('paid_amount', $invoice->paid_amount) }}"
-                                               min="0" step="0.01">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6 d-flex justify-content-md-end mt-2">
-                                <div class="invoice-calculations">
-                                    <div class="d-flex justify-content-between mb-1">
-                                        <span>Subtotal:</span><span class="fw-medium" id="c-subtotal">₦0.00</span>
-                                    </div>
-                                    <div class="d-flex justify-content-between mb-1" id="c-discount-row" style="display:none !important;">
-                                        <span id="c-discount-label-display">Discount:</span>
-                                        <span class="fw-medium text-danger" id="c-discount-display">-₦0.00</span>
-                                    </div>
-                                    <div class="d-flex justify-content-between mb-1" id="c-tax-row" style="display:none !important;">
-                                        <span id="c-tax-label-display">VAT:</span>
-                                        <span class="fw-medium" id="c-tax-display">₦0.00</span>
-                                    </div>
-                                    <div class="d-flex justify-content-between mb-1" id="c-paid-row" style="display:none !important;">
-                                        <span>Paid:</span>
-                                        <span class="fw-medium text-success" id="c-paid-display">-₦0.00</span>
-                                    </div>
-                                    <div class="d-flex justify-content-between mb-1" id="c-wht-row" style="display:none !important;">
-                                        <span id="c-wht-label-display">WHT:</span>
-                                        <span class="fw-medium text-danger" id="c-wht-display">-₦0.00</span>
-                                    </div>
-                                    <hr class="my-2">
-                                    <div class="d-flex justify-content-between">
-                                        <span>Outstanding:</span>
-                                        <span class="fw-bold" id="c-outstanding">₦0.00</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <hr class="my-0">
-
-                    {{-- ── Tax & WHT Panel ── --}}
-                    <div class="card-body py-6 px-0">
-                        <div class="pac-tax-panel">
+                        {{-- ── Tax & WHT Panel ── --}}
+                        <div class="pac-tax-panel my-6">
                             <div class="d-flex align-items-center justify-content-between">
                                 <span class="fw-medium text-heading" style="font-size:0.83rem;">Tax & Withholding</span>
                                 <div class="d-flex gap-4">
@@ -402,7 +523,9 @@
                                     </div>
                                 </div>
                             </div>
-                            <div id="tax-fields" style="{{ old('tax_enabled', $invoice->tax_enabled) ? 'display:block' : 'display:none' }};">
+
+                            <div id="tax-fields"
+                                 style="{{ old('tax_enabled', $invoice->tax_enabled) ? 'display:block' : 'display:none' }};">
                                 <div class="pac-tax-grid">
                                     <div>
                                         <label class="form-label" style="font-size:0.72rem; font-weight:600; color:#374151;">Label</label>
@@ -436,7 +559,9 @@
                                     </div>
                                 </div>
                             </div>
-                            <div id="wht-fields" style="{{ old('wht_enabled', $invoice->wht_enabled) ? 'display:block' : 'display:none' }};">
+
+                            <div id="wht-fields"
+                                 style="{{ old('wht_enabled', $invoice->wht_enabled) ? 'display:block' : 'display:none' }};">
                                 <div class="pac-tax-grid">
                                     <div>
                                         <label class="form-label" style="font-size:0.72rem; font-weight:600; color:#374151;">WHT Label</label>
@@ -455,20 +580,13 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <hr class="my-0">
+                        {{-- ── PROPOSED SERVICES ── --}}
+                        <input type="hidden" name="has_proposed" id="has_proposed"
+                               value="{{ $hasPropOld ? '1' : '0' }}">
 
-                    {{-- ══════════════════════════════════════
-                         PROPOSED SERVICES
-                    ═══════════════════════════════════════ --}}
-                    @php $hasPropOld = old('has_proposed', $invoice->has_proposed); @endphp
-                    <input type="hidden" name="has_proposed" id="has_proposed"
-                           value="{{ $hasPropOld ? '1' : '0' }}">
-
-                    <div class="card-body py-6 px-0">
-                        <div class="pac-section-toggle pac-proposed-toggle"
-                             id="proposed-toggle"
+                        <div id="proposed-toggle"
+                             class="pac-section-toggle pac-proposed-toggle"
                              style="{{ $hasPropOld ? 'display:none' : 'display:flex' }};">
                             <div class="pac-proposed-icon"><i class="ri ri-add-line"></i></div>
                             <div>
@@ -537,16 +655,28 @@
                                 </div>
                             </div>
                         </div>
+                        {{-- / proposed section --}}
+
                     </div>
 
                 </div>
             </div>
             {{-- / col 9 --}}
 
-            {{-- ── Sidebar ── --}}
+            {{-- ══════════════════════════════════════════════
+                 ACTIONS SIDEBAR (col 3)
+            ═══════════════════════════════════════════════ --}}
             <div class="col-lg-3 col-12 invoice-actions">
+
                 <div class="card mb-6">
                     <div class="card-body">
+
+                        {{-- Inline error banner --}}
+                        <div id="pac-submit-error">
+                            <i class="ri ri-error-warning-line" style="font-size:1rem; flex-shrink:0;"></i>
+                            <span>Add at least one item to any section before saving.</span>
+                        </div>
+
                         <button type="submit" name="status_action" value="sent"
                                 class="btn btn-primary d-grid w-100 mb-4">
                             <span class="d-flex align-items-center justify-content-center text-nowrap">
@@ -563,7 +693,7 @@
                 <div>
                     <div class="mb-6">
                         <label class="form-label fw-medium" style="font-size:0.82rem;">Status</label>
-                        <select name="status" class="form-select" id="status-select">
+                        <select class="form-select" id="status-select">
                             @foreach(['draft','sent','partial','paid','overdue'] as $s)
                                 <option value="{{ $s }}"
                                     {{ old('status', $invoice->status) === $s ? 'selected' : '' }}>
@@ -573,8 +703,18 @@
                         </select>
                     </div>
 
+                    {{-- Live summary --}}
                     <div class="mb-4">
                         <label class="form-label fw-medium" style="font-size:0.82rem;">Summary</label>
+
+                        <div class="d-flex justify-content-between mb-2" id="sidebar-completed-row"
+                             style="font-size:0.8rem; display:none !important;">
+                            <span style="color:#c2410c;">
+                                <i class="ri ri-checkbox-circle-line me-1" style="font-size:0.75rem;"></i>Completed
+                            </span>
+                            <span class="fw-medium" id="sidebar-completed">₦0.00</span>
+                        </div>
+
                         <div class="d-flex justify-content-between mb-2" id="sidebar-subscription-row"
                              style="font-size:0.8rem; display:none !important;">
                             <span style="color:#1d4ed8;">
@@ -582,15 +722,13 @@
                             </span>
                             <span class="fw-medium" id="sidebar-subscription">₦0.00</span>
                         </div>
-                        <div class="d-flex justify-content-between mb-2" style="font-size:0.8rem;">
-                            <span class="text-muted">Completed</span>
-                            <span class="fw-medium" id="sidebar-completed">₦0.00</span>
-                        </div>
+
                         <div class="d-flex justify-content-between mb-2" id="sidebar-proposed-row"
                              style="font-size:0.8rem; display:none !important;">
                             <span style="color:#96aa12;">Proposed</span>
                             <span class="fw-medium" id="sidebar-proposed">₦0.00</span>
                         </div>
+
                         <div class="d-flex justify-content-between mb-2" id="sidebar-paid-row"
                              style="font-size:0.8rem; display:none !important;">
                             <span class="text-success">Paid</span>
@@ -610,27 +748,32 @@
                         </a>
                     </div>
                 </div>
+
             </div>
 
         </div>
+
     </form>
 
-    {{-- ── Templates ── --}}
+    {{-- ══════════════════════════════════════════════
+         TEMPLATES
+    ═══════════════════════════════════════════════ --}}
+
     <template id="item-row-template">
         <div class="repeater-wrapper pt-0 pt-md-9 mb-4" data-item-row>
             <div class="d-flex border rounded position-relative pe-0">
                 <div class="row w-100 p-5 gx-5">
                     <div class="col-md-6 col-12 mb-md-0 mb-4">
                         <p class="h6 repeater-title">Description</p>
-                        <input type="text" class="form-control item-description" placeholder="Service description" required>
+                        <input type="text" class="form-control item-description" placeholder="Service description">
                     </div>
                     <div class="col-md-3 col-12 mb-md-0 mb-4">
                         <p class="h6 repeater-title">Unit Price (₦)</p>
-                        <input type="number" class="form-control item-price" placeholder="0.00" min="0" step="0.01" required>
+                        <input type="number" class="form-control item-price" placeholder="0.00" min="0" step="0.01">
                     </div>
                     <div class="col-md-2 col-12 mb-md-0 mb-4">
                         <p class="h6 repeater-title">Qty</p>
-                        <input type="number" class="form-control item-qty" value="1" min="1" step="1" required>
+                        <input type="number" class="form-control item-qty" value="1" min="1" step="1">
                     </div>
                     <div class="col-md-1 col-12 pe-0">
                         <p class="h6 repeater-title">Total</p>
@@ -655,7 +798,7 @@
                     <div class="col-md-4 col-12 mb-md-0 mb-4">
                         <p class="h6 repeater-title">Description</p>
                         <input type="text" class="form-control item-description"
-                               placeholder="e.g. Website Hosting — annual" required>
+                               placeholder="e.g. Website Hosting — annual">
                     </div>
                     <div class="col-md-2 col-12 mb-md-0 mb-4">
                         <p class="h6 repeater-title">Cycle</p>
@@ -671,11 +814,11 @@
                     </div>
                     <div class="col-md-2 col-12 mb-md-0 mb-4">
                         <p class="h6 repeater-title">Amount (₦)</p>
-                        <input type="number" class="form-control item-price" placeholder="0.00" min="0" step="0.01" required>
+                        <input type="number" class="form-control item-price" placeholder="0.00" min="0" step="0.01">
                     </div>
                     <div class="col-md-1 col-12 mb-md-0 mb-4">
                         <p class="h6 repeater-title">Qty</p>
-                        <input type="number" class="form-control item-qty" value="1" min="1" step="1" required>
+                        <input type="number" class="form-control item-qty" value="1" min="1" step="1">
                     </div>
                     <div class="col-md-1 col-12 pe-0">
                         <p class="h6 repeater-title">Total</p>
@@ -750,6 +893,41 @@
                 function initRenewalPicker(input) {
                     flatpickr(input, { dateFormat: 'Y-m-d', monthSelectorType: 'static' });
                 }
+
+                /* ── Toast ── */
+                function showToast(msg) {
+                    const toast = document.getElementById('pac-toast');
+                    document.getElementById('pac-toast-msg').textContent = msg;
+                    toast.classList.add('show');
+                    setTimeout(() => toast.classList.remove('show'), 4000);
+                }
+
+                /* ── Inline error banner ── */
+                function showError(msg) {
+                    const el = document.getElementById('pac-submit-error');
+                    el.querySelector('span').textContent = msg;
+                    el.style.display = 'flex';
+                    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+                function hideError() {
+                    document.getElementById('pac-submit-error').style.display = 'none';
+                }
+
+                /* ── Submit guard ── */
+                document.getElementById('pac-invoice-form').addEventListener('submit', function (e) {
+                    const completedCount    = document.querySelectorAll('#completed-items-container [data-item-row]').length;
+                    const subscriptionCount = document.querySelectorAll('#subscription-items-container [data-item-row]').length;
+                    const proposedCount     = document.querySelectorAll('#proposed-items-container [data-item-row]').length;
+
+                    if (completedCount + subscriptionCount + proposedCount === 0) {
+                        e.preventDefault();
+                        const msg = 'Add at least one item to any section before saving.';
+                        showError(msg);
+                        showToast(msg);
+                    } else {
+                        hideError();
+                    }
+                });
 
                 /* ── Client preview ── */
                 const clientSelect  = document.getElementById('client-select');
@@ -881,13 +1059,13 @@
 
                 /* ── Recalculate ── */
                 function recalc() {
-                    const taxOn   = document.getElementById('tax_enabled').checked;
-                    const whtOn   = document.getElementById('wht_enabled').checked;
-                    const taxRate = num(document.getElementById('tax_rate')) / 100;
-                    const whtRate = num(document.getElementById('wht_rate')) / 100;
-                    const taxTo   = document.getElementById('tax_applies_to')?.value || 'completed';
-                    const taxLabel = document.getElementById('tax_label')?.value || 'VAT';
-                    const whtLabel = document.getElementById('wht_label')?.value || 'WHT';
+                    const taxOn    = document.getElementById('tax_enabled').checked;
+                    const whtOn    = document.getElementById('wht_enabled').checked;
+                    const taxRate  = num(document.getElementById('tax_rate'))  / 100;
+                    const whtRate  = num(document.getElementById('wht_rate'))  / 100;
+                    const taxTo    = document.getElementById('tax_applies_to')?.value || 'completed';
+                    const taxLabel = document.getElementById('tax_label')?.value      || 'VAT';
+                    const whtLabel = document.getElementById('wht_label')?.value      || 'WHT';
 
                     const cDisc = num(document.getElementById('completed_discount'));
                     const sDisc = num(document.getElementById('subscription_discount'));
@@ -904,7 +1082,11 @@
                         proposed:     ['proposed','both','all'].includes(taxTo),
                     };
 
-                    /* Completed */
+                    const compVis = document.getElementById('has_completed').value === '1';
+                    const subsVis = document.getElementById('has_subscription').value === '1';
+                    const propVis = document.getElementById('has_proposed').value === '1';
+
+                    /* ── Completed ── */
                     const cSub = subtotal('completed-items-container');
                     const cTax = taxOn && taxAppliesTo.completed ? cSub * taxRate : 0;
                     const cWht = whtOn ? cSub * whtRate : 0;
@@ -924,11 +1106,10 @@
                     document.getElementById('c-wht-display').textContent       = '-' + fmt(cWht);
                     document.getElementById('c-outstanding').textContent = fmt(cOut);
 
-                    /* Subscription */
-                    const sSub    = subtotal('subscription-items-container');
-                    const sTax    = taxOn && taxAppliesTo.subscription ? sSub * taxRate : 0;
-                    const sTot    = sSub + sTax - sDisc;
-                    const subsVis = document.getElementById('has_subscription').value === '1';
+                    /* ── Subscription ── */
+                    const sSub = subtotal('subscription-items-container');
+                    const sTax = taxOn && taxAppliesTo.subscription ? sSub * taxRate : 0;
+                    const sTot = sSub + sTax - sDisc;
 
                     document.getElementById('s-subtotal').textContent = fmt(sSub);
                     show(document.getElementById('s-discount-row'), sDisc > 0);
@@ -939,11 +1120,10 @@
                     document.getElementById('s-tax-display').textContent       = fmt(sTax);
                     document.getElementById('s-total').textContent = fmt(sTot);
 
-                    /* Proposed */
-                    const pSub    = subtotal('proposed-items-container');
-                    const pTax    = taxOn && taxAppliesTo.proposed ? pSub * taxRate : 0;
-                    const pTot    = pSub + pTax - pDisc;
-                    const propVis = document.getElementById('has_proposed').value === '1';
+                    /* ── Proposed ── */
+                    const pSub = subtotal('proposed-items-container');
+                    const pTax = taxOn && taxAppliesTo.proposed ? pSub * taxRate : 0;
+                    const pTot = pSub + pTax - pDisc;
 
                     document.getElementById('p-subtotal').textContent = fmt(pSub);
                     show(document.getElementById('p-discount-row'), pDisc > 0);
@@ -954,14 +1134,16 @@
                     document.getElementById('p-tax-display').textContent       = fmt(pTax);
                     document.getElementById('p-total').textContent = fmt(pTot);
 
-                    /* Sidebar */
-                    const totalOutstanding = cOut + (subsVis ? sTot : 0);
-                    document.getElementById('sidebar-subscription').textContent  = fmt(sTot);
-                    document.getElementById('sidebar-completed').textContent     = fmt(cSub);
-                    document.getElementById('sidebar-proposed').textContent      = fmt(pTot);
-                    document.getElementById('sidebar-paid').textContent          = '-' + fmt(paid);
-                    document.getElementById('sidebar-outstanding').textContent   = fmt(totalOutstanding);
+                    /* ── Sidebar ── */
+                    const totalOutstanding = (compVis ? cOut : 0) + (subsVis ? sTot : 0);
 
+                    document.getElementById('sidebar-completed').textContent    = fmt(cSub);
+                    document.getElementById('sidebar-subscription').textContent = fmt(sTot);
+                    document.getElementById('sidebar-proposed').textContent     = fmt(pTot);
+                    document.getElementById('sidebar-paid').textContent         = '-' + fmt(paid);
+                    document.getElementById('sidebar-outstanding').textContent  = fmt(totalOutstanding);
+
+                    show(document.getElementById('sidebar-completed-row'),    compVis && cSub > 0);
                     show(document.getElementById('sidebar-subscription-row'), subsVis && sSub > 0);
                     show(document.getElementById('sidebar-proposed-row'),     propVis && pSub > 0);
                     show(document.getElementById('sidebar-paid-row'),         paid > 0);
@@ -983,6 +1165,24 @@
                     const el = document.getElementById(id);
                     if (el) el.addEventListener('input',  recalc);
                     if (el) el.addEventListener('change', recalc);
+                });
+
+                /* ── Completed toggle ── */
+                document.getElementById('completed-toggle').addEventListener('click', () => {
+                    document.getElementById('completed-section').style.display = 'block';
+                    document.getElementById('completed-toggle').style.display  = 'none';
+                    document.getElementById('has_completed').value = '1';
+                    document.getElementById('completed-divider').style.display = 'block';
+                    addItem('completed-items-container', 'completed', null);
+                    recalc();
+                });
+                document.getElementById('remove-completed').addEventListener('click', () => {
+                    document.getElementById('completed-section').style.display = 'none';
+                    document.getElementById('completed-toggle').style.display  = 'flex';
+                    document.getElementById('has_completed').value = '0';
+                    document.getElementById('completed-divider').style.display = 'none';
+                    document.getElementById('completed-items-container').innerHTML = '';
+                    recalc();
                 });
 
                 /* ── Subscription toggle ── */
@@ -1027,14 +1227,22 @@
                 });
 
                 /* ── Init: load existing items ── */
-                existingCompleted.forEach(item    => addItem('completed-items-container', 'completed', item));
-                if (existingCompleted.length === 0) addItem('completed-items-container', 'completed', null);
+                // Completed — only show section if there are existing items
+                if (existingCompleted.length > 0) {
+                    document.getElementById('completed-section').style.display = 'block';
+                    document.getElementById('completed-toggle').style.display  = 'none';
+                    document.getElementById('has_completed').value = '1';
+                    document.getElementById('completed-divider').style.display = 'block';
+                    existingCompleted.forEach(item => addItem('completed-items-container', 'completed', item));
+                }
 
+                // Subscription — section visibility driven by has_subscription flag (already set via Blade)
                 existingSubscription.forEach(item => addSubscriptionItem(item));
 
-                existingProposed.forEach(item     => addItem('proposed-items-container',  'proposed',  item));
+                // Proposed — section visibility driven by has_proposed flag (already set via Blade)
+                existingProposed.forEach(item => addItem('proposed-items-container', 'proposed', item));
 
-                /* ── Toast auto-hide ── */
+                /* ── Session toast auto-hide ── */
                 document.querySelectorAll('.toast.show').forEach(t => {
                     setTimeout(() => bootstrap.Toast.getOrCreateInstance(t).hide(), 4000);
                 });

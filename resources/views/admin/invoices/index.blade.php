@@ -227,15 +227,11 @@
         </a>
     </x-slot>
 
-    {{-- ══════════════════════════════════════════════
-         STAT WIDGET BAR  (template card-widget-separator)
-    ═══════════════════════════════════════════════ --}}
+    {{-- Stat Widget Section --}}
     <div class="card mb-6">
         <div class="card-widget-separator-wrapper">
             <div class="card-body card-widget-separator">
                 <div class="row gy-4 gy-sm-1">
-
-                    {{-- Invoices --}}
                     <div class="col-sm-6 col-lg-3">
                         <div class="d-flex justify-content-between align-items-start card-widget-1 border-end pb-4 pb-sm-0">
                             <div>
@@ -253,8 +249,6 @@
                         </div>
                         <hr class="d-none d-sm-block d-lg-none me-6">
                     </div>
-
-                    {{-- Total Billed --}}
                     <div class="col-sm-6 col-lg-3">
                         <div class="d-flex justify-content-between align-items-start card-widget-2 border-end pb-4 pb-sm-0">
                             <div>
@@ -274,8 +268,6 @@
                         </div>
                         <hr class="d-none d-sm-block d-lg-none">
                     </div>
-
-                    {{-- Outstanding --}}
                     <div class="col-sm-6 col-lg-3">
                         <div class="d-flex justify-content-between align-items-start card-widget-3 border-end pb-4 pb-sm-0">
                             <div>
@@ -289,161 +281,90 @@
                             </div>
                             <div class="avatar me-sm-6 av-red">
                                 <span class="avatar-initial rounded-3">
-                                    <i class="icon-base ri ri-money-dollar-circle-line text-heading icon-26px"></i>
+                                    <i class="icon-base ri ri-error-warning-line text-heading icon-26px"></i>
                                 </span>
                             </div>
                         </div>
-                        <hr class="d-none d-sm-block d-lg-none">
                     </div>
-
-                    {{-- Active Clients --}}
                     <div class="col-sm-6 col-lg-3">
-                        <div class="d-flex justify-content-between align-items-start">
+                        <div class="d-flex justify-content-between align-items-start pb-4 pb-sm-0">
                             <div>
-                                <h4 class="mb-1">{{ $stats['client_count'] ?? 0 }}</h4>
-                                <p class="mb-0">Active Clients</p>
+                                <h4 class="mb-1">{{ $stats['draft_count'] ?? 0 }}</h4>
+                                <p class="mb-0">Drafts</p>
                                 <p class="mb-0" style="font-size:.72rem;color:#6b7280;font-weight:600;margin-top:2px;">
-                                    {{ $stats['draft_count'] ?? 0 }} drafts pending
+                                    Awaiting action
                                 </p>
                             </div>
                             <div class="avatar av-metal">
                                 <span class="avatar-initial rounded-3">
-                                    <i class="icon-base ri ri-user-line text-heading icon-26px"></i>
+                                    <i class="icon-base ri ri-file-edit-line text-heading icon-26px"></i>
                                 </span>
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
     </div>
 
-    {{-- ══════════════════════════════════════════════
-         MAIN TABLE CARD
-    ═══════════════════════════════════════════════ --}}
+    {{-- Main Table Card --}}
     <div class="card">
-
-        {{-- Filters --}}
-        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 px-4 pt-4 pb-3">
-            <form method="GET" action="{{ route('admin.invoices.index') }}"
-                  class="pac-filters" id="filter-form">
-                <div class="pac-search-wrap">
-                    <i class="ri ri-search-line"></i>
-                    <input type="text" name="search" id="pac-search"
-                           class="pac-search-input"
-                           placeholder="Search # or client…"
-                           value="{{ request('search') }}"
-                           autocomplete="off">
-                </div>
-                @if(isset($clients) && $clients->count())
-                    <select name="client_id" class="pac-filter-select" onchange="this.form.submit()">
-                        <option value="">All Clients</option>
-                        @foreach($clients as $c)
-                            <option value="{{ $c->id }}"
-                                {{ request('client_id') == $c->id ? 'selected':'' }}>
-                                {{ $c->display_name }}
-                            </option>
-                        @endforeach
-                    </select>
-                @endif
-                <select name="period" class="pac-filter-select" onchange="this.form.submit()">
-                    <option value="">All Time</option>
-                    <option value="today"      {{ request('period')==='today'      ?'selected':'' }}>Today</option>
-                    <option value="this_week"  {{ request('period')==='this_week'  ?'selected':'' }}>This Week</option>
-                    <option value="this_month" {{ request('period')==='this_month' ?'selected':'' }}>This Month</option>
-                    <option value="last_month" {{ request('period')==='last_month' ?'selected':'' }}>Last Month</option>
-                    <option value="this_year"  {{ request('period')==='this_year'  ?'selected':'' }}>This Year</option>
-                </select>
-                @if(request()->hasAny(['search','client_id','period','status']))
-                    <a href="{{ route('admin.invoices.index') }}"
-                       style="font-size:.78rem;color:#9ca3af;text-decoration:none;white-space:nowrap;display:flex;align-items:center;gap:3px;">
-                        <i class="ri ri-close-circle-line"></i> Clear
+        <div class="card-header border-bottom p-0">
+            <div class="pac-status-tabs px-4">
+                <a href="{{ route('admin.invoices.index') }}" class="pac-status-tab {{ !request('status') ? 'active' : '' }}">
+                    All <span class="pac-tab-count">{{ $counts['all'] ?? 0 }}</span>
+                </a>
+                @foreach(['draft','sent','partial','paid','overdue'] as $st)
+                    <a href="{{ route('admin.invoices.index', ['status' => $st]) }}"
+                       class="pac-status-tab {{ request('status') === $st ? 'active' : '' }}">
+                        {{ ucfirst($st) }}
+                        <span class="pac-tab-count">{{ $counts[$st] ?? 0 }}</span>
                     </a>
-                @endif
-                <input type="hidden" name="status" value="{{ request('status') }}">
-            </form>
+                @endforeach
+            </div>
 
-            <div class="d-flex align-items-center gap-2"
-                 style="font-size:.78rem;color:#9ca3af;white-space:nowrap;">
-                Show
-                <select class="pac-filter-select" style="padding:.32rem 1.5rem .32rem .5rem;"
-                        onchange="location.href='{{ route('admin.invoices.index') }}?'+new URLSearchParams({...Object.fromEntries(new URLSearchParams(location.search)),per_page:this.value})">
-                    @foreach([10,25,50,100] as $pp)
-                        <option value="{{ $pp }}"
-                            {{ request('per_page',10)==$pp ?'selected':'' }}>{{ $pp }}</option>
-                    @endforeach
-                </select>
-                entries
+            <div class="p-4 d-flex align-items-center justify-content-between flex-wrap gap-4">
+                <form action="{{ route('admin.invoices.index') }}" method="GET" class="pac-filters">
+                    @if(request('status'))
+                        <input type="hidden" name="status" value="{{ request('status') }}">
+                    @endif
+                    <div class="pac-search-wrap">
+                        <i class="ri ri-search-line"></i>
+                        <input type="text" name="search" class="pac-search-input"
+                               placeholder="Search invoice or client..." value="{{ request('search') }}">
+                    </div>
+                    <select name="per_page" class="pac-filter-select" onchange="this.form.submit()">
+                        <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10 rows</option>
+                        <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 rows</option>
+                        <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 rows</option>
+                    </select>
+                </form>
             </div>
         </div>
 
-        {{-- Status tabs --}}
-        <div class="pac-status-tabs px-4">
-            @php
-                $tabs = [
-                    ''        => ['label'=>'All',     'count'=>$stats['total']         ?? 0],
-                    'draft'   => ['label'=>'Draft',   'count'=>$stats['draft_count']   ?? 0],
-                    'sent'    => ['label'=>'Sent',    'count'=>$stats['sent_count']    ?? 0],
-                    'partial' => ['label'=>'Partial', 'count'=>$stats['partial_count'] ?? 0],
-                    'paid'    => ['label'=>'Paid',    'count'=>$stats['paid_count']    ?? 0],
-                    'overdue' => ['label'=>'Overdue', 'count'=>$stats['overdue_count'] ?? 0],
-                ];
-                $currentStatus = request('status','');
-            @endphp
-            @foreach($tabs as $val => $tab)
-                <a href="{{ route('admin.invoices.index', array_merge(request()->except(['status','page']), $val ? ['status'=>$val] : [])) }}"
-                   class="pac-status-tab {{ $currentStatus===$val ? 'active':'' }}">
-                    {{ $tab['label'] }}
-                    @if($tab['count'] > 0)
-                        <span class="pac-tab-count">{{ $tab['count'] }}</span>
-                    @endif
-                </a>
-            @endforeach
-        </div>
-
-        {{-- Bulk bar --}}
         <div class="pac-bulk-bar" id="bulk-bar">
-            <span class="bulk-count" id="bulk-count">0</span> selected
-            <div style="width:1px;height:14px;background:var(--bs-border-color);"></div>
-            <form method="POST" action="{{ route('admin.invoices.index') }}" id="bulk-form">
-                @csrf
-                <input type="hidden" name="_bulk_action" id="bulk-action-val">
-                <div id="bulk-ids"></div>
-                <button type="button" onclick="doBulk('mark_sent')"
-                        class="inv-act-btn"
-                        style="width:auto;height:auto;border-radius:4px;padding:3px 8px;font-size:.75rem;gap:4px;display:inline-flex;border:1px solid var(--bs-border-color);">
-                    <i class="ri ri-send-plane-line" style="font-size:.85rem;"></i> Mark Sent
-                </button>
-                <button type="button" onclick="doBulk('mark_paid')"
-                        class="inv-act-btn"
-                        style="width:auto;height:auto;border-radius:4px;padding:3px 8px;font-size:.75rem;gap:4px;display:inline-flex;border:1px solid var(--bs-border-color);">
-                    <i class="ri ri-check-double-line" style="font-size:.85rem;"></i> Mark Paid
-                </button>
-            </form>
-            <button type="button" onclick="clearSel()" class="inv-act-btn ms-auto">
-                <i class="ri ri-close-line"></i>
-            </button>
+            <div><span class="bulk-count" id="bulk-count">0</span> selected</div>
+            <div class="d-flex gap-2 ms-auto">
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="doBulk('download')">Download ZIP</button>
+                <button type="button" class="btn btn-sm btn-outline-danger" onclick="doBulk('delete')">Delete Selected</button>
+                <button type="button" class="btn btn-sm btn-link text-muted" onclick="clearSel()">Deselect</button>
+            </div>
         </div>
 
-        {{-- Table --}}
-        <div class="card-datatable table-responsive">
-            <table class="invoice-list-table table table-hover mb-0">
+        <div class="table-responsive">
+            <table class="table invoice-list-table mb-0">
                 <thead>
                 <tr>
                     <th class="col-cb" style="width:44px;padding-left:1.25rem;">
-                        <input type="checkbox" class="form-check-input" id="sel-all"
-                               style="width:1.05rem;height:1.05rem;">
+                        <input type="checkbox" class="form-check-input" id="sel-all">
                     </th>
-                    <th>#</th>
+                    <th style="width:100px;"># ID</th>
                     <th>Client</th>
                     <th class="col-project">Project</th>
-                    <th class="col-issued">Issued Date</th>
-                    <th class="col-due">Due</th>
-                    <th class="text-end">Total</th>
+                    <th>Amount</th>
+                    <th class="col-issued">Issued</th>
                     <th class="col-balance">Balance</th>
-                    <th class="text-center">Status</th>
-                    <th class="text-end cell-fit" style="padding-right:1.25rem;">Actions</th>
+                    <th class="text-end" style="padding-right:1.25rem;">Action</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -451,8 +372,8 @@
                     @php
                         $initials    = collect(explode(' ', $invoice->client->name ?? ''))
                                         ->take(2)->map(fn($w) => strtoupper($w[0] ?? ''))->implode('');
-                        $outstanding = $invoice->completedOutstanding();
-                        $subtotal    = $invoice->completedSubtotal();
+                        $outstanding = $invoice->grandOutstanding();
+                        $subtotal    = $invoice->totalSubtotal();
                     @endphp
                     <tr>
                         <td class="col-cb" style="padding-left:1.25rem;width:44px;">
@@ -460,187 +381,99 @@
                                    style="width:1.05rem;height:1.05rem;"
                                    value="{{ $invoice->id }}">
                         </td>
-
                         <td>
-                            <a href="{{ route('admin.invoices.show', $invoice) }}"
-                               class="inv-num-link">#{{ $invoice->number }}</a>
+                            <a href="{{ route('admin.invoices.show', $invoice) }}" class="inv-num-link">
+                                #{{ $invoice->number }}
+                            </a>
                         </td>
-
                         <td>
-                            <div class="d-flex justify-content-start align-items-center gap-2">
-                                <div class="avatar-wrapper">
-                                    <div class="avatar avatar-sm">
-                                        <div class="inv-client-av">{{ $initials }}</div>
-                                    </div>
-                                </div>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="inv-client-av">{{ $initials }}</div>
                                 <div class="d-flex flex-column">
-                                    <a href="{{ route('admin.invoices.show', $invoice) }}"
-                                       class="inv-client-name text-truncate">
-                                        {{ $invoice->client->name ?? '—' }}
+                                    <a href="{{ route('admin.clients.show', $invoice->client) }}" class="inv-client-name">
+                                        {{ $invoice->client->name ?? 'N/A' }}
                                     </a>
-                                    @if($invoice->client->company)
-                                        <small class="text-truncate"
-                                               style="font-size:.72rem;color:#9ca3af;">
-                                            {{ $invoice->client->company }}
-                                        </small>
-                                    @endif
+                                    <span class="inv-sub">{{ $invoice->client->email ?? '' }}</span>
                                 </div>
                             </div>
                         </td>
-
                         <td class="col-project">
-                                <span style="font-size:.79rem;color:#6b7280;max-width:150px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
-                                    {{ $invoice->project_name ?: '—' }}
-                                </span>
-                        </td>
-
-                        <td class="col-issued">
-                                <span class="inv-date">
-                                    {{ \Carbon\Carbon::parse($invoice->submitted_at)->format('d M Y') }}
-                                </span>
-                        </td>
-
-                        <td class="col-due">
-                            <span class="inv-date">{{ $invoice->due_date }}</span>
-                        </td>
-
-                        <td class="text-end">
-                            <div class="inv-amount">₦{{ number_format($subtotal, 2) }}</div>
+                            <span style="font-weight:500;color:#4b5563;">{{ $invoice->project_name }}</span>
                             @if($invoice->has_proposed)
-                                <div class="inv-sub">
-                                    +₦{{ number_format($invoice->proposedTotal(), 0) }} proposed
-                                </div>
+                                <div class="mt-1"><span class="badge bg-label-info" style="font-size:.65rem">Includes Proposal</span></div>
                             @endif
                         </td>
-
+                        <td>
+                            <div class="inv-amount">{{ $invoice->formatAmount($subtotal) }}</div>
+                            <div class="inv-sub success">
+                                @if($invoice->paid_amount > 0)
+                                    Paid {{ $invoice->formatAmount($invoice->paid_amount) }}
+                                @else
+                                    Not paid yet
+                                @endif
+                            </div>
+                        </td>
+                        <td class="col-issued">
+                            <div class="inv-date">{{ $invoice->submitted_at?->format('d M, Y') ?? 'N/A' }}</div>
+                        </td>
                         <td class="col-balance">
-                            @if($invoice->status === 'paid' || $outstanding <= 0)
+                            @if($outstanding <= 0 && $invoice->status === 'paid')
                                 <span class="inv-balance-paid">Paid</span>
                             @else
-                                <div class="inv-balance-due {{ $invoice->status==='overdue' ? 'overdue':'' }}">
-                                    ₦{{ number_format($outstanding, 2) }}
+                                <div class="inv-balance-due {{ $invoice->status === 'overdue' ? 'overdue' : '' }}">
+                                    {{ $invoice->formatAmount($outstanding) }}
                                 </div>
-                                @if($invoice->paid_amount > 0)
-                                    <div class="inv-sub success">
-                                        ₦{{ number_format($invoice->paid_amount, 2) }} rec'd
-                                    </div>
-                                @endif
+                                {{-- Safe display for due_date strings vs date objects --}}
+                                <div class="inv-sub">
+                                    Due:
+                                    @if($invoice->due_date)
+                                        @php
+                                            $isDate = strtotime($invoice->due_date);
+                                        @endphp
+                                        @if($isDate)
+                                            {{ \Illuminate\Support\Carbon::parse($invoice->due_date)->format('d M') }}
+                                        @else
+                                            {{ $invoice->due_date }}
+                                        @endif
+                                    @else
+                                        --
+                                    @endif
+                                </div>
                             @endif
                         </td>
-
-                        <td class="text-center">
-                                <span class="pac-pill p-{{ $invoice->status }}">
-                                    {{ ucfirst($invoice->status) }}
-                                </span>
-                        </td>
-
                         <td class="text-end" style="padding-right:1.25rem;">
-                            <div class="d-flex align-items-center justify-content-end gap-1">
-
-                                <form method="POST"
-                                      action="{{ route('admin.invoices.destroy', $invoice) }}"
-                                      onsubmit="return confirm('Delete invoice #{{ $invoice->number }}?')">
-                                    @csrf @method('DELETE')
-                                    <button type="submit"
-                                            class="inv-act-btn danger waves-effect waves-light"
-                                            data-bs-toggle="tooltip"
-                                            data-bs-placement="top"
-                                            title="Delete Invoice">
-                                        <i class="ri ri-delete-bin-7-line icon-20px"></i>
-                                    </button>
-                                </form>
-
-                                <a href="{{ route('admin.invoices.show', $invoice) }}"
-                                   class="inv-act-btn waves-effect waves-light"
-                                   data-bs-toggle="tooltip"
-                                   data-bs-placement="top"
-                                   title="Preview Invoice">
-                                    <i class="ri ri-eye-line icon-20px"></i>
+                            <div class="d-inline-flex gap-1">
+                                <a href="{{ route('admin.invoices.show', $invoice) }}" class="inv-act-btn" title="View">
+                                    <i class="ri ri-eye-line"></i>
                                 </a>
-
                                 <div class="dropdown">
-                                    <button class="inv-act-btn waves-effect waves-light"
-                                            data-bs-toggle="dropdown"
-                                            aria-expanded="false">
-                                        <i class="ri ri-more-2-line icon-20px"></i>
+                                    <button class="inv-act-btn" type="button" data-bs-toggle="dropdown">
+                                        <i class="ri ri-more-2-fill"></i>
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end">
-                                        <li>
-                                            <a class="dropdown-item"
-                                               href="{{ route('admin.invoices.pdf', $invoice) }}"
-                                               target="_blank">
-                                                <i class="ri ri-download-2-line"></i> Download PDF
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item"
-                                               href="{{ route('admin.invoices.edit', $invoice) }}">
-                                                <i class="ri ri-pencil-line"></i> Edit
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <form method="POST"
-                                                  action="{{ route('admin.invoices.duplicate', $invoice) }}">
-                                                @csrf
-                                                <button type="submit" class="dropdown-item">
-                                                    <i class="ri ri-file-copy-line"></i> Duplicate
-                                                </button>
-                                            </form>
-                                        </li>
-                                        @if(!in_array($invoice->status, ['sent','paid']))
-                                            <li>
-                                                <form method="POST"
-                                                      action="{{ route('admin.invoices.send', $invoice) }}">
-                                                    @csrf
-                                                    <button type="submit" class="dropdown-item">
-                                                        <i class="ri ri-send-plane-line"></i> Mark as Sent
-                                                    </button>
-                                                </form>
-                                            </li>
-                                        @endif
+                                        {{-- Placeholder link to prevent RouteNotFoundException --}}
+                                        <li><a class="dropdown-item" href="#"><i class="ri ri-download-line"></i> Download PDF</a></li>
+                                        <li><a class="dropdown-item" href="{{ route('admin.invoices.edit', $invoice) }}"><i class="ri ri-edit-line"></i> Edit Invoice</a></li>
                                         <li><hr class="dropdown-divider"></li>
                                         <li>
-                                            <form method="POST"
-                                                  action="{{ route('admin.invoices.destroy', $invoice) }}"
-                                                  onsubmit="return confirm('Delete invoice #{{ $invoice->number }}?')">
+                                            <form action="{{ route('admin.invoices.destroy', $invoice) }}" method="POST" onsubmit="return confirm('Delete this invoice?')">
                                                 @csrf @method('DELETE')
-                                                <button type="submit" class="dropdown-item"
-                                                        style="color:#b91c1c;">
-                                                    <i class="ri ri-delete-bin-7-line" style="color:#b91c1c;"></i>
-                                                    Delete
-                                                </button>
+                                                <button type="submit" class="dropdown-item text-danger"><i class="ri ri-delete-bin-line"></i> Delete</button>
                                             </form>
                                         </li>
                                     </ul>
                                 </div>
-
                             </div>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="10">
+                        <td colspan="8">
                             <div class="pac-empty">
-                                <div class="pac-empty-ring">
-                                    <i class="ri ri-file-list-3-line"></i>
-                                </div>
-                                @if(request()->hasAny(['search','client_id','period','status']))
-                                    <h6>No invoices match your filters</h6>
-                                    <p>Try adjusting the search or filter criteria above.</p>
-                                    <a href="{{ route('admin.invoices.index') }}"
-                                       class="btn btn-sm"
-                                       style="background:var(--bs-tertiary-bg);color:var(--bs-body-color);border-radius:.4rem;font-size:.8rem;font-weight:600;">
-                                        Clear Filters
-                                    </a>
-                                @else
-                                    <h6>No invoices yet</h6>
-                                    <p>Create your first invoice to start billing clients.</p>
-                                    <a href="{{ route('admin.invoices.create') }}"
-                                       class="btn btn-sm"
-                                       style="background:#b5cc18;color:#111827;border-radius:.4rem;font-size:.8rem;font-weight:700;">
-                                        <i class="ri ri-add-line"></i> New Invoice
-                                    </a>
-                                @endif
+                                <div class="pac-empty-ring"><i class="ri ri-file-list-3-line"></i></div>
+                                <h6>No invoices found</h6>
+                                <p>Try adjusting your filters or search terms.</p>
+                                <a href="{{ route('admin.invoices.create') }}" class="btn btn-sm" style="background:#b5cc18;color:#111827;font-weight:700;">Create One Now</a>
                             </div>
                         </td>
                     </tr>
@@ -649,75 +482,38 @@
             </table>
         </div>
 
-        {{-- Pagination --}}
         @if($invoices->hasPages())
             <div class="pac-pagination">
-                <span>
-                    Showing {{ $invoices->firstItem() }}–{{ $invoices->lastItem() }}
-                    of {{ $invoices->total() }} invoices
-                </span>
-                {{ $invoices->appends(request()->except('page'))->links() }}
-            </div>
-        @elseif($invoices->count() > 0)
-            <div style="padding:.75rem 1.25rem;font-size:.78rem;color:#9ca3af;border-top:1px solid var(--bs-border-color-translucent);">
-                Showing all {{ $invoices->count() }} {{ Str::plural('invoice',$invoices->count()) }}
+                <div>Showing {{ $invoices->firstItem() }} to {{ $invoices->lastItem() }} of {{ $invoices->total() }} entries</div>
+                {{ $invoices->links('pagination::bootstrap-5') }}
             </div>
         @endif
-
     </div>
 
-    {{-- Flash toast --}}
-    @if(session('success'))
-        <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:9999;">
-            <div class="toast show align-items-center"
-                 style="background:var(--bs-body-bg);border-left:4px solid #b5cc18;border-radius:.5rem;box-shadow:0 4px 20px rgba(0,0,0,.1);min-width:280px;"
-                 role="alert">
-                <div class="d-flex">
-                    <div class="toast-body d-flex align-items-center gap-2"
-                         style="font-size:.83rem;color:var(--bs-body-color);">
-                        <i class="ri ri-checkbox-circle-line" style="color:#b5cc18;font-size:1.1rem;"></i>
-                        {{ session('success') }}
-                    </div>
-                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
-                </div>
-            </div>
-        </div>
-    @endif
+    {{-- Safe placeholder for bulk form action --}}
+    <form id="bulk-form" action="#" method="POST" style="display:none;">
+        @csrf
+        <input type="hidden" name="action" id="bulk-action-val">
+        <div id="bulk-ids"></div>
+    </form>
 
     @push('page-js')
         <script>
-            (function () {
-
-                /* Tooltips */
-                document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el =>
-                    new bootstrap.Tooltip(el, { boundary: document.body })
-                );
-
-                /* Search debounce */
-                const searchEl = document.getElementById('pac-search');
-                let timer;
-                if (searchEl) {
-                    searchEl.addEventListener('input', () => {
-                        clearTimeout(timer);
-                        timer = setTimeout(() => document.getElementById('filter-form').submit(), 500);
-                    });
-                    searchEl.addEventListener('keydown', e => {
-                        if (e.key === 'Enter') { clearTimeout(timer); document.getElementById('filter-form').submit(); }
-                    });
-                }
-
-                /* Checkbox bulk select */
-                const selAll  = document.getElementById('sel-all');
-                const cbs     = document.querySelectorAll('.row-cb');
-                const bulkBar = document.getElementById('bulk-bar');
-                const bulkCnt = document.getElementById('bulk-count');
+            (function(){
+                const selAll = document.getElementById('sel-all');
+                const cbs    = document.querySelectorAll('.row-cb');
+                const bar    = document.getElementById('bulk-bar');
+                const count  = document.getElementById('bulk-count');
 
                 function sync() {
                     const checked = [...cbs].filter(c => c.checked);
-                    bulkBar.classList.toggle('active', checked.length > 0);
-                    bulkCnt.textContent = checked.length;
+                    if (checked.length > 0) {
+                        bar.classList.add('active');
+                        count.textContent = checked.length;
+                    } else {
+                        bar.classList.remove('active');
+                    }
                     if (selAll) {
-                        selAll.indeterminate = checked.length > 0 && checked.length < cbs.length;
                         selAll.checked = checked.length === cbs.length && cbs.length > 0;
                     }
                 }
@@ -736,6 +532,14 @@
                 window.doBulk = action => {
                     const checked = [...cbs].filter(c => c.checked);
                     if (!checked.length) return;
+
+                    // Logic to handle bulk submission safely
+                    const form = document.getElementById('bulk-form');
+                    if (form.getAttribute('action') === '#') {
+                        console.warn('Bulk action route is not defined.');
+                        return;
+                    }
+
                     document.getElementById('bulk-action-val').value = action;
                     const box = document.getElementById('bulk-ids');
                     box.innerHTML = '';
@@ -744,7 +548,7 @@
                         i.type = 'hidden'; i.name = 'ids[]'; i.value = c.value;
                         box.appendChild(i);
                     });
-                    document.getElementById('bulk-form').submit();
+                    form.submit();
                 };
 
                 /* Auto-dismiss toast */

@@ -294,6 +294,28 @@
             padding-left: 10px;
         }
 
+        /* ── COMPLETED DIVIDER ── */
+        .completed-divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 0 0 28px;
+        }
+        .completed-divider-line { flex: 1; height: 1px; background: rgba(234, 88, 12, 0.2); }
+        .completed-badge {
+            font-family: 'Urbanist', sans-serif;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #c2410c;
+            background: rgba(234, 88, 12, 0.08);
+            border: 1px solid rgba(234, 88, 12, 0.25);
+            border-radius: 100px;
+            padding: 4px 12px;
+            white-space: nowrap;
+        }
+
         /* ── PROPOSED DIVIDER ── */
         .proposed-divider {
             display: flex;
@@ -385,8 +407,8 @@
             letter-spacing: 0.05em;
         }
 
-        /* ── Print ── */
-        @media print {
+
+        /*@media print {*/
             body {
                 background: #ffffff;
                 padding: 0;
@@ -401,6 +423,79 @@
                 size: A4;
                 margin: 0;
             }
+
+        /* ── SUBSCRIPTION DIVIDER ── */
+        .subscription-divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 36px 0 28px;
+        }
+        .subscription-divider-line { flex: 1; height: 1px; background: rgba(59, 130, 246, 0.2); }
+        .subscription-badge {
+            font-family: 'Urbanist', sans-serif;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #1d4ed8;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 100px;
+            padding: 4px 12px;
+            white-space: nowrap;
+        }
+
+        /* Badge for billing cycles */
+        .cycle-badge {
+            font-size: 8px;
+            text-transform: uppercase;
+            background: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #6b7280;
+            margin-left: 8px;
+        }
+        /* ── STATUS BADGES ── */
+        .status-badge {
+            font-size: 9px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 3px 10px;
+            border-radius: 100px;
+            display: inline-block;
+        }
+
+        /* Status-specific mapping */
+        .s-draft   { background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; }
+        .s-sent    { background: rgba(59, 130, 246, 0.1);  color: #1d4ed8; border: 1px solid rgba(59,130,246,0.2); }
+        .s-partial { background: rgba(245,158,11,0.1);  color: #b45309; border: 1px solid rgba(245,158,11,0.2); }
+        .s-paid    { background: rgba(34,197,94,0.1);   color: #15803d; border: 1px solid rgba(34,197,94,0.2); }
+        .s-overdue { background: rgba(239,68,68,0.1);   color: #b91c1c; border: 1px solid rgba(239,68,68,0.2); }
+
+        .payment-info,
+        .notes-wrap,
+        .summary-wrap,
+        .totals-block,
+        .inv-footer {
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        .inv-table tr {
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        .payment-info {
+            page-break-before: avoid;
+            break-before: avoid;
+        }
+
+        .inv-footer {
+            page-break-before: avoid;
+            break-before: avoid;
         }
     </style>
 </head>
@@ -409,14 +504,32 @@
 <div class="invoice-wrapper">
 
     @php
-        $fmt = fn($n) => '₦' . number_format($n, 2);
-        $completedSub  = $invoice->completedSubtotal();
-        $completedTax  = $invoice->completedTax();
-        $completedWht  = $invoice->completedWht();
-        $outstanding   = $invoice->completedOutstanding();
-        $proposedSub   = $invoice->proposedSubtotal();
-        $proposedTax   = $invoice->proposedTax();
-        $proposedTotal = $invoice->proposedTotal();
+        // Dynamic Currency Logic
+         $symbol = $invoice->currencySymbol();
+         $fmt = fn($n) => $symbol . ' ' . number_format((float) $n, 2);
+
+         // Totals
+         $completedSub  = $invoice->completedSubtotal();
+         $completedTax  = $invoice->completedTax();
+         $completedWht  = $invoice->completedWht();
+         $outstanding   = $invoice->completedOutstanding();
+
+         $proposedSub   = $invoice->proposedSubtotal();
+         $proposedTax   = $invoice->proposedTax();
+         $proposedTotal = $invoice->proposedTotal();
+
+         // Subscription Totals
+         $subSub        = $invoice->subscriptionSubtotal();
+         $subTax        = $invoice->subscriptionTax();
+         $subTotal      = $invoice->subscriptionOutstanding();
+
+         $statusClasses = [
+        'draft'   => 's-draft',
+        'sent'    => 's-sent',
+        'partial' => 's-partial',
+        'paid'    => 's-paid',
+        'overdue' => 's-overdue',
+    ];
     @endphp
 
     {{-- ── Logo: yellow strip + dark square + peridot Pacmedia mark ── --}}
@@ -451,10 +564,13 @@
                 Due:
                 <span class="inv-number-val" style="color:#374151;">{{ $invoice->due_date }}</span>
             </div>
-            <div class="inv-number-row" style="margin-top:2px;">
-                Status:
-                <span class="inv-number-val" style="color:#374151;">{{ $invoice->status }}</span>
-            </div>
+        </div>
+
+        <div class="inv-number-row" style="margin-top:6px; display: flex; align-items: center; gap: 8px;">
+            Status:
+            <span class="status-badge {{ $statusClasses[$invoice->status] ?? 's-draft' }}">
+        {{ $invoice->status }}
+    </span>
         </div>
 
         <div class="inv-header-right">
@@ -489,78 +605,156 @@
     {{-- ══════════════════════════════════════
          COMPLETED SERVICES
     ═══════════════════════════════════════ --}}
-    <div class="section-head">Completed Services</div>
-
-    <table class="inv-table">
-        <thead>
-        <tr>
-            <th style="width:48%">Description</th>
-            <th class="center" style="width:8%">Qty</th>
-            <th class="right" style="width:20%">Unit Price</th>
-            <th class="right" style="width:24%">Total</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach($invoice->completedItems as $item)
+    @if($invoice->completedItems->count() > 0)
+        <div class="completed-divider">
+            <div class="completed-divider-line"></div>
+            <span class="completed-badge">Completed Services</span>
+            <div class="completed-divider-line"></div>
+        </div>
+        <table class="inv-table">
+            <thead>
             <tr>
-                <td class="desc">{{ $item->description }}</td>
-                <td class="center">{{ $item->qty }}</td>
-                <td class="unit-price">{{ $fmt($item->unit_price) }}</td>
-                <td class="total">{{ $fmt($item->total()) }}</td>
+                <th style="width:48%">Description</th>
+                <th class="center" style="width:8%">Qty</th>
+                <th class="right" style="width:20%">Unit Price</th>
+                <th class="right" style="width:24%">Total</th>
             </tr>
-        @endforeach
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+            @foreach($invoice->completedItems as $item)
+                <tr>
+                    <td class="desc">{{ $item->description }}</td>
+                    <td class="center">{{ $item->qty }}</td>
+                    <td class="unit-price">{{ $fmt($item->unit_price) }}</td>
+                    <td class="total">{{ $fmt($item->total()) }}</td>
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
 
-    {{-- Completed totals --}}
-    <div class="summary-wrap">
-        <div class="totals-block">
-            <div class="totals-row">
-                <span>Subtotal</span>
-                <span class="mono">{{ $fmt($completedSub) }}</span>
-            </div>
-
-            @if($invoice->completed_discount > 0)
-                <div class="totals-row deduction">
-                    <span>{{ $invoice->completed_discount_label ?: 'Discount' }}</span>
-                    <span class="mono">-{{ $fmt($invoice->completed_discount) }}</span>
-                </div>
-            @endif
-
-            @if($invoice->tax_enabled && in_array($invoice->tax_applies_to, ['completed','both']))
+        {{-- Completed totals --}}
+        <div class="summary-wrap">
+            <div class="totals-block">
                 <div class="totals-row">
-                    <span>{{ $invoice->tax_label }} ({{ $invoice->tax_rate }}%)</span>
-                    <span class="mono">{{ $fmt($completedTax) }}</span>
+                    <span>Subtotal</span>
+                    <span class="mono">{{ $fmt($completedSub) }}</span>
                 </div>
-            @endif
 
-            @if($invoice->paid_amount > 0)
-                <div class="totals-row paid-row">
-                    <span>Paid</span>
-                    <span class="mono">-{{ $fmt($invoice->paid_amount) }}</span>
+                @if($invoice->completed_discount > 0)
+                    <div class="totals-row deduction">
+                        <span>{{ $invoice->completed_discount_label ?: 'Discount' }}</span>
+                        <span class="mono">-{{ $fmt($invoice->completed_discount) }}</span>
+                    </div>
+                @endif
+
+                @if($invoice->tax_enabled && in_array($invoice->tax_applies_to, ['completed','both']))
+                    <div class="totals-row">
+                        <span>{{ $invoice->tax_label }} ({{ $invoice->tax_rate }}%)</span>
+                        <span class="mono">{{ $fmt($completedTax) }}</span>
+                    </div>
+                @endif
+
+                @if($invoice->paid_amount > 0)
+                    <div class="totals-row paid-row">
+                        <span>Paid</span>
+                        <span class="mono">-{{ $fmt($invoice->paid_amount) }}</span>
+                    </div>
+                @endif
+
+                @if($invoice->wht_enabled)
+                    <div class="totals-row deduction">
+                        <span>{{ $invoice->wht_label }}</span>
+                        <span class="mono">-{{ $fmt($completedWht) }}</span>
+                    </div>
+                @endif
+
+                <div class="totals-row outstanding-row">
+                    <span>Outstanding</span>
+                    <span class="mono">{{ $fmt(max(0, $outstanding)) }}</span>
                 </div>
-            @endif
-
-            @if($invoice->wht_enabled)
-                <div class="totals-row deduction">
-                    <span>{{ $invoice->wht_label }}</span>
-                    <span class="mono">-{{ $fmt($completedWht) }}</span>
-                </div>
-            @endif
-
-            <div class="totals-row outstanding-row">
-                <span>Outstanding</span>
-                <span class="mono">{{ $fmt(max(0, $outstanding)) }}</span>
             </div>
         </div>
-    </div>
 
-    {{-- Completed notes --}}
-    @if($invoice->completed_notes)
-        <div class="notes-wrap">
-            <div class="notes-label">Notes:</div>
-            <div class="notes-body">{{ $invoice->completed_notes }}</div>
+        {{-- Completed notes --}}
+        @if($invoice->completed_notes)
+            <div class="notes-wrap">
+                <div class="notes-label">Notes:</div>
+                <div class="notes-body">{{ $invoice->completed_notes }}</div>
+            </div>
+        @endif
+    @endif
+
+    {{-- ══════════════════════════════════════
+         SUBSCRIPTION SERVICES (Added)
+    ═══════════════════════════════════════ --}}
+    @if($invoice->has_subscription && $invoice->subscriptionItems->count())
+        <div class="subscription-divider">
+            <div class="subscription-divider-line"></div>
+            <span class="subscription-badge">Subscription Services</span>
+            <div class="subscription-divider-line"></div>
         </div>
+
+        <table class="inv-table">
+            <thead>
+            <tr>
+                <th style="width:48%">Description</th>
+                <th class="center" style="width:15%">Cycle</th>
+                <th class="right" style="width:15%">Unit Price</th>
+                <th class="right" style="width:22%">Total</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach($invoice->subscriptionItems as $item)
+                <tr>
+                    <td class="desc">
+                        {{ $item->description }}
+                        @if($item->renewal_date)
+                            <div style="font-size: 9px; color: #9ca3af; font-weight: 400; margin-top: 2px;">
+                                Renews: {{ $item->renewal_date->format('d M, Y') }}
+                            </div>
+                        @endif
+                    </td>
+                    <td class="center">
+                        <span class="cycle-badge">{{ str_replace('_', ' ', $item->billing_cycle) }}</span>
+                    </td>
+                    <td class="unit-price">{{ $fmt($item->unit_price) }}</td>
+                    <td class="total">{{ $fmt($item->total()) }}</td>
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
+
+        <div class="summary-wrap">
+            <div class="totals-block">
+                <div class="totals-row">
+                    <span>Subtotal</span>
+                    <span class="mono">{{ $fmt($subSub) }}</span>
+                </div>
+                @if($invoice->subscription_discount > 0)
+                    <div class="totals-row deduction">
+                        <span>{{ $invoice->subscription_discount_label ?: 'Discount' }}</span>
+                        <span class="mono">-{{ $fmt($invoice->subscription_discount) }}</span>
+                    </div>
+                @endif
+                @if($invoice->tax_enabled && in_array($invoice->tax_applies_to, ['subscription','all']))
+                    <div class="totals-row">
+                        <span>{{ $invoice->tax_label }} ({{ $invoice->tax_rate }}%)</span>
+                        <span class="mono">{{ $fmt($subTax) }}</span>
+                    </div>
+                @endif
+                <div class="totals-row total-row" style="border-top-style: solid; border-top-width: 1px;">
+                    <span>Recurring Total</span>
+                    <span class="mono">{{ $fmt($subTotal) }}</span>
+                </div>
+            </div>
+        </div>
+
+        @if($invoice->subscription_notes)
+            <div class="notes-wrap">
+                <div class="notes-label">Subscription Notes:</div>
+                <div class="notes-body">{{ $invoice->subscription_notes }}</div>
+            </div>
+        @endif
     @endif
 
     {{-- ══════════════════════════════════════

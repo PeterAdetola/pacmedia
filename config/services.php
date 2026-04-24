@@ -53,8 +53,8 @@ return [
         'redirect'      => env('GITHUB_REDIRECT_URI'),
     ],
 
-    'resend' => [
-        'key' => env('RESEND_API_KEY'),
+    'browserless' => [
+        'token' => env('BROWSERLESS_TOKEN'),
     ],
 
 ];

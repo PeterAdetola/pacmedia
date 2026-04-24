@@ -39,6 +39,20 @@
                 font-size: 0.82rem; color: #6b7280; line-height: 1.6;
             }
 
+
+            /* completed divider */
+            .pac-completed-divider {
+                display: flex; align-items: center; gap: 0.75rem; margin: 1.5rem 0 1rem;
+            }
+            .pac-completed-divider hr { flex: 1; margin: 0; }
+            .pac-completed-badge {
+                font-size: 0.68rem; font-weight: 700; letter-spacing: 0.07em;
+                text-transform: uppercase; color: #96aa12;
+                background: rgba(234,88,12,0.1);
+                border-color: rgba(234,88,12,0.25);
+                border-radius: 100px; padding: 3px 10px; white-space: nowrap;
+            }
+
             /* Proposed divider */
             .pac-proposed-divider {
                 display: flex; align-items: center; gap: 0.75rem; margin: 1.5rem 0 1rem;
@@ -77,6 +91,19 @@
                 .invoice-actions, .toast-container { display: none !important; }
                 .card { box-shadow: none !important; border: none !important; }
             }
+
+            /* Add this new style for Subscriptions */
+            .pac-subscription-divider {
+                display: flex; align-items: center; gap: 0.75rem; margin: 2rem 0 1rem;
+            }
+            .pac-subscription-divider hr { flex: 1; margin: 0; border-color: rgba(59, 130, 246, 0.2); }
+            .pac-subscription-badge {
+                font-size: 0.68rem; font-weight: 700; letter-spacing: 0.07em;
+                text-transform: uppercase; color: #1d4ed8;
+                background: rgba(59, 130, 246, 0.1);
+                border: 1px solid rgba(59, 130, 246, 0.25);
+                border-radius: 100px; padding: 3px 10px; white-space: nowrap;
+            }
         </style>
     @endpush
 
@@ -88,6 +115,11 @@
             'paid'    => 's-paid',
             'overdue' => 's-overdue',
         ];
+
+        // Tactical Fix: Use the dynamic currency from the model helper
+        $symbol = $invoice->currencySymbol();
+        $fmt = fn($n) => $symbol . ' ' . number_format((float) $n, 2);
+
         $outstanding   = $invoice->completedOutstanding();
         $completedSub  = $invoice->completedSubtotal();
         $completedTax  = $invoice->completedTax();
@@ -95,7 +127,12 @@
         $proposedSub   = $invoice->proposedSubtotal();
         $proposedTax   = $invoice->proposedTax();
         $proposedTotal = $invoice->proposedTotal();
-        $fmt = fn($n) => '₦' . number_format((float) $n, 2);
+//        $fmt = fn($n) => '₦' . number_format((float) $n, 2);
+
+    // NEW: Subscription Calculations
+        $subSub        = $invoice->subscriptionSubtotal();
+        $subTax        = $invoice->subscriptionTax();
+        $subTotal      = $invoice->subscriptionOutstanding();
     @endphp
 
     <div class="row invoice-preview">
@@ -117,7 +154,7 @@
                                      fill="#b5cc18" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M0,0V92.7H92.7V0ZM44.13,85.55,25.84,68.33V48.91H44.13Zm0-40.42H25.84V24l18.29-4.59ZM66.44,63.74,48.15,66V48.91H66.44Zm0-18.61H48.15V26.91l18.29,2.87Z"/>
                                 </svg>
-                                <span class="mb-0 app-brand-text fw-semibold">The Pacmedia</span>
+{{--                                <span class="mb-0 app-brand-text fw-semibold">The Pacmedia</span>--}}
                             </div>
                             <p class="mb-1">Pacmedia Creatives</p>
                             <p class="mb-0">Lagos, Nigeria</p>
@@ -213,6 +250,11 @@
                 {{-- ══════════════════════════════════════
                      COMPLETED SERVICES TABLE
                 ═══════════════════════════════════════ --}}
+                <div class="pac-subscription-divider px-6">
+                    <hr>
+                    <span class="pac-completed-badge">Completed Services</span>
+                    <hr>
+                </div>
                 <div class="table-responsive border rounded-4 border-bottom-0">
                     <table class="table m-0">
                         <thead>
@@ -295,6 +337,83 @@
                     </table>
                 </div>
                 {{-- / completed summary --}}
+
+                {{-- ══════════════════════════════════════
+                     SUBSCRIPTION SERVICES
+                ═══════════════════════════════════════ --}}
+                @if($invoice->has_subscription && $invoice->subscriptionItems->count())
+                    <div class="pac-subscription-divider px-6">
+                        <hr>
+                        <span class="pac-subscription-badge">Subscription Services</span>
+                        <hr>
+                    </div>
+
+                    <div class="table-responsive border rounded-4 border-bottom-0">
+                        <table class="table m-0">
+                            <thead>
+                            <tr>
+                                <th>Description</th>
+                                <th class="text-center">Billing Cycle</th>
+                                <th class="text-end">Unit Price</th>
+                                <th class="text-end">Total Price</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach($invoice->subscriptionItems as $item)
+                                <tr @if($loop->last) class="border-bottom" @endif>
+                                    <td>
+                                        <div class="text-heading fw-medium">{{ $item->description }}</div>
+                                        @if($item->renewal_date)
+                                            <small class="text-muted">Renews: {{ $item->renewal_date->format('d M, Y') }}</small>
+                                        @endif
+                                    </td>
+                                    <td class="text-center text-muted">
+                                        <span class="badge bg-label-info text-capitalize">{{ str_replace('_', ' ', $item->billing_cycle) }}</span>
+                                    </td>
+                                    <td class="text-end text-muted">{{ $fmt($item->unit_price) }}</td>
+                                    <td class="text-end fw-semibold">{{ $fmt($item->total()) }}</td>
+                                </tr>
+                            @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {{-- Subscription summary --}}
+                    <div class="table-responsive">
+                        <table class="table m-0 table-borderless">
+                            <tbody>
+                            <tr>
+                                <td class="align-top px-0 py-6">
+                                    @if($invoice->subscription_notes)
+                                        <p class="mb-1"><span class="fw-medium text-heading me-1">Subscription Notes:</span></p>
+                                        <div class="pac-notes-wrap">{{ $invoice->subscription_notes }}</div>
+                                    @endif
+                                </td>
+                                <td class="pe-0 py-6 w-px-150 text-nowrap">
+                                    <p class="mb-1">Subtotal:</p>
+                                    @if($invoice->subscription_discount > 0)
+                                        <p class="mb-1">{{ $invoice->subscription_discount_label ?: 'Discount' }}:</p>
+                                    @endif
+                                    @if($invoice->tax_enabled && in_array($invoice->tax_applies_to, ['subscription','all']))
+                                        <p class="mb-1">{{ $invoice->tax_label }} ({{ $invoice->tax_rate }}%):</p>
+                                    @endif
+                                    <p class="mb-0 pt-2 fw-bold border-top">Recurring Total:</p>
+                                </td>
+                                <td class="text-end px-0 py-6 w-px-100 text-nowrap">
+                                    <p class="fw-medium mb-1">{{ $fmt($subSub) }}</p>
+                                    @if($invoice->subscription_discount > 0)
+                                        <p class="fw-medium mb-1 text-danger">-{{ $fmt($invoice->subscription_discount) }}</p>
+                                    @endif
+                                    @if($invoice->tax_enabled && in_array($invoice->tax_applies_to, ['subscription','all']))
+                                        <p class="fw-medium mb-1">{{ $fmt($subTax) }}</p>
+                                    @endif
+                                    <p class="fw-bold mb-0 pt-2 border-top">{{ $fmt($subTotal) }}</p>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
 
                 {{-- ══════════════════════════════════════
                      PROPOSED SERVICES (conditional)
@@ -394,22 +513,17 @@
                             </span>
                         </button>
 
-                        {{-- Download PDF --}}
-                        <a href="{{ route('admin.invoices.pdf', $invoice) }}"
-                                               target="_blank"
-                                               class="btn btn-outline-secondary d-grid w-100 mb-4">
-                                    <span class="d-flex align-items-center justify-content-center gap-2">
-                                        <i class="ri ri-file-pdf-line icon-16px"></i>
-                                        View PDF
-                                    </span>
-                        </a>
 
                         {{-- Print + Edit --}}
                         <div class="d-flex mb-4 gap-4">
-                            <button onclick="window.print()"
-                                    class="btn btn-outline-secondary d-grid w-100">
-                                Print
-                            </button>
+                            <a href="{{ route('admin.invoices.pdf', $invoice) }}"
+                               target="_blank"
+                               class="btn btn-outline-secondary d-grid w-100">
+                                <span class="d-flex align-items-center justify-content-center gap-2">
+                                    <i class="ri ri-file-pdf-line icon-16px"></i>
+                                    Print
+                                </span>
+                            </a>
                             <a href="{{ route('admin.invoices.edit', $invoice) }}"
                                class="btn btn-outline-secondary d-grid w-100">
                                 Edit

@@ -3,577 +3,397 @@
     @push('page-css')
         <style>
             /* ══════════════════════════════════════
-               STAT SUMMARY BAR
+               STAT WIDGET SEPARATOR (matches template)
             ══════════════════════════════════════ */
-            .pac-inv-stats {
-                display: grid;
-                grid-template-columns: repeat(4, 1fr);
-                gap: 0;
-                border-radius: 0.875rem;
-                overflow: hidden;
-                border: 1px solid #e5e7eb;
-                background: #fff;
-                margin-bottom: 1.5rem;
+            .card-widget-separator .card-widget-1,
+            .card-widget-separator .card-widget-2,
+            .card-widget-separator .card-widget-3 {
+                border-right: 1px solid var(--bs-border-color);
             }
-            .pac-inv-stat {
-                padding: 1.25rem 1.5rem;
-                position: relative;
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                gap: 1rem;
+            @media (max-width: 991.98px) {
+                .card-widget-separator .card-widget-3 { border-right: none; }
             }
-            .pac-inv-stat + .pac-inv-stat {
-                border-left: 1px solid #e5e7eb;
+            @media (max-width: 575.98px) {
+                .card-widget-separator .card-widget-1,
+                .card-widget-separator .card-widget-2,
+                .card-widget-separator .card-widget-3 { border-right: none; }
             }
-            .pac-inv-stat-label {
-                font-size: 0.78rem;
-                color: #9ca3af;
-                font-weight: 500;
-                margin-bottom: 0.2rem;
-            }
-            .pac-inv-stat-value {
-                font-size: 1.5rem;
+            .card-widget-separator h4 {
+                font-size: 1.375rem;
                 font-weight: 800;
-                color: #111827;
-                letter-spacing: -0.03em;
-                line-height: 1;
+                letter-spacing: -0.02em;
             }
-            .pac-inv-stat-sub {
-                font-size: 0.71rem;
-                color: #d1d5db;
-                margin-top: 0.2rem;
-            }
-            .pac-inv-stat-sub strong {
-                color: #6b7280;
-                font-weight: 600;
-            }
-            .pac-inv-stat-icon {
-                width: 44px;
-                height: 44px;
-                border-radius: 10px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 1.1rem;
-                flex-shrink: 0;
-            }
+            .card-widget-separator p { font-size: 0.83rem; color: #9ca3af; }
 
-            /* Dark mode */
-            [data-bs-theme="dark"] .pac-inv-stats {
-                background: var(--bs-paper-bg);
-                border-color: rgba(255,255,255,0.07);
-            }
-            [data-bs-theme="dark"] .pac-inv-stat + .pac-inv-stat {
-                border-color: rgba(255,255,255,0.07);
-            }
-            [data-bs-theme="dark"] .pac-inv-stat-value { color: #f9fafb; }
-
-            @media (max-width: 767.98px) {
-                .pac-inv-stats { grid-template-columns: 1fr 1fr; }
-                .pac-inv-stat:nth-child(2) { border-left: 1px solid #e5e7eb; }
-                .pac-inv-stat:nth-child(3) { border-left: none; border-top: 1px solid #e5e7eb; }
-                .pac-inv-stat:nth-child(4) { border-left: 1px solid #e5e7eb; border-top: 1px solid #e5e7eb; }
-            }
-            @media (max-width: 479.98px) {
-                .pac-inv-stats { grid-template-columns: 1fr; }
-                .pac-inv-stat + .pac-inv-stat { border-left: none; border-top: 1px solid #e5e7eb; }
-            }
+            .av-peridot .avatar-initial { background: rgba(181,204,24,0.12) !important; color: #96aa12 !important; }
+            .av-green   .avatar-initial { background: rgba(34,197,94,0.1)  !important; color: #15803d !important; }
+            .av-red     .avatar-initial { background: rgba(239,68,68,0.1)  !important; color: #b91c1c !important; }
+            .av-metal   .avatar-initial { background: rgba(107,114,128,0.1)!important; color: #6b7280 !important; }
 
             /* ══════════════════════════════════════
-               FILTERS BAR
+               FILTERS
             ══════════════════════════════════════ */
-            .pac-filters {
-                display: flex;
-                align-items: center;
-                gap: 0.75rem;
-                flex-wrap: wrap;
-            }
-            .pac-search-wrap {
-                position: relative;
-                flex: 1;
-                min-width: 220px;
-                max-width: 320px;
-            }
+            .pac-filters { display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap; }
+            .pac-search-wrap { position:relative; flex:1; min-width:200px; max-width:290px; }
             .pac-search-wrap i {
-                position: absolute;
-                left: 0.75rem;
-                top: 50%;
-                transform: translateY(-50%);
-                color: #9ca3af;
-                font-size: 1rem;
-                pointer-events: none;
+                position:absolute; left:0.75rem; top:50%; transform:translateY(-50%);
+                color:#9ca3af; font-size:1rem; pointer-events:none;
             }
             .pac-search-input {
-                width: 100%;
-                border: 1px solid #e5e7eb;
-                border-radius: 0.5rem;
-                padding: 0.47rem 0.875rem 0.47rem 2.25rem;
-                font-size: 0.82rem;
-                color: #111827;
-                background: #fff;
-                outline: none;
-                transition: border-color 0.15s, box-shadow 0.15s;
+                width:100%; border:1px solid var(--bs-border-color); border-radius:0.5rem;
+                padding:0.45rem 0.875rem 0.45rem 2.25rem; font-size:0.82rem;
+                color:var(--bs-body-color); background:var(--bs-body-bg); outline:none;
+                transition:border-color .15s, box-shadow .15s;
             }
-            .pac-search-input:focus {
-                border-color: #b5cc18;
-                box-shadow: 0 0 0 3px rgba(181,204,24,0.12);
-            }
-            .pac-search-input::placeholder { color: #9ca3af; }
-
+            .pac-search-input:focus { border-color:#b5cc18; box-shadow:0 0 0 3px rgba(181,204,24,.12); }
+            .pac-search-input::placeholder { color:#9ca3af; }
             .pac-filter-select {
-                border: 1px solid #e5e7eb;
-                border-radius: 0.5rem;
-                padding: 0.47rem 2rem 0.47rem 0.75rem;
-                font-size: 0.82rem;
-                color: #374151;
-                background: #fff;
-                outline: none;
-                appearance: none;
-                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-                background-repeat: no-repeat;
-                background-position: right 0.6rem center;
-                cursor: pointer;
-                transition: border-color 0.15s;
+                border:1px solid var(--bs-border-color); border-radius:0.5rem;
+                padding:0.45rem 2rem 0.45rem 0.75rem; font-size:0.82rem;
+                color:var(--bs-body-color); background-color:var(--bs-body-bg);
+                outline:none; appearance:none; cursor:pointer;
+                background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+                background-repeat:no-repeat; background-position:right .6rem center;
             }
-            .pac-filter-select:focus {
-                border-color: #b5cc18;
-                box-shadow: 0 0 0 3px rgba(181,204,24,0.12);
-            }
-
-            [data-bs-theme="dark"] .pac-search-input,
-            [data-bs-theme="dark"] .pac-filter-select {
-                background-color: var(--bs-paper-bg);
-                border-color: rgba(255,255,255,0.1);
-                color: var(--bs-body-color);
-            }
+            .pac-filter-select:focus { border-color:#b5cc18; box-shadow:0 0 0 3px rgba(181,204,24,.12); outline:none; }
 
             /* ══════════════════════════════════════
-               STATUS FILTER TABS
+               STATUS TABS
             ══════════════════════════════════════ */
             .pac-status-tabs {
-                display: flex;
-                gap: 0;
-                border-bottom: 1px solid #e5e7eb;
-                margin-bottom: 0;
-                overflow-x: auto;
-                scrollbar-width: none;
+                display:flex; gap:0; border-bottom:1px solid var(--bs-border-color);
+                overflow-x:auto; scrollbar-width:none;
             }
-            .pac-status-tabs::-webkit-scrollbar { display: none; }
+            .pac-status-tabs::-webkit-scrollbar { display:none; }
             .pac-status-tab {
-                font-size: 0.78rem;
-                font-weight: 600;
-                color: #9ca3af;
-                padding: 0.75rem 1.1rem;
-                text-decoration: none;
-                border-bottom: 2px solid transparent;
-                white-space: nowrap;
-                transition: color 0.15s, border-color 0.15s;
-                display: flex;
-                align-items: center;
-                gap: 0.4rem;
+                font-size:0.8rem; font-weight:600; color:#9ca3af;
+                padding:0.8rem 1.1rem; text-decoration:none;
+                border-bottom:2px solid transparent; white-space:nowrap;
+                transition:color .15s, border-color .15s;
+                display:flex; align-items:center; gap:0.4rem; margin-bottom:-1px;
             }
-            .pac-status-tab:hover { color: #374151; }
-            .pac-status-tab.active {
-                color: #96aa12;
-                border-bottom-color: #b5cc18;
-            }
+            .pac-status-tab:hover { color:var(--bs-body-color); }
+            .pac-status-tab.active { color:#96aa12; border-bottom-color:#b5cc18; }
             .pac-tab-count {
-                font-size: 0.65rem;
-                font-weight: 700;
-                padding: 1px 6px;
-                border-radius: 100px;
-                background: #f1f5f9;
-                color: #64748b;
+                font-size:0.65rem; font-weight:700; padding:1px 7px; border-radius:100px;
+                background:var(--bs-tertiary-bg, #f1f5f9); color:#64748b;
             }
-            .pac-status-tab.active .pac-tab-count {
-                background: rgba(181,204,24,0.12);
-                color: #96aa12;
-            }
-
-            [data-bs-theme="dark"] .pac-status-tabs { border-color: rgba(255,255,255,0.08); }
-            [data-bs-theme="dark"] .pac-status-tab:hover { color: var(--bs-body-color); }
-            [data-bs-theme="dark"] .pac-tab-count { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.5); }
+            .pac-status-tab.active .pac-tab-count { background:rgba(181,204,24,.12); color:#96aa12; }
 
             /* ══════════════════════════════════════
-               INVOICE TABLE
+               TABLE (template card-datatable style)
             ══════════════════════════════════════ */
-            .pac-inv-table {
-                width: 100%;
-                border-collapse: collapse;
+            .invoice-list-table thead th {
+                font-size:0.72rem; font-weight:700; text-transform:uppercase;
+                letter-spacing:0.07em; color:#9ca3af; padding:0.75rem 1rem;
+                white-space:nowrap; border-bottom:1px solid var(--bs-border-color);
+                background:var(--bs-tertiary-bg, #f9fafb); vertical-align:middle;
             }
-            .pac-inv-table thead tr {
-                background: #f9fafb;
-                border-bottom: 1px solid #e5e7eb;
+            .invoice-list-table tbody td {
+                padding:0.875rem 1rem; font-size:0.83rem; vertical-align:middle;
+                border-bottom:1px solid var(--bs-border-color-translucent, #f3f4f6);
             }
-            .pac-inv-table thead th {
-                font-size: 0.67rem;
-                font-weight: 700;
-                text-transform: uppercase;
-                letter-spacing: 0.08em;
-                color: #9ca3af;
-                padding: 0.65rem 1rem;
-                white-space: nowrap;
-            }
-            .pac-inv-table tbody tr {
-                border-bottom: 1px solid #f3f4f6;
-                transition: background 0.1s;
-            }
-            .pac-inv-table tbody tr:last-child { border-bottom: none; }
-            .pac-inv-table tbody tr:hover { background: #fafafa; }
-            .pac-inv-table tbody td {
-                padding: 0.9rem 1rem;
-                font-size: 0.82rem;
-                vertical-align: middle;
-            }
+            .invoice-list-table tbody tr:last-child td { border-bottom:none; }
+            .invoice-list-table tbody tr:hover td { background:var(--bs-tertiary-bg, #fafafa); }
 
-            [data-bs-theme="dark"] .pac-inv-table thead tr { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.07); }
-            [data-bs-theme="dark"] .pac-inv-table tbody tr { border-color: rgba(255,255,255,0.05); }
-            [data-bs-theme="dark"] .pac-inv-table tbody tr:hover { background: rgba(255,255,255,0.03); }
+            .inv-num-link { font-size:0.8rem; font-weight:700; color:#96aa12; text-decoration:none; }
+            .inv-num-link:hover { color:#b5cc18; text-decoration:underline; }
 
-            /* Cell types */
-            .t-inv-num {
-                font-size: 0.78rem;
-                font-weight: 700;
-                color: #96aa12;
-                text-decoration: none;
+            .inv-client-av {
+                width:36px; height:36px; border-radius:50%;
+                background:rgba(181,204,24,.12); display:flex; align-items:center;
+                justify-content:center; font-size:0.72rem; font-weight:700;
+                color:#96aa12; flex-shrink:0; letter-spacing:0.02em;
             }
-            .t-inv-num:hover { color: #b5cc18; text-decoration: underline; }
-            .t-client-name { font-weight: 600; color: #111827; font-size: 0.83rem; }
-            .t-client-company { font-size: 0.71rem; color: #9ca3af; margin-top: 1px; }
-            .t-project { font-size: 0.78rem; color: #6b7280; max-width: 160px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-            .t-amount { font-size: 0.875rem; font-weight: 700; color: #111827; }
-            .t-out { font-size: 0.72rem; color: #9ca3af; }
-            .t-out.danger { color: #b91c1c; font-weight: 600; }
-            .t-date { font-size: 0.78rem; color: #6b7280; }
+            .inv-client-name {
+                font-size:0.84rem; font-weight:600;
+                color:var(--bs-heading-color, #111827); text-decoration:none; line-height:1.2;
+            }
+            .inv-client-name:hover { color:#96aa12; }
 
-            [data-bs-theme="dark"] .t-client-name { color: var(--bs-body-color); }
-            [data-bs-theme="dark"] .t-amount { color: var(--bs-body-color); }
+            .inv-amount { font-size:0.875rem; font-weight:700; color:var(--bs-heading-color,#111827); }
+            .inv-sub { font-size:0.71rem; color:#9ca3af; margin-top:1px; }
+            .inv-sub.success { color:#15803d; }
+            .inv-date { font-size:0.79rem; color:#6b7280; }
 
-            /* Status pill */
             .pac-pill {
-                font-size: 0.65rem;
-                font-weight: 700;
-                padding: 3px 9px;
-                border-radius: 100px;
-                white-space: nowrap;
-                display: inline-block;
+                font-size:0.67rem; font-weight:700; padding:3px 10px;
+                border-radius:100px; white-space:nowrap; display:inline-block; letter-spacing:0.02em;
             }
-            .p-draft   { background: #f1f5f9; color: #64748b; }
-            .p-sent    { background: rgba(59,130,246,0.1);  color: #1d4ed8; }
-            .p-partial { background: rgba(245,158,11,0.1);  color: #b45309; }
-            .p-paid    { background: rgba(34,197,94,0.1);   color: #15803d; }
-            .p-overdue { background: rgba(239,68,68,0.1);   color: #b91c1c; }
+            .p-draft   { background:var(--bs-tertiary-bg, #f1f5f9); color:#64748b; }
+            .p-sent    { background:rgba(59,130,246,.1);  color:#1d4ed8; }
+            .p-partial { background:rgba(245,158,11,.1);  color:#b45309; }
+            .p-paid    { background:rgba(34,197,94,.1);   color:#15803d; }
+            .p-overdue { background:rgba(239,68,68,.1);   color:#b91c1c; }
 
-            /* Client avatar */
-            .pac-av {
-                width: 34px;
-                height: 34px;
-                border-radius: 50%;
-                background: rgba(181,204,24,0.12);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 0.7rem;
-                font-weight: 700;
-                color: #96aa12;
-                flex-shrink: 0;
+            .inv-balance-paid {
+                font-size:0.67rem; font-weight:700; padding:3px 10px; border-radius:100px;
+                background:rgba(34,197,94,.1); color:#15803d; display:inline-block;
             }
+            .inv-balance-due { font-size:0.8rem; font-weight:600; color:var(--bs-heading-color,#111827); }
+            .inv-balance-due.overdue { color:#b91c1c; }
 
             /* ══════════════════════════════════════
-               ROW ACTIONS
+               ACTION BUTTONS (template rounded icon btns)
             ══════════════════════════════════════ */
-            .pac-row-actions {
-                display: flex;
-                align-items: center;
-                gap: 0.2rem;
+            .inv-act-btn {
+                display:inline-flex; align-items:center; justify-content:center;
+                width:32px; height:32px; border-radius:50%; border:none;
+                background:transparent; color:#9ca3af; font-size:1rem;
+                cursor:pointer; transition:background .12s, color .12s; text-decoration:none;
             }
-            .pac-act-btn {
-                width: 30px;
-                height: 30px;
-                border-radius: 6px;
-                border: none;
-                background: transparent;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: #9ca3af;
-                font-size: 0.95rem;
-                cursor: pointer;
-                transition: background 0.12s, color 0.12s;
-                text-decoration: none;
+            .inv-act-btn:hover { background:var(--bs-tertiary-bg,#f3f4f6); color:var(--bs-body-color,#374151); }
+            .inv-act-btn.danger:hover { background:rgba(239,68,68,.08); color:#b91c1c; }
+            .inv-act-btn:focus { outline:none; box-shadow:none; }
+
+            .dropdown-menu {
+                font-size:0.82rem; border-radius:0.5rem;
+                border-color:var(--bs-border-color);
+                box-shadow:0 4px 20px rgba(0,0,0,.08); min-width:168px;
             }
-            .pac-act-btn:hover { background: #f3f4f6; color: #374151; }
-            .pac-act-btn.danger:hover { background: rgba(239,68,68,0.08); color: #b91c1c; }
+            .dropdown-item {
+                font-size:0.82rem; padding:0.48rem 1rem;
+                display:flex; align-items:center; gap:0.5rem;
+            }
+            .dropdown-item i { font-size:0.9rem; color:#9ca3af; }
 
-            [data-bs-theme="dark"] .pac-act-btn:hover { background: rgba(255,255,255,0.08); color: var(--bs-body-color); }
-            [data-bs-theme="dark"] .pac-act-btn.danger:hover { background: rgba(239,68,68,0.1); }
-
-            /* Dropdown menu */
-            .dropdown-menu { font-size: 0.82rem; border-radius: 0.5rem; border-color: #e5e7eb; box-shadow: 0 4px 16px rgba(0,0,0,0.08); min-width: 160px; }
-            .dropdown-item { font-size: 0.82rem; padding: 0.45rem 1rem; }
+            /* ══════════════════════════════════════
+               BULK BAR
+            ══════════════════════════════════════ */
+            .pac-bulk-bar {
+                display:none; align-items:center; gap:0.75rem; padding:0.6rem 1.25rem;
+                background:rgba(181,204,24,.05); border-bottom:1px solid rgba(181,204,24,.2);
+                font-size:0.8rem;
+            }
+            .pac-bulk-bar.active { display:flex; }
+            .bulk-count { font-weight:700; color:#96aa12; }
 
             /* ══════════════════════════════════════
                EMPTY STATE
             ══════════════════════════════════════ */
-            .pac-empty-state {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                padding: 4rem 2rem;
-                text-align: center;
+            .pac-empty {
+                display:flex; flex-direction:column; align-items:center;
+                justify-content:center; padding:4rem 2rem; text-align:center;
             }
             .pac-empty-ring {
-                width: 64px;
-                height: 64px;
-                border-radius: 50%;
-                border: 2px dashed rgba(181,204,24,0.3);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                background: rgba(181,204,24,0.04);
-                margin-bottom: 1rem;
+                width:64px; height:64px; border-radius:50%;
+                border:2px dashed rgba(181,204,24,.3);
+                display:flex; align-items:center; justify-content:center;
+                background:rgba(181,204,24,.04); margin-bottom:1rem;
             }
-            .pac-empty-ring i { font-size: 1.6rem; color: rgba(181,204,24,0.5); }
-            .pac-empty-state h5 { font-size: 0.95rem; font-weight: 700; color: #111827; margin-bottom: 0.35rem; }
-            .pac-empty-state p { font-size: 0.82rem; color: #9ca3af; margin-bottom: 1rem; }
+            .pac-empty-ring i { font-size:1.6rem; color:rgba(181,204,24,.45); }
+            .pac-empty h6 { font-size:0.95rem; font-weight:700; color:var(--bs-heading-color); margin-bottom:.35rem; }
+            .pac-empty p  { font-size:0.82rem; color:#9ca3af; margin-bottom:1.1rem; }
 
             /* ══════════════════════════════════════
                PAGINATION
             ══════════════════════════════════════ */
             .pac-pagination {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                padding: 0.875rem 1.25rem;
-                border-top: 1px solid #f3f4f6;
-                font-size: 0.78rem;
-                color: #9ca3af;
-                gap: 1rem;
-                flex-wrap: wrap;
+                display:flex; align-items:center; justify-content:space-between;
+                padding:0.875rem 1.25rem; border-top:1px solid var(--bs-border-color-translucent,#f3f4f6);
+                font-size:0.78rem; color:#9ca3af; gap:1rem; flex-wrap:wrap;
             }
-            .pac-pagination .pagination {
-                margin: 0;
-                gap: 0.2rem;
-            }
+            .pac-pagination .pagination { margin:0; gap:.2rem; }
             .pac-pagination .page-link {
-                border-radius: 0.35rem;
-                border-color: #e5e7eb;
-                color: #374151;
-                font-size: 0.78rem;
-                padding: 0.3rem 0.6rem;
-                min-width: 32px;
-                text-align: center;
+                border-radius:.375rem; border-color:var(--bs-border-color);
+                color:var(--bs-body-color); font-size:.78rem;
+                padding:.32rem .65rem; min-width:32px; text-align:center;
             }
             .pac-pagination .page-item.active .page-link {
-                background: #b5cc18;
-                border-color: #b5cc18;
-                color: #111827;
-                font-weight: 700;
+                background:#b5cc18; border-color:#b5cc18; color:#111827; font-weight:700;
             }
             .pac-pagination .page-link:hover:not(.disabled) {
-                background: #f9fafb;
-                border-color: #b5cc18;
-                color: #96aa12;
+                background:var(--bs-tertiary-bg); border-color:#b5cc18; color:#96aa12;
             }
-            .pac-pagination .page-item.disabled .page-link { opacity: 0.45; }
+            .pac-pagination .page-item.disabled .page-link { opacity:.4; }
 
             /* ══════════════════════════════════════
-               BULK SELECT
+               RESPONSIVE COLUMN HIDING
             ══════════════════════════════════════ */
-            .pac-bulk-bar {
-                display: none;
-                align-items: center;
-                gap: 0.75rem;
-                padding: 0.625rem 1.25rem;
-                background: rgba(181,204,24,0.06);
-                border-top: 1px solid rgba(181,204,24,0.2);
-                font-size: 0.8rem;
-                color: #374151;
-            }
-            .pac-bulk-bar.active { display: flex; }
-            .pac-bulk-bar span { font-weight: 600; color: #96aa12; }
-
-            /* ══════════════════════════════════════
-               RESPONSIVE
-            ══════════════════════════════════════ */
-            @media (max-width: 991.98px) {
-                .pac-inv-table .col-project,
-                .pac-inv-table .col-issued { display: none; }
-            }
-            @media (max-width: 767.98px) {
-                .pac-inv-table .col-due { display: none; }
-                .pac-inv-table thead th:first-child { display: none; }
-                .pac-inv-table tbody td:first-child { display: none; }
-            }
-            @media (max-width: 575.98px) {
-                .pac-filters { gap: 0.5rem; }
-                .pac-search-wrap { max-width: 100%; }
-            }
+            @media (max-width:1199.98px) { .col-project  { display:none; } }
+            @media (max-width:991.98px)  { .col-issued   { display:none; } }
+            @media (max-width:767.98px)  { .col-due, .col-cb { display:none; } }
+            @media (max-width:575.98px)  { .col-balance  { display:none; } }
         </style>
     @endpush
 
-    {{-- ── Page header slot ── --}}
+    {{-- ── Page header action slot ── --}}
     <x-slot name="actions">
         <a href="{{ route('admin.invoices.create') }}"
            class="btn btn-sm d-flex align-items-center gap-2"
-           style="background:#111827; color:#fff; border-radius:0.4rem; font-size:0.82rem; font-weight:600;">
+           style="background:#111827;color:#fff;border-radius:.4rem;font-size:.82rem;font-weight:600;padding:.42rem .875rem;">
             <i class="ri ri-add-line"></i>
             <span class="d-none d-sm-inline">New Invoice</span>
         </a>
     </x-slot>
 
     {{-- ══════════════════════════════════════════════
-         STAT SUMMARY BAR
+         STAT WIDGET BAR  (template card-widget-separator)
     ═══════════════════════════════════════════════ --}}
-    <div class="pac-inv-stats">
+    <div class="card mb-6">
+        <div class="card-widget-separator-wrapper">
+            <div class="card-body card-widget-separator">
+                <div class="row gy-4 gy-sm-1">
 
-        {{-- Total invoices --}}
-        <div class="pac-inv-stat">
-            <div>
-                <div class="pac-inv-stat-label">Total Invoices</div>
-                <div class="pac-inv-stat-value">{{ $stats['total'] ?? 0 }}</div>
-                <div class="pac-inv-stat-sub">
-                    <strong>{{ $stats['this_month'] ?? 0 }}</strong> this month
+                    {{-- Invoices --}}
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="d-flex justify-content-between align-items-start card-widget-1 border-end pb-4 pb-sm-0">
+                            <div>
+                                <h4 class="mb-1">{{ $stats['total'] ?? 0 }}</h4>
+                                <p class="mb-0">Invoices</p>
+                                <p class="mb-0" style="font-size:.72rem;color:#b5cc18;font-weight:600;margin-top:2px;">
+                                    {{ $stats['this_month'] ?? 0 }} this month
+                                </p>
+                            </div>
+                            <div class="avatar me-sm-6 av-peridot">
+                                <span class="avatar-initial rounded-3">
+                                    <i class="icon-base ri ri-pages-line text-heading icon-26px"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <hr class="d-none d-sm-block d-lg-none me-6">
+                    </div>
+
+                    {{-- Total Billed --}}
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="d-flex justify-content-between align-items-start card-widget-2 border-end pb-4 pb-sm-0">
+                            <div>
+                                <h4 class="mb-1" style="font-size:1.15rem;">
+                                    ₦{{ number_format($stats['total_billed'] ?? 0, 0) }}
+                                </h4>
+                                <p class="mb-0">Total Billed</p>
+                                <p class="mb-0" style="font-size:.72rem;color:#15803d;font-weight:600;margin-top:2px;">
+                                    {{ $stats['paid_count'] ?? 0 }} paid in full
+                                </p>
+                            </div>
+                            <div class="avatar me-lg-6 av-green">
+                                <span class="avatar-initial rounded-3">
+                                    <i class="icon-base ri ri-wallet-line text-heading icon-26px"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <hr class="d-none d-sm-block d-lg-none">
+                    </div>
+
+                    {{-- Outstanding --}}
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="d-flex justify-content-between align-items-start card-widget-3 border-end pb-4 pb-sm-0">
+                            <div>
+                                <h4 class="mb-1" style="font-size:1.15rem;{{ ($stats['total_outstanding']??0)>0 ? 'color:#b91c1c;' : '' }}">
+                                    ₦{{ number_format($stats['total_outstanding'] ?? 0, 0) }}
+                                </h4>
+                                <p class="mb-0">Outstanding</p>
+                                <p class="mb-0" style="font-size:.72rem;color:#b91c1c;font-weight:600;margin-top:2px;">
+                                    {{ $stats['overdue_count'] ?? 0 }} overdue
+                                </p>
+                            </div>
+                            <div class="avatar me-sm-6 av-red">
+                                <span class="avatar-initial rounded-3">
+                                    <i class="icon-base ri ri-money-dollar-circle-line text-heading icon-26px"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <hr class="d-none d-sm-block d-lg-none">
+                    </div>
+
+                    {{-- Active Clients --}}
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h4 class="mb-1">{{ $stats['client_count'] ?? 0 }}</h4>
+                                <p class="mb-0">Active Clients</p>
+                                <p class="mb-0" style="font-size:.72rem;color:#6b7280;font-weight:600;margin-top:2px;">
+                                    {{ $stats['draft_count'] ?? 0 }} drafts pending
+                                </p>
+                            </div>
+                            <div class="avatar av-metal">
+                                <span class="avatar-initial rounded-3">
+                                    <i class="icon-base ri ri-user-line text-heading icon-26px"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
-            </div>
-            <div class="pac-inv-stat-icon" style="background: rgba(181,204,24,0.1);">
-                <i class="ri ri-file-list-3-line" style="color:#96aa12;"></i>
             </div>
         </div>
-
-        {{-- Total billed --}}
-        <div class="pac-inv-stat">
-            <div>
-                <div class="pac-inv-stat-label">Total Billed</div>
-                <div class="pac-inv-stat-value" style="font-size:1.2rem;">
-                    ₦{{ number_format($stats['total_billed'] ?? 0, 0) }}
-                </div>
-                <div class="pac-inv-stat-sub">
-                    <strong>{{ $stats['paid_count'] ?? 0 }}</strong> paid in full
-                </div>
-            </div>
-            <div class="pac-inv-stat-icon" style="background: rgba(34,197,94,0.08);">
-                <i class="ri ri-money-dollar-circle-line" style="color:#15803d;"></i>
-            </div>
-        </div>
-
-        {{-- Outstanding --}}
-        <div class="pac-inv-stat">
-            <div>
-                <div class="pac-inv-stat-label">Outstanding</div>
-                <div class="pac-inv-stat-value" style="font-size:1.2rem; color:{{ ($stats['total_outstanding'] ?? 0) > 0 ? '#b91c1c' : '#111827' }};">
-                    ₦{{ number_format($stats['total_outstanding'] ?? 0, 0) }}
-                </div>
-                <div class="pac-inv-stat-sub">
-                    <strong>{{ $stats['overdue_count'] ?? 0 }}</strong> overdue
-                </div>
-            </div>
-            <div class="pac-inv-stat-icon" style="background: rgba(239,68,68,0.08);">
-                <i class="ri ri-error-warning-line" style="color:#b91c1c;"></i>
-            </div>
-        </div>
-
-        {{-- Clients --}}
-        <div class="pac-inv-stat">
-            <div>
-                <div class="pac-inv-stat-label">Active Clients</div>
-                <div class="pac-inv-stat-value">{{ $stats['client_count'] ?? 0 }}</div>
-                <div class="pac-inv-stat-sub">
-                    <strong>{{ $stats['draft_count'] ?? 0 }}</strong> draft invoices
-                </div>
-            </div>
-            <div class="pac-inv-stat-icon" style="background: rgba(107,114,128,0.1);">
-                <i class="ri ri-group-line" style="color:#6b7280;"></i>
-            </div>
-        </div>
-
     </div>
 
     {{-- ══════════════════════════════════════════════
-         MAIN CARD
+         MAIN TABLE CARD
     ═══════════════════════════════════════════════ --}}
-    <div class="card" style="border-radius: 0.875rem; overflow: hidden;">
+    <div class="card">
 
-        {{-- ── Card top: filters ── --}}
-        <div class="d-flex align-items-center justify-content-between px-4 pt-3 pb-3 gap-3 flex-wrap">
-            <form method="GET" action="{{ route('admin.invoices.index') }}" class="pac-filters" id="filter-form">
-
-                {{-- Search --}}
+        {{-- Filters --}}
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 px-4 pt-4 pb-3">
+            <form method="GET" action="{{ route('admin.invoices.index') }}"
+                  class="pac-filters" id="filter-form">
                 <div class="pac-search-wrap">
                     <i class="ri ri-search-line"></i>
-                    <input type="text"
-                           name="search"
+                    <input type="text" name="search" id="pac-search"
                            class="pac-search-input"
-                           placeholder="Search invoice # or client…"
+                           placeholder="Search # or client…"
                            value="{{ request('search') }}"
                            autocomplete="off">
                 </div>
-
-                {{-- Client filter --}}
                 @if(isset($clients) && $clients->count())
                     <select name="client_id" class="pac-filter-select" onchange="this.form.submit()">
                         <option value="">All Clients</option>
                         @foreach($clients as $c)
-                            <option value="{{ $c->id }}" {{ request('client_id') == $c->id ? 'selected' : '' }}>
+                            <option value="{{ $c->id }}"
+                                {{ request('client_id') == $c->id ? 'selected':'' }}>
                                 {{ $c->display_name }}
                             </option>
                         @endforeach
                     </select>
                 @endif
-
-                {{-- Date range --}}
                 <select name="period" class="pac-filter-select" onchange="this.form.submit()">
                     <option value="">All Time</option>
-                    <option value="today"      {{ request('period') === 'today'      ? 'selected' : '' }}>Today</option>
-                    <option value="this_week"  {{ request('period') === 'this_week'  ? 'selected' : '' }}>This Week</option>
-                    <option value="this_month" {{ request('period') === 'this_month' ? 'selected' : '' }}>This Month</option>
-                    <option value="last_month" {{ request('period') === 'last_month' ? 'selected' : '' }}>Last Month</option>
-                    <option value="this_year"  {{ request('period') === 'this_year'  ? 'selected' : '' }}>This Year</option>
+                    <option value="today"      {{ request('period')==='today'      ?'selected':'' }}>Today</option>
+                    <option value="this_week"  {{ request('period')==='this_week'  ?'selected':'' }}>This Week</option>
+                    <option value="this_month" {{ request('period')==='this_month' ?'selected':'' }}>This Month</option>
+                    <option value="last_month" {{ request('period')==='last_month' ?'selected':'' }}>Last Month</option>
+                    <option value="this_year"  {{ request('period')==='this_year'  ?'selected':'' }}>This Year</option>
                 </select>
-
                 @if(request()->hasAny(['search','client_id','period','status']))
                     <a href="{{ route('admin.invoices.index') }}"
-                       style="font-size:0.78rem; color:#9ca3af; text-decoration:none; white-space:nowrap;"
-                       title="Clear filters">
+                       style="font-size:.78rem;color:#9ca3af;text-decoration:none;white-space:nowrap;display:flex;align-items:center;gap:3px;">
                         <i class="ri ri-close-circle-line"></i> Clear
                     </a>
                 @endif
-
-                {{-- Hidden status (set by tabs) --}}
-                <input type="hidden" name="status" id="status-filter" value="{{ request('status') }}">
+                <input type="hidden" name="status" value="{{ request('status') }}">
             </form>
 
-            {{-- Per-page --}}
-            <div class="d-flex align-items-center gap-2" style="font-size:0.78rem; color:#9ca3af; white-space:nowrap;">
+            <div class="d-flex align-items-center gap-2"
+                 style="font-size:.78rem;color:#9ca3af;white-space:nowrap;">
                 Show
-                <select class="pac-filter-select" style="padding:0.3rem 1.5rem 0.3rem 0.5rem;"
-                        onchange="window.location='{{ route('admin.invoices.index') }}?' + new URLSearchParams({...Object.fromEntries(new URLSearchParams(location.search)), per_page: this.value})">
-                    @foreach([10, 25, 50, 100] as $pp)
-                        <option value="{{ $pp }}" {{ request('per_page', 10) == $pp ? 'selected' : '' }}>{{ $pp }}</option>
+                <select class="pac-filter-select" style="padding:.32rem 1.5rem .32rem .5rem;"
+                        onchange="location.href='{{ route('admin.invoices.index') }}?'+new URLSearchParams({...Object.fromEntries(new URLSearchParams(location.search)),per_page:this.value})">
+                    @foreach([10,25,50,100] as $pp)
+                        <option value="{{ $pp }}"
+                            {{ request('per_page',10)==$pp ?'selected':'' }}>{{ $pp }}</option>
                     @endforeach
                 </select>
                 entries
             </div>
         </div>
 
-        {{-- ── Status tabs ── --}}
+        {{-- Status tabs --}}
         <div class="pac-status-tabs px-4">
             @php
                 $tabs = [
-                    ''        => ['label' => 'All',     'count' => $stats['total'] ?? 0],
-                    'draft'   => ['label' => 'Draft',   'count' => $stats['draft_count']   ?? 0],
-                    'sent'    => ['label' => 'Sent',    'count' => $stats['sent_count']    ?? 0],
-                    'partial' => ['label' => 'Partial', 'count' => $stats['partial_count'] ?? 0],
-                    'paid'    => ['label' => 'Paid',    'count' => $stats['paid_count']    ?? 0],
-                    'overdue' => ['label' => 'Overdue', 'count' => $stats['overdue_count'] ?? 0],
+                    ''        => ['label'=>'All',     'count'=>$stats['total']         ?? 0],
+                    'draft'   => ['label'=>'Draft',   'count'=>$stats['draft_count']   ?? 0],
+                    'sent'    => ['label'=>'Sent',    'count'=>$stats['sent_count']    ?? 0],
+                    'partial' => ['label'=>'Partial', 'count'=>$stats['partial_count'] ?? 0],
+                    'paid'    => ['label'=>'Paid',    'count'=>$stats['paid_count']    ?? 0],
+                    'overdue' => ['label'=>'Overdue', 'count'=>$stats['overdue_count'] ?? 0],
                 ];
-                $currentStatus = request('status', '');
+                $currentStatus = request('status','');
             @endphp
             @foreach($tabs as $val => $tab)
-                <a href="{{ route('admin.invoices.index', array_merge(request()->except(['status','page']), $val ? ['status' => $val] : [])) }}"
-                   class="pac-status-tab {{ $currentStatus === $val ? 'active' : '' }}">
+                <a href="{{ route('admin.invoices.index', array_merge(request()->except(['status','page']), $val ? ['status'=>$val] : [])) }}"
+                   class="pac-status-tab {{ $currentStatus===$val ? 'active':'' }}">
                     {{ $tab['label'] }}
                     @if($tab['count'] > 0)
                         <span class="pac-tab-count">{{ $tab['count'] }}</span>
@@ -582,183 +402,198 @@
             @endforeach
         </div>
 
-        {{-- ── Bulk action bar (shown when rows selected) ── --}}
+        {{-- Bulk bar --}}
         <div class="pac-bulk-bar" id="bulk-bar">
-            <span id="bulk-count">0</span> selected
-            <div style="height:14px; width:1px; background:#e5e7eb; margin:0 0.25rem;"></div>
+            <span class="bulk-count" id="bulk-count">0</span> selected
+            <div style="width:1px;height:14px;background:var(--bs-border-color);"></div>
             <form method="POST" action="{{ route('admin.invoices.index') }}" id="bulk-form">
                 @csrf
-                <input type="hidden" name="_bulk_action" id="bulk-action-input">
-                <div id="bulk-ids-container"></div>
-                <button type="button" onclick="bulkAction('mark_sent')"
-                        class="pac-act-btn" style="font-size:0.78rem; width:auto; padding:0 0.6rem; gap:4px; display:inline-flex;">
-                    <i class="ri ri-send-plane-line" style="font-size:0.85rem;"></i> Mark Sent
+                <input type="hidden" name="_bulk_action" id="bulk-action-val">
+                <div id="bulk-ids"></div>
+                <button type="button" onclick="doBulk('mark_sent')"
+                        class="inv-act-btn"
+                        style="width:auto;height:auto;border-radius:4px;padding:3px 8px;font-size:.75rem;gap:4px;display:inline-flex;border:1px solid var(--bs-border-color);">
+                    <i class="ri ri-send-plane-line" style="font-size:.85rem;"></i> Mark Sent
                 </button>
-                <button type="button" onclick="bulkAction('mark_paid')"
-                        class="pac-act-btn" style="font-size:0.78rem; width:auto; padding:0 0.6rem; gap:4px; display:inline-flex;">
-                    <i class="ri ri-check-double-line" style="font-size:0.85rem;"></i> Mark Paid
+                <button type="button" onclick="doBulk('mark_paid')"
+                        class="inv-act-btn"
+                        style="width:auto;height:auto;border-radius:4px;padding:3px 8px;font-size:.75rem;gap:4px;display:inline-flex;border:1px solid var(--bs-border-color);">
+                    <i class="ri ri-check-double-line" style="font-size:.85rem;"></i> Mark Paid
                 </button>
             </form>
-            <button type="button" onclick="clearSelection()"
-                    class="pac-act-btn ms-auto" title="Clear selection">
+            <button type="button" onclick="clearSel()" class="inv-act-btn ms-auto">
                 <i class="ri ri-close-line"></i>
             </button>
         </div>
 
-        {{-- ── Invoice table ── --}}
-        <div class="table-responsive">
-            <table class="pac-inv-table">
+        {{-- Table --}}
+        <div class="card-datatable table-responsive">
+            <table class="invoice-list-table table table-hover mb-0">
                 <thead>
                 <tr>
-                    <th style="width:36px; padding-left:1.25rem;">
-                        <input type="checkbox"
-                               class="form-check-input"
-                               style="width:1rem; height:1rem;"
-                               id="select-all"
-                               title="Select all">
+                    <th class="col-cb" style="width:44px;padding-left:1.25rem;">
+                        <input type="checkbox" class="form-check-input" id="sel-all"
+                               style="width:1.05rem;height:1.05rem;">
                     </th>
-                    <th>Invoice #</th>
+                    <th>#</th>
                     <th>Client</th>
                     <th class="col-project">Project</th>
-                    <th class="col-issued">Issued</th>
+                    <th class="col-issued">Issued Date</th>
                     <th class="col-due">Due</th>
-                    <th class="text-end">Amount</th>
+                    <th class="text-end">Total</th>
+                    <th class="col-balance">Balance</th>
                     <th class="text-center">Status</th>
-                    <th class="text-end" style="padding-right:1.25rem;">Actions</th>
+                    <th class="text-end cell-fit" style="padding-right:1.25rem;">Actions</th>
                 </tr>
                 </thead>
                 <tbody>
                 @forelse($invoices as $invoice)
                     @php
-                        $initials = collect(explode(' ', $invoice->client->name ?? ''))
-                            ->take(2)->map(fn($w) => strtoupper($w[0] ?? ''))->implode('');
+                        $initials    = collect(explode(' ', $invoice->client->name ?? ''))
+                                        ->take(2)->map(fn($w) => strtoupper($w[0] ?? ''))->implode('');
                         $outstanding = $invoice->completedOutstanding();
+                        $subtotal    = $invoice->completedSubtotal();
                     @endphp
                     <tr>
-                        {{-- Checkbox --}}
-                        <td style="padding-left:1.25rem; width:36px;">
-                            <input type="checkbox"
-                                   class="form-check-input row-check"
-                                   style="width:1rem; height:1rem;"
+                        <td class="col-cb" style="padding-left:1.25rem;width:44px;">
+                            <input type="checkbox" class="form-check-input row-cb"
+                                   style="width:1.05rem;height:1.05rem;"
                                    value="{{ $invoice->id }}">
                         </td>
 
-                        {{-- Invoice # --}}
                         <td>
                             <a href="{{ route('admin.invoices.show', $invoice) }}"
-                               class="t-inv-num">
-                                {{ $invoice->number }}
-                            </a>
+                               class="inv-num-link">#{{ $invoice->number }}</a>
                         </td>
 
-                        {{-- Client --}}
                         <td>
-                            <div class="d-flex align-items-center gap-2">
-                                <div class="pac-av">{{ $initials }}</div>
-                                <div>
-                                    <div class="t-client-name">{{ $invoice->client->name ?? '—' }}</div>
+                            <div class="d-flex justify-content-start align-items-center gap-2">
+                                <div class="avatar-wrapper">
+                                    <div class="avatar avatar-sm">
+                                        <div class="inv-client-av">{{ $initials }}</div>
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-column">
+                                    <a href="{{ route('admin.invoices.show', $invoice) }}"
+                                       class="inv-client-name text-truncate">
+                                        {{ $invoice->client->name ?? '—' }}
+                                    </a>
                                     @if($invoice->client->company)
-                                        <div class="t-client-company">{{ $invoice->client->company }}</div>
+                                        <small class="text-truncate"
+                                               style="font-size:.72rem;color:#9ca3af;">
+                                            {{ $invoice->client->company }}
+                                        </small>
                                     @endif
                                 </div>
                             </div>
                         </td>
 
-                        {{-- Project --}}
                         <td class="col-project">
-                            <span class="t-project">{{ $invoice->project_name ?: '—' }}</span>
+                                <span style="font-size:.79rem;color:#6b7280;max-width:150px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                                    {{ $invoice->project_name ?: '—' }}
+                                </span>
                         </td>
 
-                        {{-- Issued --}}
                         <td class="col-issued">
-                                <span class="t-date">
+                                <span class="inv-date">
                                     {{ \Carbon\Carbon::parse($invoice->submitted_at)->format('d M Y') }}
                                 </span>
                         </td>
 
-                        {{-- Due --}}
                         <td class="col-due">
-                            <span class="t-date">{{ $invoice->due_date }}</span>
+                            <span class="inv-date">{{ $invoice->due_date }}</span>
                         </td>
 
-                        {{-- Amount --}}
                         <td class="text-end">
-                            <div class="t-amount">₦{{ number_format($invoice->completedSubtotal(), 2) }}</div>
-                            @if($outstanding > 0)
-                                <div class="t-out {{ $invoice->status === 'overdue' ? 'danger' : '' }}">
-                                    ₦{{ number_format($outstanding, 2) }} due
-                                </div>
-                            @elseif($invoice->paid_amount > 0)
-                                <div class="t-out" style="color:#15803d;">
-                                    Paid ₦{{ number_format($invoice->paid_amount, 2) }}
+                            <div class="inv-amount">₦{{ number_format($subtotal, 2) }}</div>
+                            @if($invoice->has_proposed)
+                                <div class="inv-sub">
+                                    +₦{{ number_format($invoice->proposedTotal(), 0) }} proposed
                                 </div>
                             @endif
                         </td>
 
-                        {{-- Status --}}
+                        <td class="col-balance">
+                            @if($invoice->status === 'paid' || $outstanding <= 0)
+                                <span class="inv-balance-paid">Paid</span>
+                            @else
+                                <div class="inv-balance-due {{ $invoice->status==='overdue' ? 'overdue':'' }}">
+                                    ₦{{ number_format($outstanding, 2) }}
+                                </div>
+                                @if($invoice->paid_amount > 0)
+                                    <div class="inv-sub success">
+                                        ₦{{ number_format($invoice->paid_amount, 2) }} rec'd
+                                    </div>
+                                @endif
+                            @endif
+                        </td>
+
                         <td class="text-center">
                                 <span class="pac-pill p-{{ $invoice->status }}">
                                     {{ ucfirst($invoice->status) }}
                                 </span>
-                            @if($invoice->has_proposed)
-                                <div style="margin-top:3px;">
-                                    <span style="font-size:0.62rem; color:#b5cc18; font-weight:600;">+Proposed</span>
-                                </div>
-                            @endif
                         </td>
 
-                        {{-- Actions --}}
-                        <td style="padding-right:1.25rem;">
-                            <div class="pac-row-actions justify-content-end">
+                        <td class="text-end" style="padding-right:1.25rem;">
+                            <div class="d-flex align-items-center justify-content-end gap-1">
 
-                                {{-- View --}}
+                                <form method="POST"
+                                      action="{{ route('admin.invoices.destroy', $invoice) }}"
+                                      onsubmit="return confirm('Delete invoice #{{ $invoice->number }}?')">
+                                    @csrf @method('DELETE')
+                                    <button type="submit"
+                                            class="inv-act-btn danger waves-effect waves-light"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="top"
+                                            title="Delete Invoice">
+                                        <i class="ri ri-delete-bin-7-line icon-20px"></i>
+                                    </button>
+                                </form>
+
                                 <a href="{{ route('admin.invoices.show', $invoice) }}"
-                                   class="pac-act-btn"
-                                   title="View Invoice">
-                                    <i class="ri ri-eye-line"></i>
+                                   class="inv-act-btn waves-effect waves-light"
+                                   data-bs-toggle="tooltip"
+                                   data-bs-placement="top"
+                                   title="Preview Invoice">
+                                    <i class="ri ri-eye-line icon-20px"></i>
                                 </a>
 
-                                {{-- Edit --}}
-                                <a href="{{ route('admin.invoices.edit', $invoice) }}"
-                                   class="pac-act-btn"
-                                   title="Edit Invoice">
-                                    <i class="ri ri-pencil-line"></i>
-                                </a>
-
-                                {{-- More dropdown --}}
                                 <div class="dropdown">
-                                    <button class="pac-act-btn"
+                                    <button class="inv-act-btn waves-effect waves-light"
                                             data-bs-toggle="dropdown"
-                                            title="More actions">
-                                        <i class="ri ri-more-2-line"></i>
+                                            aria-expanded="false">
+                                        <i class="ri ri-more-2-line icon-20px"></i>
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end">
                                         <li>
-                                            <a class="dropdown-item d-flex align-items-center gap-2"
+                                            <a class="dropdown-item"
                                                href="{{ route('admin.invoices.pdf', $invoice) }}"
                                                target="_blank">
-                                                <i class="ri ri-download-2-line" style="font-size:0.9rem; color:#9ca3af;"></i>
-                                                Download PDF
+                                                <i class="ri ri-download-2-line"></i> Download PDF
                                             </a>
                                         </li>
                                         <li>
-                                            <form method="POST" action="{{ route('admin.invoices.duplicate', $invoice) }}">
+                                            <a class="dropdown-item"
+                                               href="{{ route('admin.invoices.edit', $invoice) }}">
+                                                <i class="ri ri-pencil-line"></i> Edit
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <form method="POST"
+                                                  action="{{ route('admin.invoices.duplicate', $invoice) }}">
                                                 @csrf
-                                                <button type="submit"
-                                                        class="dropdown-item d-flex align-items-center gap-2">
-                                                    <i class="ri ri-file-copy-line" style="font-size:0.9rem; color:#9ca3af;"></i>
-                                                    Duplicate
+                                                <button type="submit" class="dropdown-item">
+                                                    <i class="ri ri-file-copy-line"></i> Duplicate
                                                 </button>
                                             </form>
                                         </li>
-                                        @if($invoice->status !== 'sent' && $invoice->status !== 'paid')
+                                        @if(!in_array($invoice->status, ['sent','paid']))
                                             <li>
-                                                <form method="POST" action="{{ route('admin.invoices.send', $invoice) }}">
+                                                <form method="POST"
+                                                      action="{{ route('admin.invoices.send', $invoice) }}">
                                                     @csrf
-                                                    <button type="submit"
-                                                            class="dropdown-item d-flex align-items-center gap-2">
-                                                        <i class="ri ri-send-plane-line" style="font-size:0.9rem; color:#9ca3af;"></i>
-                                                        Mark as Sent
+                                                    <button type="submit" class="dropdown-item">
+                                                        <i class="ri ri-send-plane-line"></i> Mark as Sent
                                                     </button>
                                                 </form>
                                             </li>
@@ -767,44 +602,43 @@
                                         <li>
                                             <form method="POST"
                                                   action="{{ route('admin.invoices.destroy', $invoice) }}"
-                                                  onsubmit="return confirm('Delete invoice {{ $invoice->number }}? This cannot be undone.')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit"
-                                                        class="dropdown-item d-flex align-items-center gap-2"
+                                                  onsubmit="return confirm('Delete invoice #{{ $invoice->number }}?')">
+                                                @csrf @method('DELETE')
+                                                <button type="submit" class="dropdown-item"
                                                         style="color:#b91c1c;">
-                                                    <i class="ri ri-delete-bin-7-line" style="font-size:0.9rem;"></i>
+                                                    <i class="ri ri-delete-bin-7-line" style="color:#b91c1c;"></i>
                                                     Delete
                                                 </button>
                                             </form>
                                         </li>
                                     </ul>
                                 </div>
+
                             </div>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="9">
-                            <div class="pac-empty-state">
+                        <td colspan="10">
+                            <div class="pac-empty">
                                 <div class="pac-empty-ring">
                                     <i class="ri ri-file-list-3-line"></i>
                                 </div>
                                 @if(request()->hasAny(['search','client_id','period','status']))
-                                    <h5>No invoices match your filters</h5>
-                                    <p>Try adjusting the search or filter criteria.</p>
+                                    <h6>No invoices match your filters</h6>
+                                    <p>Try adjusting the search or filter criteria above.</p>
                                     <a href="{{ route('admin.invoices.index') }}"
                                        class="btn btn-sm"
-                                       style="background:#f1f5f9; color:#374151; border-radius:0.4rem; font-size:0.8rem; font-weight:600;">
+                                       style="background:var(--bs-tertiary-bg);color:var(--bs-body-color);border-radius:.4rem;font-size:.8rem;font-weight:600;">
                                         Clear Filters
                                     </a>
                                 @else
-                                    <h5>No invoices yet</h5>
+                                    <h6>No invoices yet</h6>
                                     <p>Create your first invoice to start billing clients.</p>
                                     <a href="{{ route('admin.invoices.create') }}"
                                        class="btn btn-sm"
-                                       style="background:#b5cc18; color:#111827; border-radius:0.4rem; font-size:0.8rem; font-weight:700;">
-                                        <i class="ri ri-add-line"></i> Create Invoice
+                                       style="background:#b5cc18;color:#111827;border-radius:.4rem;font-size:.8rem;font-weight:700;">
+                                        <i class="ri ri-add-line"></i> New Invoice
                                     </a>
                                 @endif
                             </div>
@@ -815,7 +649,7 @@
             </table>
         </div>
 
-        {{-- ── Pagination ── --}}
+        {{-- Pagination --}}
         @if($invoices->hasPages())
             <div class="pac-pagination">
                 <span>
@@ -824,26 +658,24 @@
                 </span>
                 {{ $invoices->appends(request()->except('page'))->links() }}
             </div>
-        @else
-            @if($invoices->count() > 0)
-                <div style="padding:0.75rem 1.25rem; font-size:0.78rem; color:#9ca3af; border-top:1px solid #f3f4f6;">
-                    Showing all {{ $invoices->count() }} invoice{{ $invoices->count() === 1 ? '' : 's' }}
-                </div>
-            @endif
+        @elseif($invoices->count() > 0)
+            <div style="padding:.75rem 1.25rem;font-size:.78rem;color:#9ca3af;border-top:1px solid var(--bs-border-color-translucent);">
+                Showing all {{ $invoices->count() }} {{ Str::plural('invoice',$invoices->count()) }}
+            </div>
         @endif
 
     </div>
-    {{-- / main card --}}
 
-    {{-- ── Flash messages ── --}}
+    {{-- Flash toast --}}
     @if(session('success'))
         <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:9999;">
             <div class="toast show align-items-center"
-                 style="background:#fff; border-left:4px solid #b5cc18; border-radius:0.5rem; box-shadow:0 4px 20px rgba(0,0,0,0.1); min-width:280px;"
+                 style="background:var(--bs-body-bg);border-left:4px solid #b5cc18;border-radius:.5rem;box-shadow:0 4px 20px rgba(0,0,0,.1);min-width:280px;"
                  role="alert">
                 <div class="d-flex">
-                    <div class="toast-body d-flex align-items-center gap-2" style="font-size:0.83rem; color:#374151;">
-                        <i class="ri ri-checkbox-circle-line" style="color:#b5cc18; font-size:1.1rem;"></i>
+                    <div class="toast-body d-flex align-items-center gap-2"
+                         style="font-size:.83rem;color:var(--bs-body-color);">
+                        <i class="ri ri-checkbox-circle-line" style="color:#b5cc18;font-size:1.1rem;"></i>
                         {{ session('success') }}
                     </div>
                     <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
@@ -856,82 +688,69 @@
         <script>
             (function () {
 
-                /* ── Live search on Enter or 400ms debounce ── */
-                const searchInput = document.querySelector('.pac-search-input');
-                let searchTimer;
-                if (searchInput) {
-                    searchInput.addEventListener('input', function () {
-                        clearTimeout(searchTimer);
-                        searchTimer = setTimeout(() => {
-                            document.getElementById('filter-form').submit();
-                        }, 500);
+                /* Tooltips */
+                document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el =>
+                    new bootstrap.Tooltip(el, { boundary: document.body })
+                );
+
+                /* Search debounce */
+                const searchEl = document.getElementById('pac-search');
+                let timer;
+                if (searchEl) {
+                    searchEl.addEventListener('input', () => {
+                        clearTimeout(timer);
+                        timer = setTimeout(() => document.getElementById('filter-form').submit(), 500);
                     });
-                    searchInput.addEventListener('keydown', function (e) {
-                        if (e.key === 'Enter') {
-                            clearTimeout(searchTimer);
-                            document.getElementById('filter-form').submit();
-                        }
+                    searchEl.addEventListener('keydown', e => {
+                        if (e.key === 'Enter') { clearTimeout(timer); document.getElementById('filter-form').submit(); }
                     });
                 }
 
-                /* ── Checkbox select-all ── */
-                const selectAll   = document.getElementById('select-all');
-                const rowChecks   = document.querySelectorAll('.row-check');
-                const bulkBar     = document.getElementById('bulk-bar');
-                const bulkCount   = document.getElementById('bulk-count');
-                const bulkIds     = document.getElementById('bulk-ids-container');
+                /* Checkbox bulk select */
+                const selAll  = document.getElementById('sel-all');
+                const cbs     = document.querySelectorAll('.row-cb');
+                const bulkBar = document.getElementById('bulk-bar');
+                const bulkCnt = document.getElementById('bulk-count');
 
-                function updateBulkBar() {
-                    const checked = [...rowChecks].filter(c => c.checked);
-                    if (checked.length > 0) {
-                        bulkBar.classList.add('active');
-                        bulkCount.textContent = checked.length;
-                    } else {
-                        bulkBar.classList.remove('active');
-                    }
-                    if (selectAll) {
-                        selectAll.indeterminate = checked.length > 0 && checked.length < rowChecks.length;
-                        selectAll.checked = checked.length === rowChecks.length && rowChecks.length > 0;
+                function sync() {
+                    const checked = [...cbs].filter(c => c.checked);
+                    bulkBar.classList.toggle('active', checked.length > 0);
+                    bulkCnt.textContent = checked.length;
+                    if (selAll) {
+                        selAll.indeterminate = checked.length > 0 && checked.length < cbs.length;
+                        selAll.checked = checked.length === cbs.length && cbs.length > 0;
                     }
                 }
 
-                if (selectAll) {
-                    selectAll.addEventListener('change', function () {
-                        rowChecks.forEach(c => c.checked = this.checked);
-                        updateBulkBar();
-                    });
-                }
-                rowChecks.forEach(c => c.addEventListener('change', updateBulkBar));
+                if (selAll) selAll.addEventListener('change', function () {
+                    cbs.forEach(c => c.checked = this.checked); sync();
+                });
+                cbs.forEach(c => c.addEventListener('change', sync));
 
-                window.clearSelection = function () {
-                    rowChecks.forEach(c => c.checked = false);
-                    if (selectAll) selectAll.checked = false;
-                    updateBulkBar();
+                window.clearSel = () => {
+                    cbs.forEach(c => c.checked = false);
+                    if (selAll) selAll.checked = false;
+                    sync();
                 };
 
-                window.bulkAction = function (action) {
-                    const checked = [...rowChecks].filter(c => c.checked);
+                window.doBulk = action => {
+                    const checked = [...cbs].filter(c => c.checked);
                     if (!checked.length) return;
-                    document.getElementById('bulk-action-input').value = action;
-                    bulkIds.innerHTML = '';
+                    document.getElementById('bulk-action-val').value = action;
+                    const box = document.getElementById('bulk-ids');
+                    box.innerHTML = '';
                     checked.forEach(c => {
-                        const inp = document.createElement('input');
-                        inp.type = 'hidden';
-                        inp.name = 'ids[]';
-                        inp.value = c.value;
-                        bulkIds.appendChild(inp);
+                        const i = document.createElement('input');
+                        i.type = 'hidden'; i.name = 'ids[]'; i.value = c.value;
+                        box.appendChild(i);
                     });
                     document.getElementById('bulk-form').submit();
                 };
 
-                /* ── Auto-dismiss toast ── */
-                const toasts = document.querySelectorAll('.toast.show');
-                toasts.forEach(t => {
-                    setTimeout(() => {
-                        const bsToast = bootstrap.Toast.getOrCreateInstance(t);
-                        bsToast.hide();
-                    }, 4000);
-                });
+                /* Auto-dismiss toast */
+                document.querySelectorAll('.toast.show').forEach(t =>
+                    setTimeout(() => bootstrap.Toast.getOrCreateInstance(t).hide(), 4500)
+                );
 
             })();
         </script>

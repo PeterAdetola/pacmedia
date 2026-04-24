@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Spatie\Browsershot\Browsershot;
 use Illuminate\Support\Facades\Mail;
 use App\Jobs\SendInvoiceEmail;
+use Illuminate\Support\Facades\Http;
 
 class InvoiceController extends Controller
 {
@@ -103,7 +104,6 @@ class InvoiceController extends Controller
             'has_subscription'              => 'boolean',
             'subscription_discount'         => 'nullable|numeric|min:0',
             'subscription_discount_label'   => 'nullable|string|max:255',
-            'subscription_notes'            => 'nullable|string',
 
             // Proposed
             'has_proposed'                  => 'boolean',
@@ -120,6 +120,7 @@ class InvoiceController extends Controller
             'wht_rate'                      => 'nullable|numeric|min:0|max:100',
 
             // Notes
+            'subscription_notes'            => 'nullable|string',
             'completed_notes'               => 'nullable|string',
             'proposed_notes'                => 'nullable|string',
 
@@ -150,6 +151,9 @@ class InvoiceController extends Controller
             'proposed_items.*.qty'          => 'required|numeric|min:1',
             'proposed_items.*.unit_price'   => 'required|numeric|min:0',
             'proposed_items.*.taxable'      => 'boolean',
+
+            // Currency
+            'currency' => 'required|string|size:3',
         ];
     }
 
@@ -168,7 +172,9 @@ class InvoiceController extends Controller
             'paid_amount'                 => $v['paid_amount']                   ?? 0,
             'completed_discount'          => $v['completed_discount']            ?? 0,
             'completed_discount_label'    => $v['completed_discount_label']      ?? null,
+            'has_proposed'                => $v['has_proposed']                  ?? false,
             'has_subscription'            => $v['has_subscription']              ?? false,
+            'has_completed'               => $v['has_completed']                 ?? false,
             'subscription_discount'       => $v['subscription_discount']         ?? 0,
             'subscription_discount_label' => $v['subscription_discount_label']   ?? null,
             'subscription_notes'          => $v['subscription_notes']            ?? null,
@@ -183,10 +189,10 @@ class InvoiceController extends Controller
             'wht_rate'                    => $v['wht_rate']                      ?? 5.00,
             'completed_notes'             => $v['completed_notes']               ?? null,
             'proposed_notes'              => $v['proposed_notes']                ?? null,
-            'has_proposed'                => $v['has_proposed']                  ?? false,
             'bank_name'                   => $v['bank_name']                     ?? null,
             'bank_account_name'           => $v['bank_account_name']             ?? null,
             'bank_account_number'         => $v['bank_account_number']           ?? null,
+            'currency'                    => $v['currency'] ?? 'NGN',
         ];
     }
 
@@ -199,48 +205,27 @@ class InvoiceController extends Controller
             $invoice->items()->delete();
         }
 
-        // Completed items
-        foreach (($validated['completed_items'] ?? []) as $i => $item) {
-            InvoiceItem::create([
-                'invoice_id'  => $invoice->id,
-                'section'     => 'completed',
-                'description' => $item['description'],
-                'qty'         => $item['qty'],
-                'unit_price'  => $item['unit_price'],
-                'taxable'     => $item['taxable'] ?? true,
-                'sort_order'  => $i,
-            ]);
-        }
+        $sections = ['completed', 'proposed', 'subscription'];
 
-        // Subscription items
-        foreach (($validated['subscription_items'] ?? []) as $i => $item) {
-            InvoiceItem::create([
-                'invoice_id'    => $invoice->id,
-                'section'       => 'subscription',
-                'description'   => $item['description'],
-                'qty'           => $item['qty'],
-                'unit_price'    => $item['unit_price'],
-                'billing_cycle' => $item['billing_cycle'] ?? null,
-                'renewal_date'  => $item['renewal_date']  ?? null,
-                'taxable'       => $item['taxable'] ?? true,
-                'sort_order'    => $i,
-            ]);
-        }
+        foreach ($sections as $section) {
+            $inputKey = "{$section}_items";
 
-        // Proposed items
-        foreach (($validated['proposed_items'] ?? []) as $i => $item) {
-            InvoiceItem::create([
-                'invoice_id'  => $invoice->id,
-                'section'     => 'proposed',
-                'description' => $item['description'],
-                'qty'         => $item['qty'],
-                'unit_price'  => $item['unit_price'],
-                'taxable'     => $item['taxable'] ?? true,
-                'sort_order'  => $i,
-            ]);
+            foreach (($validated[$inputKey] ?? []) as $i => $item) {
+                $invoice->items()->create([
+                    'invoice_id'    => $invoice->id,
+                    'section'       => $section,
+                    'description'   => $item['description'],
+                    'qty'           => $item['qty'],
+                    'unit_price'    => $item['unit_price'],
+                    'taxable'       => isset($item['taxable']),
+                    'sort_order'    => $i,
+                    'billing_cycle' => $item['billing_cycle'] ?? null,
+                    'renewal_date'  => $item['renewal_date']  ?? null,
+                ]);
+            }
         }
+        // ← DELETE the duplicate subscription and proposed loops that follow
     }
-
     /* ─────────────────────────────────────────────────────────
      | STORE
      ───────────────────────────────────────────────────────── */
@@ -248,36 +233,35 @@ class InvoiceController extends Controller
     {
         $validated = $request->validate($this->validationRules());
 
-        // The submit button value (sent | draft | preview_draft) overrides
-        // the hidden status select so "Save & Send" always persists as 'sent'.
         $action = $request->input('status_action', 'draft');
         $validated['status'] = match($action) {
-            'sent'         => 'sent',
-            'preview_draft'=> 'draft',
-            default        => $validated['status'],
+            'sent'          => 'sent',
+            'preview_draft' => 'draft',
+            default         => $validated['status'],
         };
 
-        DB::transaction(function () use ($validated) {
+        // 1. Assign the result of the transaction to $invoice
+        $invoice = DB::transaction(function () use ($validated) {
             $invoice = Invoice::create($this->invoiceAttributes($validated));
             $this->saveItems($invoice, $validated);
-            $this->_invoice = $invoice;
+            return $invoice;
         });
 
-        // "Save & Send" — dispatch email job
+        // 2. Use $invoice (not $this->_invoice)
         if ($action === 'sent') {
-            SendInvoiceEmail::dispatch($this->_invoice);
+            SendInvoiceEmail::dispatch($invoice);
         }
 
-        // "Save & Preview" — open the preview page instead of show
+        // 3. Update the redirects to use the local $invoice variable
         if ($action === 'preview_draft') {
             return redirect()
-                ->route('admin.invoices.preview', $this->_invoice)
+                ->route('admin.invoices.preview', $invoice) // Changed from $this->_invoice
                 ->with('success', 'Invoice saved as draft.');
         }
 
         return redirect()
-            ->route('admin.invoices.show', $this->_invoice)
-            ->with('success', 'Invoice ' . $this->_invoice->number . ' created successfully.');
+            ->route('admin.invoices.show', $invoice) // Changed from $this->_invoice
+            ->with('success', 'Invoice ' . $invoice->number . ' created successfully.');
     }
 
     /* ─────────────────────────────────────────────────────────
@@ -296,7 +280,7 @@ class InvoiceController extends Controller
     }
 
     /* ─────────────────────────────────────────────────────────
-         | PREVIEW
+     | PREVIEW
      ───────────────────────────────────────────────────────── */
     public function preview(Invoice $invoice)
     {
@@ -426,31 +410,69 @@ class InvoiceController extends Controller
 
         $html = view('admin.invoices.pdf', compact('invoice'))->render();
 
-        $pdf = Browsershot::html($html)
-            ->format('A4')
-            ->landscape(false)
-            ->margins(0, 0, 0, 0)
-            ->showBackground(true)
-            ->waitUntilNetworkIdle()
-            ->timeout(30)
-            ->noSandbox()
-            ->setOption('displayHeaderFooter', false)
-            ->setOption('preferCSSPageSize', true)
-            ->pdf();
+        $response = Http::withHeaders([
+            'Cache-Control' => 'no-cache',
+            'Content-Type'  => 'application/json',
+        ])->post('https://chrome.browserless.io/pdf?token=' . config('services.browserless.token'), [
+            'html' => $html,
+            'options' => [
+                'format'          => 'A4',
+                'landscape'       => false,
+                'printBackground' => true,
+                'margin' => [
+                    'top'    => '0mm',
+                    'right'  => '0mm',
+                    'bottom' => '0mm',
+                    'left'   => '0mm',
+                ],
+            ],
+        ]);
 
         $filename = 'invoice-' . $invoice->number . '.pdf';
 
-        return response($pdf, 200, [
+        return response($response->body(), 200, [
             'Content-Type'        => 'application/pdf',
             'Content-Disposition' => 'inline; filename="' . $filename . '"',
-            'Content-Length'      => strlen($pdf),
+            'Content-Length'      => strlen($response->body()),
             'Cache-Control'       => 'no-store, no-cache, must-revalidate',
         ]);
     }
+//    public function pdf(Invoice $invoice)
+//    {
+//        $invoice->load([
+//            'client',
+//            'completedItems'    => fn($q) => $q->orderBy('sort_order'),
+//            'subscriptionItems' => fn($q) => $q->orderBy('sort_order'),
+//            'proposedItems'     => fn($q) => $q->orderBy('sort_order'),
+//        ]);
+//
+//        $html = view('admin.invoices.pdf', compact('invoice'))->render();
+//
+//        $pdf = Browsershot::html($html)
+//            ->setOption('browserWSEndpoint',
+//                'wss://chrome.browserless.io?token=' . config('services.browserless.token')
+//            )
+//            ->setOption('waitUntil', 'load')
+//            ->format('A4')
+//            ->landscape(false)
+//            ->margins(0, 0, 0, 0)
+//            ->showBackground(true)
+//            ->timeout(60)
+//            ->pdf();
+//
+//        $filename = 'invoice-' . $invoice->number . '.pdf';
+//
+//        return response($pdf, 200, [
+//            'Content-Type'        => 'application/pdf',
+//            'Content-Disposition' => 'inline; filename="' . $filename . '"',
+//            'Content-Length'      => strlen($pdf),
+//            'Cache-Control'       => 'no-store, no-cache, must-revalidate',
+//        ]);
+//    }
 
     /* ─────────────────────────────────────────────────────────
- | SEND EMAIL
- ───────────────────────────────────────────────────────── */
+     | SEND EMAIL
+     ───────────────────────────────────────────────────────── */
     public function send(Invoice $invoice)
     {
         if (!$invoice->client->email) {
@@ -466,5 +488,5 @@ class InvoiceController extends Controller
     }
 
     /** Temp property to pass data out of DB::transaction closure */
-    private Invoice $_invoice;
+    private ?Invoice $_invoice = null;
 }
