@@ -587,64 +587,89 @@
     </div>
     {{-- / row --}}
 
-    {{-- ══════════════════════════════════════════════
+        {{-- ══════════════════════════════════════════════
          SEND INVOICE OFFCANVAS
-    ═══════════════════════════════════════════════ --}}
-    <div class="offcanvas offcanvas-end" id="sendInvoiceOffcanvas" aria-hidden="true">
-        <div class="offcanvas-header border-bottom">
-            <h5 class="offcanvas-title">Send Invoice</h5>
-            <button type="button" class="btn-close text-reset"
-                    data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        </div>
-        <div class="offcanvas-body flex-grow-1">
-            <form method="POST" action="{{ route('admin.invoices.send', $invoice) }}">
-                @csrf
-                <div class="form-floating form-floating-outline mb-5">
-                    <input type="email" class="form-control" id="invoice-from"
-                           value="hello@thepacmedia.com" placeholder="company@email.com">
-                    <label for="invoice-from">From</label>
-                </div>
-                <div class="form-floating form-floating-outline mb-5">
-                    <input type="email" class="form-control" id="invoice-to"
-                           value="{{ $invoice->client->email ?? '' }}"
-                           placeholder="client@email.com">
-                    <label for="invoice-to">To</label>
-                </div>
-                <div class="form-floating form-floating-outline mb-5">
-                    <input type="text" class="form-control" id="invoice-subject"
-                           value="Invoice {{ $invoice->number }} — The Pacmedia"
-                           placeholder="Invoice subject">
-                    <label for="invoice-subject">Subject</label>
-                </div>
-                <div class="form-floating form-floating-outline mb-5">
-                    <textarea class="form-control" id="invoice-message"
-                              style="height: 160px;">Dear {{ $invoice->client->name ?? 'Client' }},
+        ═══════════════════════════════════════════════ --}}
+        <div class="offcanvas offcanvas-end" id="sendInvoiceOffcanvas" aria-hidden="true">
+            <div class="offcanvas-header border-bottom">
+                <h5 class="offcanvas-title">Send Invoice</h5>
+                <button type="button" class="btn-close text-reset"
+                        data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body flex-grow-1">
+                <form method="POST" action="{{ route('admin.invoices.send', $invoice) }}">
+                    @csrf
 
-Thank you for your business. Please find attached Invoice {{ $invoice->number }} for {{ $invoice->project_name ?: 'our services' }}.
+                    {{-- From: display only — actual sender comes from mail config --}}
+                    <div class="form-floating form-floating-outline mb-5">
+                        <input type="email" class="form-control" id="invoice-from"
+                               value="{{ config('mail.from.address', 'reach@thepacmedia.com') }}"
+                               placeholder="company@email.com" disabled>
+                        <label for="invoice-from">From</label>
+                    </div>
 
-Outstanding balance: {{ $fmt(max(0, $outstanding)) }}
-Due: {{ $invoice->due_date }}
+                    {{-- To: display only — recipient is always the client on record --}}
+                    <div class="form-floating form-floating-outline mb-5">
+                        <input type="email" class="form-control" id="invoice-to"
+                               value="{{ $invoice->client->email ?? 'No email on file' }}"
+                               placeholder="client@email.com" disabled>
+                        <label for="invoice-to">To</label>
+                    </div>
+
+                    {{-- Subject: editable, submitted --}}
+                    <div class="form-floating form-floating-outline mb-5">
+                        <input type="text" class="form-control @error('subject') is-invalid @enderror"
+                               id="invoice-subject" name="subject" required
+                               value="{{ old('subject', 'Invoice ' . $invoice->number . ' — The Pacmedia' . ($invoice->project_name ? ' · ' . $invoice->project_name : '')) }}"
+                               placeholder="Invoice subject">
+                        <label for="invoice-subject">Subject</label>
+                        @error('subject')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    {{-- Message: editable, submitted --}}
+                    <div class="form-floating form-floating-outline mb-5">
+                <textarea class="form-control @error('message') is-invalid @enderror"
+                          id="invoice-message" name="message"
+                          style="height: 200px;" required>{{ old('message',
+"Dear {$invoice->client->name},
+
+Thank you for your business. Please find attached Invoice {$invoice->number}" . ($invoice->project_name ? " for {$invoice->project_name}" : '') . ".
+
+A summary of the charges is included below for your reference.
+
+Outstanding balance: " . $invoice->formatAmount(max(0, $invoice->completedOutstanding())) . "
+Due: {$invoice->due_date}
 
 Kindly process payment at your earliest convenience.
 
 Warm regards,
-The Pacmedia</textarea>
-                    <label for="invoice-message">Message</label>
-                </div>
-                <div class="mb-5">
-                    <span class="badge bg-label-primary rounded-pill">
-                        <i class="icon-base ri ri-links-line icon-14px me-1"></i>
-                        <span class="align-middle">Invoice Attached</span>
-                    </span>
-                </div>
-                <div class="mb-4 d-flex flex-wrap gap-3">
-                    <button type="submit" class="btn btn-primary">Send</button>
-                    <button type="button" class="btn btn-outline-secondary"
-                            data-bs-dismiss="offcanvas">Cancel</button>
-                </div>
-            </form>
+Peter
+The Pacmedia") }}</textarea>
+                        <label for="invoice-message">Message</label>
+                        @error('message')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="mb-5">
+                <span class="badge bg-label-primary rounded-pill">
+                    <i class="icon-base ri ri-attachment-2 icon-14px me-1"></i>
+                    <span class="align-middle">PDF Invoice Attached</span>
+                </span>
+                    </div>
+
+                    <div class="mb-4 d-flex flex-wrap gap-3">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="ri ri-send-plane-line me-1"></i> Send
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary"
+                                data-bs-dismiss="offcanvas">Cancel</button>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
 
     {{-- ══════════════════════════════════════════════
          ADD PAYMENT OFFCANVAS

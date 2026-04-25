@@ -10,34 +10,32 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class InvoiceMail extends Mailable implements ShouldQueue
+class InvoiceMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     public function __construct(
         public Invoice $invoice,
-        public ?string $pdfContent,     // raw PDF bytes — null if Browsershot failed
-        public bool $failedPdf = false
+        public ?string $pdfContent,     // raw PDF bytes — null if generation failed
+        public string  $customSubject,  // subject line from the send form
+        public string  $customMessage,  // body text from the send form
+        public bool    $failedPdf = false,
     ) {}
 
     public function build(): self
     {
-        $subject = "Invoice {$this->invoice->number} — The Pacmedia";
-        if ($this->invoice->project_name) {
-            $subject .= ' · ' . $this->invoice->project_name;
-        }
-
         $mail = $this
-            ->subject($subject)
-            ->view('emails.invoice')        // resources/views/emails/invoice.blade.php
+            ->subject($this->customSubject)
+            ->view('emails.invoice-sent')   // resources/views/emails/invoice-sent.blade.php
             ->with([
-                'invoice'    => $this->invoice,
-                'failedPdf'  => $this->failedPdf,
+                'invoice'       => $this->invoice,
+                'customMessage' => $this->customMessage,
+                'failedPdf'     => $this->failedPdf,
             ]);
 
         if ($this->pdfContent) {
             $mail->attachData(
-                $this->pdfContent,
+                base64_decode($this->pdfContent),
                 'Invoice-' . $this->invoice->number . '.pdf',
                 ['mime' => 'application/pdf']
             );

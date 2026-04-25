@@ -325,7 +325,18 @@ class InvoiceController extends Controller
         });
 
         if ($action === 'sent') {
-            SendInvoiceEmail::dispatch($invoice->fresh());
+            $subject = 'Invoice ' . $invoice->number . ' — The Pacmedia'
+                . ($invoice->project_name ? ' · ' . $invoice->project_name : '');
+
+            $message = "Dear {$invoice->client->name},\n\n"
+                . "Please find attached Invoice {$invoice->number}"
+                . ($invoice->project_name ? " for {$invoice->project_name}" : '') . ".\n\n"
+                . "Outstanding balance: " . $invoice->formatAmount(max(0, $invoice->completedOutstanding())) . "\n"
+                . "Due: {$invoice->due_date}\n\n"
+                . "Kindly process payment at your earliest convenience.\n\n"
+                . "Warm regards,\nPeter\nThe Pacmedia";
+
+            SendInvoiceEmail::dispatch($invoice->fresh(), $subject, $message);
         }
 
         if ($action === 'preview_draft') {
@@ -437,50 +448,27 @@ class InvoiceController extends Controller
             'Cache-Control'       => 'no-store, no-cache, must-revalidate',
         ]);
     }
-//    public function pdf(Invoice $invoice)
-//    {
-//        $invoice->load([
-//            'client',
-//            'completedItems'    => fn($q) => $q->orderBy('sort_order'),
-//            'subscriptionItems' => fn($q) => $q->orderBy('sort_order'),
-//            'proposedItems'     => fn($q) => $q->orderBy('sort_order'),
-//        ]);
-//
-//        $html = view('admin.invoices.pdf', compact('invoice'))->render();
-//
-//        $pdf = Browsershot::html($html)
-//            ->setOption('browserWSEndpoint',
-//                'wss://chrome.browserless.io?token=' . config('services.browserless.token')
-//            )
-//            ->setOption('waitUntil', 'load')
-//            ->format('A4')
-//            ->landscape(false)
-//            ->margins(0, 0, 0, 0)
-//            ->showBackground(true)
-//            ->timeout(60)
-//            ->pdf();
-//
-//        $filename = 'invoice-' . $invoice->number . '.pdf';
-//
-//        return response($pdf, 200, [
-//            'Content-Type'        => 'application/pdf',
-//            'Content-Disposition' => 'inline; filename="' . $filename . '"',
-//            'Content-Length'      => strlen($pdf),
-//            'Cache-Control'       => 'no-store, no-cache, must-revalidate',
-//        ]);
-//    }
+
 
     /* ─────────────────────────────────────────────────────────
      | SEND EMAIL
      ───────────────────────────────────────────────────────── */
-    public function send(Invoice $invoice)
+    public function send(Request $request, Invoice $invoice)
     {
         if (!$invoice->client->email) {
             return back()->withErrors(['email' => 'This client has no email address on record.']);
         }
 
-        // Dispatch to queue — returns immediately
-        SendInvoiceEmail::dispatch($invoice);
+        $request->validate([
+            'subject' => 'required|string|max:255',
+            'message' => 'required|string',
+        ]);
+
+        SendInvoiceEmail::dispatch(
+            $invoice->load('client'),
+            $request->input('subject'),
+            $request->input('message'),
+        );
 
         $invoice->update(['status' => 'sent']);
 

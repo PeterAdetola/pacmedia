@@ -149,11 +149,18 @@
                 <div class="divider"
                      style="width:32px; height:1px; background-color:#8f93a1; margin:24px 0;"></div>
 
-                <!-- Intro -->
-                <p class="email-body-text"
-                   style="font-size:15px; font-weight:400; line-height:1.8; color:#44474a; margin:0 0 16px 0;">
-                    Please find your invoice attached to this email as a PDF. A summary of the charges is included below for your reference.
-                </p>
+                <!-- Intro / custom message from send form -->
+                @foreach(explode("\n", $customMessage) as $line)
+                    @if(trim($line) !== '')
+                        <p class="email-body-text"
+                           style="font-size:15px; font-weight:400; line-height:1.8; color:#44474a; margin:0 0 10px 0;">
+                            {{ $line }}
+                        </p>
+                    @else
+                        <div style="height:8px;"></div>
+                    @endif
+                @endforeach
+                <div style="height:6px;"></div>
 
                 @if($failedPdf)
                     <!-- ── PDF failure alert ────────────────────────── -->

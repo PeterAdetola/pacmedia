@@ -11,18 +11,22 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Spatie\Browsershot\Browsershot;
+use Illuminate\Support\Facades\Mail;
 
 class SendInvoiceEmail implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public int $tries   = 2;      // retry once on failure
-    public int $timeout = 60;     // give Browsershot enough time
+    public int $tries   = 2;
+    public int $timeout = 60;
 
-    public function __construct(public Invoice $invoice) {}
+    public function __construct(
+        public Invoice $invoice,
+        public string  $customSubject,
+        public string  $customMessage,
+    ) {}
 
     public function handle(): void
     {
@@ -33,39 +37,49 @@ class SendInvoiceEmail implements ShouldQueue
             'proposedItems'     => fn($q) => $q->orderBy('sort_order'),
         ]);
 
-        // ── Attempt Browsershot PDF generation ──────────────
+        // ── PDF via Browserless (same approach as InvoiceController::pdf()) ──
+        $pdfContent = null;
+        $failedPdf  = false;
+
         try {
-            $pdfContent = Browsershot::html(
-                view('admin.invoices.pdf', ['invoice' => $this->invoice])->render()
-            )
-                ->format('A4')
-                ->landscape(false)
-                ->margins(0, 0, 0, 0)
-                ->showBackground(true)
-                ->waitUntilNetworkIdle()
-                ->timeout(30)
-                ->noSandbox()
-                ->setOption('displayHeaderFooter', false)
-                ->setOption('preferCSSPageSize', true)
-                ->pdf();
+            $html = view('admin.invoices.pdf', ['invoice' => $this->invoice])->render();
 
+            $response = Http::timeout(45)->withHeaders([
+                'Cache-Control' => 'no-cache',
+                'Content-Type'  => 'application/json',
+            ])->post('https://chrome.browserless.io/pdf?token=' . config('services.browserless.token'), [
+                'html'    => $html,
+                'options' => [
+                    'format'          => 'A4',
+                    'landscape'       => false,
+                    'printBackground' => true,
+                    'margin'          => ['top' => '0mm', 'right' => '0mm', 'bottom' => '0mm', 'left' => '0mm'],
+                ],
+            ]);
+
+            if ($response->successful()) {
+                $pdfContent = base64_encode($response->body());
+            } else {
+                throw new \RuntimeException('Browserless returned HTTP ' . $response->status());
+            }
         } catch (\Throwable $e) {
-            // ── Fallback: send email without PDF, flag it ────
-            Log::error("Browsershot failed for invoice #{$this->invoice->number}: " . $e->getMessage());
-
-            Mail::to($this->invoice->client->email)
-                ->send(new InvoiceMail($this->invoice, null, failedPdf: true));
-
-            return;
+            Log::error("PDF generation failed for invoice #{$this->invoice->number}: " . $e->getMessage());
+            $failedPdf = true;
         }
 
-        // ── Happy path: send with PDF attached ───────────────
+        // ── Send (with PDF if available, flagged if not) ─────────────────────
         Mail::to($this->invoice->client->email)
-            ->send(new InvoiceMail($this->invoice, $pdfContent));
+            ->send(new InvoiceMail(
+                invoice:       $this->invoice,
+                pdfContent:    $pdfContent,
+                customSubject: $this->customSubject,
+                customMessage: $this->customMessage,
+                failedPdf:     $failedPdf,
+            ));
     }
 
     public function failed(\Throwable $e): void
     {
-        Log::error("SendInvoiceEmail job failed for invoice #{$this->invoice->number}: " . $e->getMessage());
+        Log::error("SendInvoiceEmail permanently failed for invoice #{$this->invoice->number}: " . $e->getMessage());
     }
 }
