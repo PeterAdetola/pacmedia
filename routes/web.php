@@ -106,32 +106,21 @@ Route::get('/show-deploy-log', function () {
     return response('<pre>' . implode('', $last200) . '</pre>');
 });
 
-Route::get('/server-check', function () {
-    $dropdownPath = base_path('resources/views/components/dropdown.blade.php');
-    return response()->json([
-        'git_head'         => trim(shell_exec('cd ' . base_path() . ' && git log --oneline -1 2>/dev/null')),
-        'dropdown_exists'  => file_exists($dropdownPath),
-        'dropdown_content' => file_exists($dropdownPath) ? substr(file_get_contents($dropdownPath), 0, 100) : 'NOT FOUND',
-        'components_dir'   => scandir(base_path('resources/views/components')),
-    ]);
-});
+Route::get('/deploy/{token}', function (string $token) {
+    if ($token !== env('DEPLOY_TOKEN')) {
+        abort(403);
+    }
 
-Route::get('/browsershot-check', function () {
-    $checks = [
-        'node'      => trim(shell_exec('which node 2>/dev/null') ?: 'not found'),
-        'chromium'  => trim(shell_exec('which chromium-browser 2>/dev/null') ?: 'not found'),
-        'chrome'    => trim(shell_exec('which google-chrome 2>/dev/null') ?: 'not found'),
-        'puppeteer' => file_exists(base_path('node_modules/puppeteer')) ? 'installed' : 'missing',
-    ];
-    return response()->json($checks);
-});
-Route::get('/server-check', function () {
-    return response()->json([
-        'composer' => trim(shell_exec('which composer 2>/dev/null') ?: shell_exec('find /usr /opt /home -name "composer" -type f 2>/dev/null | head -1')),
-        'php'      => trim(shell_exec('which php')),
-        'php_ver'  => PHP_VERSION,
-    ]);
-});
+    $base = base_path();
+    $output = shell_exec("cd {$base} && php artisan route:clear 2>&1");
+    $output .= shell_exec("cd {$base} && php artisan config:clear 2>&1");
+    $output .= shell_exec("cd {$base} && git pull origin main 2>&1");
+    $output .= shell_exec("cd {$base} && composer install --no-dev --optimize-autoloader 2>&1");
+    $output .= shell_exec("cd {$base} && php artisan migrate --force 2>&1");
+    $output .= shell_exec("cd {$base} && php artisan optimize 2>&1");
+
+    return '<pre>' . $output . '</pre>';
+})->middleware('throttle:3,1');
 
 
 require __DIR__.'/auth.php';
