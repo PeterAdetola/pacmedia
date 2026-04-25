@@ -119,6 +119,8 @@ Route::get('/deploy/{token}', function (string $token) {
     $output .= shell_exec("cd {$base} && php artisan migrate --force 2>&1");
     $output .= shell_exec("cd {$base} && php artisan optimize 2>&1");
 
+    $output .= shell_exec("which composer 2>&1 || find /home/thepacme -name 'composer.phar' 2>&1");
+
     return '<pre>' . $output . '</pre>';
 })->middleware('throttle:3,1');
 
