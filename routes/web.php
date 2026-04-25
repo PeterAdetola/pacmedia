@@ -92,6 +92,14 @@ Route::get('/auth/{provider}/callback', [SocialAuthController::class, 'callback'
 
 // ── Debug routes ─────────────────────────────────────────────────────────────
 
+Route::get('/system-check', function() {
+    return [
+        'opcache' => function_exists('opcache_get_status') ? 'Enabled' : 'Disabled',
+        'queue_count' => DB::table('jobs')->count(),
+        'last_log' => file_exists(storage_path('logs/laravel.log')) ? date('Y-m-d H:i:s', filemtime(storage_path('logs/laravel.log'))) : 'N/A'
+    ];
+})->middleware('auth.admin');
+
 Route::get('/clear-cache', function () {
     Artisan::call('route:clear');
     Artisan::call('config:clear');
