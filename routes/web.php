@@ -118,7 +118,12 @@ Route::get('/deploy/{token}', function (string $token) {
     $output .= shell_exec("cd {$base} && composer install --no-dev --optimize-autoloader 2>&1");
     $output .= shell_exec("cd {$base} && php artisan migrate --force 2>&1");
     $output .= shell_exec("cd {$base} && php artisan optimize 2>&1");
+
     $output .= shell_exec("which composer 2>&1 || find /home/thepacme -name 'composer.phar' 2>&1");
+    $output .= shell_exec("find /home/thepacme -name 'composer.phar' -not -path '*/.jb-roundcube/*' 2>/dev/null");
+    $output .= shell_exec("find /usr/local -name 'composer' 2>/dev/null");
+    $output .= shell_exec("find /opt -name 'composer' 2>/dev/null");
+
 
     return '<pre>' . $output . '</pre>';
 })->middleware('throttle:3,1');
