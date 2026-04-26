@@ -101,20 +101,13 @@
             <td class="email-header" style="padding:28px 40px; border-bottom:1px solid #8f93a1;">
                 <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
                     <tr>
+                        <!-- NEW -->
                         <td style="vertical-align:middle;">
-                            <table cellpadding="0" cellspacing="0" role="presentation">
-                                <tr>
-                                    <td style="vertical-align:middle; padding-right:10px;">
-
-                                    </td>
-                                    <td style="vertical-align:middle;">
-                                        <span class="brand-name"
-                                              style="font-size:15px; font-weight:600; letter-spacing:0.04em; color:#151617;">
-                                            THE PACMEDIA
-                                        </span>
-                                    </td>
-                                </tr>
-                            </table>
+                            <img src="https://thepacmedia.com/img/pac-symbol.png"
+                                 alt="The Pacmedia"
+                                 width="32"
+                                 height="32"
+                                 style="display:block; width:32px; height:32px; object-fit:contain;" />
                         </td>
                         <td align="right" style="vertical-align:middle;">
                             <span class="brand-tagline"
@@ -358,7 +351,7 @@
                 @if($invoice->bank_name)
                     <!-- ══════════════════════════════════════════════
                      PAYMENT DETAILS BLOCK
-                ════════════════════════════════════════════════ -->
+                    ════════════════════════════════════════════════ -->
                     <table class="detail-block" width="100%" cellpadding="0" cellspacing="0" role="presentation"
                            style="background-color:#cdd2dc; border:1px solid #8f93a1; border-radius:12px; margin-bottom:36px; overflow:hidden;">
 
@@ -531,12 +524,7 @@
                                    style="color:#797d83; text-decoration:none;">thepacmedia.com</a>
                             </p>
                         </td>
-                        <td align="right" style="vertical-align:bottom;">
-                            <div style="
-                                width:6px; height:6px; border-radius:50%;
-                                background:linear-gradient(to right, #faf195 0%, #e6da00 50%, #2b261f 100%);
-                            "></div>
-                        </td>
+
                     </tr>
                 </table>
             </td>

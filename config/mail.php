@@ -18,6 +18,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Emails Accounts from DirectAdmin
+    |--------------------------------------------------------------------------
+    |
+    | This option controls the availability of emails to choose from, to send email
+    | the email account must be confirmed to have been created
+    */
+
+    'from_addresses' => [
+        ['address' => 'updates@thepacmedia.com', 'name' => 'The Pacmedia'],
+        ['address' => 'peter@thepacmedia.com',   'name' => 'Peter — The Pacmedia'],
+        ['address' => 'reach@thepacmedia.com',   'name' => 'The Pacmedia'],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Mailer Configurations
     |--------------------------------------------------------------------------
     |

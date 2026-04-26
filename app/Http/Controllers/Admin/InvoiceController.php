@@ -460,19 +460,27 @@ class InvoiceController extends Controller
         }
 
         $request->validate([
-            'subject' => 'required|string|max:255',
-            'message' => 'required|string',
+            'from_address' => 'required|email',   // ← ADD
+            'subject'      => 'required|string|max:255',
+            'message'      => 'required|string',
         ]);
+
+        // Whitelist — only allow your own domain
+        $allowed = array_column(config('mail.from_addresses', []), 'address');
+        if (!in_array($request->from_address, $allowed)) {
+            return back()->withErrors(['from_address' => 'Invalid sender address.']);
+        }
 
         SendInvoiceEmail::dispatch(
             $invoice->load('client'),
             $request->input('subject'),
             $request->input('message'),
+            $request->input('from_address'),     // ← ADD
         );
 
         $invoice->update(['status' => 'sent']);
 
-        return back()->with('success', "Invoice #{$invoice->number} is being sent to {$invoice->client->email}.");
+        return back()->with('success', "Invoice #{$invoice->number} sent to {$invoice->client->email}.");
     }
 
     /** Temp property to pass data out of DB::transaction closure */

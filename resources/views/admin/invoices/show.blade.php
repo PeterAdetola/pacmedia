@@ -600,12 +600,22 @@
                 <form method="POST" action="{{ route('admin.invoices.send', $invoice) }}">
                     @csrf
 
-                    {{-- From: display only — actual sender comes from mail config --}}
+                    {{-- From: sender address selector — default: updates@ --}}
                     <div class="form-floating form-floating-outline mb-5">
-                        <input type="email" class="form-control" id="invoice-from"
-                               value="{{ config('mail.from.address', 'reach@thepacmedia.com') }}"
-                               placeholder="company@email.com" disabled>
+                        <select class="form-select @error('from_address') is-invalid @enderror"
+                                id="invoice-from" name="from_address" required>
+                            @foreach(config('mail.from_addresses', []) as $addr)
+                                <option value="{{ $addr['address'] }}"
+                                    {{ $addr['address'] === 'updates@thepacmedia.com' ? 'selected' : '' }}>
+{{--                                    {{ $addr['name'] }}--}}
+                                    {{ $addr['address'] }}
+                                </option>
+                            @endforeach
+                        </select>
                         <label for="invoice-from">From</label>
+                        @error('from_address')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
 
                     {{-- To: display only — recipient is always the client on record --}}

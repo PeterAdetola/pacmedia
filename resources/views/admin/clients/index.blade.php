@@ -94,6 +94,10 @@
                 font-size: 0.82rem;
                 color: var(--pac-ink);
             }
+            .card-datatable.table-responsive {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
         </style>
     @endpush
 
@@ -224,7 +228,7 @@
             </div>
         </div>
 
-        <div class="card-datatable">
+        <div class="card-datatable table-responsive">
             <table class="datatables-clients table" id="clientsTable">
                 <thead>
                 <tr>

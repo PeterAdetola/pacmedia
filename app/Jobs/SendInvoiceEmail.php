@@ -26,6 +26,7 @@ class SendInvoiceEmail implements ShouldQueue
         public Invoice $invoice,
         public string  $customSubject,
         public string  $customMessage,
+        public string  $fromAddress = 'updates@thepacmedia.com',
     ) {}
 
     public function handle(): void
@@ -68,14 +69,21 @@ class SendInvoiceEmail implements ShouldQueue
         }
 
         // ── Send (with PDF if available, flagged if not) ─────────────────────
+        $fromConfig = collect(config('mail.from_addresses'))
+            ->firstWhere('address', $this->fromAddress);
+
+        $fromName = $fromConfig['name'] ?? 'The Pacmedia';
+
         Mail::to($this->invoice->client->email)
-            ->send(new InvoiceMail(
-                invoice:       $this->invoice,
-                pdfContent:    $pdfContent,
-                customSubject: $this->customSubject,
-                customMessage: $this->customMessage,
-                failedPdf:     $failedPdf,
-            ));
+            ->send(
+                (new InvoiceMail(
+                    invoice:       $this->invoice,
+                    pdfContent:    $pdfContent,
+                    customSubject: $this->customSubject,
+                    customMessage: $this->customMessage,
+                    failedPdf:     $failedPdf,
+                ))->from($this->fromAddress, $fromName)  // ← ADD THIS
+            );
     }
 
     public function failed(\Throwable $e): void

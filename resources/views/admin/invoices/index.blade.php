@@ -400,7 +400,9 @@
                         <td class="col-project">
                             <span style="font-weight:500;color:#4b5563;">{{ $invoice->project_name }}</span>
                             @if($invoice->has_proposed)
-                                <div class="mt-1"><span class="badge bg-label-info" style="font-size:.65rem">Includes Proposal</span></div>
+                                <div class="mt-1">
+                                    <span class="badge bg-label-info" style="font-size:.65rem">Includes Proposal</span>
+                                </div>
                             @endif
                         </td>
                         <td>
@@ -415,21 +417,21 @@
                         </td>
                         <td class="col-issued">
                             <div class="inv-date">{{ $invoice->submitted_at?->format('d M, Y') ?? 'N/A' }}</div>
+                            <div class="inv-sub">
+                                <span class="pac-pill p-{{ $invoice->status }}">{{ ucfirst($invoice->status) }}</span>
+                            </div>
                         </td>
                         <td class="col-balance">
                             @if($outstanding <= 0 && $invoice->status === 'paid')
-                                <span class="inv-balance-paid">Paid</span>
+                                <span class="inv-balance-paid">Paid in full</span>
                             @else
                                 <div class="inv-balance-due {{ $invoice->status === 'overdue' ? 'overdue' : '' }}">
                                     {{ $invoice->formatAmount($outstanding) }}
                                 </div>
-                                {{-- Safe display for due_date strings vs date objects --}}
                                 <div class="inv-sub">
                                     Due:
                                     @if($invoice->due_date)
-                                        @php
-                                            $isDate = strtotime($invoice->due_date);
-                                        @endphp
+                                        @php $isDate = strtotime($invoice->due_date); @endphp
                                         @if($isDate)
                                             {{ \Illuminate\Support\Carbon::parse($invoice->due_date)->format('d M') }}
                                         @else
@@ -443,22 +445,61 @@
                         </td>
                         <td class="text-end" style="padding-right:1.25rem;">
                             <div class="d-inline-flex gap-1">
-                                <a href="{{ route('admin.invoices.show', $invoice) }}" class="inv-act-btn" title="View">
+                                <a href="{{ route('admin.invoices.show', $invoice) }}"
+                                   class="inv-act-btn" title="View">
                                     <i class="ri ri-eye-line"></i>
+                                </a>
+                                <a href="{{ route('admin.invoices.preview', $invoice) }}"
+                                   class="inv-act-btn" title="Preview" target="_blank">
+                                    <i class="ri ri-file-pdf-line"></i>
                                 </a>
                                 <div class="dropdown">
                                     <button class="inv-act-btn" type="button" data-bs-toggle="dropdown">
                                         <i class="ri ri-more-2-fill"></i>
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end">
-                                        {{-- Placeholder link to prevent RouteNotFoundException --}}
-                                        <li><a class="dropdown-item" href="#"><i class="ri ri-download-line"></i> Download PDF</a></li>
-                                        <li><a class="dropdown-item" href="{{ route('admin.invoices.edit', $invoice) }}"><i class="ri ri-edit-line"></i> Edit Invoice</a></li>
+                                        <li>
+                                            <a class="dropdown-item"
+                                               href="{{ route('admin.invoices.pdf', $invoice) }}"
+                                               target="_blank">
+                                                <i class="ri ri-download-line"></i> Download PDF
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item"
+                                               href="{{ route('admin.invoices.edit', $invoice) }}">
+                                                <i class="ri ri-edit-line"></i> Edit Invoice
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <form action="{{ route('admin.invoices.duplicate', $invoice) }}"
+                                                  method="POST">
+                                                @csrf
+                                                <button type="submit" class="dropdown-item">
+                                                    <i class="ri ri-file-copy-line"></i> Duplicate
+                                                </button>
+                                            </form>
+                                        </li>
+                                        @if($invoice->client->email)
+                                            <li>
+                                                <form action="{{ route('admin.invoices.send', $invoice) }}"
+                                                      method="POST">
+                                                    @csrf
+                                                    <button type="submit" class="dropdown-item">
+                                                        <i class="ri ri-send-plane-line"></i> Send to Client
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        @endif
                                         <li><hr class="dropdown-divider"></li>
                                         <li>
-                                            <form action="{{ route('admin.invoices.destroy', $invoice) }}" method="POST" onsubmit="return confirm('Delete this invoice?')">
+                                            <form action="{{ route('admin.invoices.destroy', $invoice) }}"
+                                                  method="POST"
+                                                  onsubmit="return confirm('Delete invoice {{ $invoice->number }}? This cannot be undone.')">
                                                 @csrf @method('DELETE')
-                                                <button type="submit" class="dropdown-item text-danger"><i class="ri ri-delete-bin-line"></i> Delete</button>
+                                                <button type="submit" class="dropdown-item text-danger">
+                                                    <i class="ri ri-delete-bin-line"></i> Delete
+                                                </button>
                                             </form>
                                         </li>
                                     </ul>
@@ -473,7 +514,11 @@
                                 <div class="pac-empty-ring"><i class="ri ri-file-list-3-line"></i></div>
                                 <h6>No invoices found</h6>
                                 <p>Try adjusting your filters or search terms.</p>
-                                <a href="{{ route('admin.invoices.create') }}" class="btn btn-sm" style="background:#b5cc18;color:#111827;font-weight:700;">Create One Now</a>
+                                <a href="{{ route('admin.invoices.create') }}"
+                                   class="btn btn-sm"
+                                   style="background:#b5cc18;color:#111827;font-weight:700;">
+                                    Create One Now
+                                </a>
                             </div>
                         </td>
                     </tr>
