@@ -45,6 +45,9 @@
         .detail-row         { border-bottom: 1px solid #8f93a1; }
         .detail-label       { color: #797d83; }
         .detail-value       { color: #151617; }
+        .sig-name           { color: #151617; }
+        .sig-role           { color: #797d83; }
+        .sig-divider        { border-left-color: #d0cdc8; }
         .peridot-dot        { background-color: #b8b800; }
         .footer-link        { color: #797d83; }
 
@@ -68,6 +71,9 @@
             .detail-row         { border-bottom-color: #535762 !important; }
             .detail-label       { color: #505258 !important; }
             .detail-value       { color: #f2f5fc !important; }
+            .sig-name           { color: #f2f5fc !important; }
+            .sig-role           { color: #505258 !important; }
+            .sig-divider        { border-left-color: #535762 !important; }
             .peridot-dot        { background-color: #e6e200 !important; }
             .footer-link        { color: #505258 !important; }
         }
@@ -94,20 +100,38 @@
 ║  resources/views/emails/base.blade.php                       ║
 ║                                                              ║
 ║  Variables:                                                  ║
-║    $subject      string   Email subject / tab title          ║
-║    $preheader    string   Hidden inbox preview text          ║
-║    $emailType    string   Top-right tag                      ║
-║    $indexLabel   string   Small text above headline          ║
-║    $heading      string   Main headline (HTML allowed)       ║
-║    $paragraphs   array    Body paragraphs — any number       ║
-║    $bodyLine1    string   Fallback if $paragraphs not set    ║
-║    $bodyLine2    string   Fallback second paragraph          ║
-║    $note         string   Italic aside (optional)            ║
-║    $details      array    ['Label' => 'Value'] (optional)    ║
-║    $ctaUrl       string   CTA button URL (optional)          ║
-║    $ctaLabel     string   CTA button text (optional)         ║
+║    $subject        string   Email subject / tab title        ║
+║    $preheader      string   Hidden inbox preview text        ║
+║    $emailType      string   Top-right tag                    ║
+║    $indexLabel     string   Small text above headline        ║
+║    $heading        string   Main headline (HTML allowed)     ║
+║    $paragraphs     array    Body paragraphs (any number)     ║
+║    $bodyLine1      string   Fallback if $paragraphs not set  ║
+║    $bodyLine2      string   Fallback second paragraph        ║
+║    $note           string   Italic aside (optional)          ║
+║    $details        array    ['Label' => 'Value'] (optional)  ║
+║    $ctaUrl         string   CTA button URL (optional)        ║
+║    $ctaLabel       string   CTA button text (optional)       ║
+║    $sigName        string   Signature name (optional)        ║
+║    $sigRole        string   Signature role/title (optional)  ║
+║                                                              ║
+║  Footer (all optional — fall back to defaults):              ║
+║    $footerEmail    string   Contact email in footer          ║
+║    $footerWebsite  string   Website URL in footer            ║
+║    $footerPrivacy  string   Privacy policy URL               ║
+║    $footerName     string   Brand name in footer             ║
+║    $footerTagline  string   Tagline in footer                ║
 ╚══════════════════════════════════════════════════════════════╝
 --}}
+
+@php
+    $footerEmail    = $footerEmail    ?? 'hello@thepacmedia.com';
+    $footerWebsite  = $footerWebsite  ?? 'https://thepacmedia.com';
+    $footerPrivacy  = $footerPrivacy  ?? 'https://thepacmedia.com/privacy';
+    $footerName     = $footerName     ?? 'The Pacmedia';
+    $footerTagline  = $footerTagline  ?? 'Forging Identity. Engineering Digital Infrastructure.';
+@endphp
+
 <body>
 
 {{-- Preheader --}}
@@ -115,14 +139,12 @@
     <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;visibility:hidden;opacity:0;font-size:1px;color:#cfd2d7;">{{ $preheader }}&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;</div>
 @endif
 
-{{-- Outer wrapper — full viewport background --}}
 <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
        style="width:100%;background-color:#cfd2d7;">
     <tr>
         <td class="outer-td" align="center" valign="top"
             style="background-color:#cfd2d7;padding:40px 16px;">
 
-            {{-- Container --}}
             <table class="email-container" cellpadding="0" cellspacing="0" role="presentation"
                    style="max-width:580px;width:100%;background-color:#d8dde7;border:1px solid #8f93a1;border-radius:20px;overflow:hidden;">
 
@@ -133,17 +155,10 @@
                         <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
                             <tr>
                                 <td style="vertical-align:middle;">
-                                    <table cellpadding="0" cellspacing="0" role="presentation">
-                                        <tr>
-                                            <td style="vertical-align:middle;">
-                                                <img src="https://thepacmedia.com/img/pac-symbol.png"
-                                                     alt="The Pacmedia"
-                                                     width="32"
-                                                     height="32"
-                                                     style="display:block; width:32px; height:32px; object-fit:contain;" />
-                                            </td>
-                                        </tr>
-                                    </table>
+                                    <img src="https://thepacmedia.com/img/pac-symbol.png"
+                                         alt="The Pacmedia"
+                                         width="32" height="32"
+                                         style="display:block;width:32px;height:32px;object-fit:contain;" />
                                 </td>
                                 <td align="right" style="vertical-align:middle;">
                                     <span class="index-label" style="font-family:'Trebuchet MS',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;font-weight:400;letter-spacing:0.14em;text-transform:uppercase;color:#797d83;">{{ $emailType ?? 'Notification' }}</span>
@@ -166,12 +181,7 @@
                         {{-- Rule --}}
                         <div class="divider" style="width:28px;height:1px;background-color:#8f93a1;margin:24px 0;font-size:0;line-height:0;">&nbsp;</div>
 
-                        {{--
-                            PARAGRAPHS — supports any number.
-                            Priority: $paragraphs array > $bodyLine1/$bodyLine2 fallback.
-                            This ensures backward compatibility with contact-confirmation
-                            and internal-alert views that still set $bodyLine1/$bodyLine2.
-                        --}}
+                        {{-- Paragraphs --}}
                         @if (!empty($paragraphs) && is_array($paragraphs))
                             @foreach ($paragraphs as $para)
                                 @if (trim($para))
@@ -180,7 +190,6 @@
                             @endforeach
                             <div style="margin-bottom:16px;"></div>
                         @else
-                            {{-- Fallback for views that set $bodyLine1 / $bodyLine2 directly --}}
                             @if (!empty($bodyLine1))
                                 <p class="body-text" style="font-family:'Trebuchet MS',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;font-weight:400;line-height:1.8;color:#44474a;margin:0 0 16px 0;">{{ $bodyLine1 }}</p>
                             @endif
@@ -190,7 +199,7 @@
                             <div style="margin-bottom:16px;"></div>
                         @endif
 
-                        {{-- Detail block (optional) --}}
+                        {{-- Detail block --}}
                         @if (!empty($details))
                             <table class="detail-block" width="100%" cellpadding="0" cellspacing="0" role="presentation"
                                    style="background-color:#cdd2dc;border:1px solid #8f93a1;border-radius:12px;margin-bottom:32px;overflow:hidden;">
@@ -207,25 +216,55 @@
                             </table>
                         @endif
 
-                        {{-- CTA button (optional) --}}
+                        {{-- CTA button --}}
                         @if (!empty($ctaUrl))
                             <table cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom:32px;">
                                 <tr>
                                     <td>
-                                        <a href="{{ $ctaUrl }}" class="cta-button" style="display:inline-block;font-family:'Trebuchet MS',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;color:#f2f5fc;background-color:#151617;border:1px solid #151617;border-radius:50px;padding:15px 36px;line-height:1;">{{ $ctaLabel ?? 'Visit Our Website &#8594;' }}</a>
+                                        <a href="{{ $ctaUrl }}" class="cta-button" style="display:inline-block;font-family:'Trebuchet MS',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;color:#f2f5fc;background-color:#151617;border:1px solid #151617;border-radius:50px;padding:15px 36px;line-height:1;">{{ $ctaLabel ?? 'Visit Our Website →' }}</a>
                                     </td>
                                 </tr>
                             </table>
                         @endif
 
-                        {{-- Note / aside (optional) --}}
+                        {{-- Note / aside --}}
                         @if (!empty($note))
-                            <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                            <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom:32px;">
                                 <tr>
                                     <td class="note-block note-text" style="padding:12px 16px;border-left:2px solid #8f93a1;font-family:'Trebuchet MS',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;line-height:1.7;font-style:italic;color:#797d83;">{{ $note }}</td>
                                 </tr>
                             </table>
                         @endif
+
+                        {{-- ── SIGNATURE ── --}}
+                        @if (!empty($sigName) || !empty($sigRole))
+                            <table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
+                                <tr>
+                                    <td style="vertical-align:middle;padding-right:14px;">
+                                        <!--[if !mso]><!-->
+                                        <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(to right,#faf195 0%,#e6da00 50%,#2b261f 100%);display:inline-block;vertical-align:middle;"></div>
+                                        <!--<![endif]-->
+                                        <!--[if mso]>
+                                        <v:oval xmlns:v="urn:schemas-microsoft-com:vml"
+                                                style="width:40px;height:40px;" fillcolor="#e6e200" stroked="f">
+                                        </v:oval>
+                                        <![endif]-->
+                                    </td>
+                                    <td class="sig-divider"
+                                        style="vertical-align:middle;border-left:1px solid #d0cdc8;padding-left:14px;">
+                                        @if (!empty($sigName))
+                                            <p class="sig-name"
+                                               style="font-family:'Trebuchet MS',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;font-weight:600;color:#151617;margin:0 0 3px 0;padding:0;">{{ $sigName }}</p>
+                                        @endif
+                                        @if (!empty($sigRole))
+                                            <p class="sig-role"
+                                               style="font-family:'Trebuchet MS',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;font-weight:400;letter-spacing:0.1em;text-transform:uppercase;color:#797d83;margin:0;padding:0;">{{ $sigRole }}</p>
+                                        @endif
+                                    </td>
+                                </tr>
+                            </table>
+                        @endif
+                        {{-- /Signature --}}
 
                     </td>
                 </tr>
@@ -237,15 +276,15 @@
                         <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
                             <tr>
                                 <td style="vertical-align:middle;">
-                                    <p class="muted-text" style="font-family:'Trebuchet MS',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;line-height:1.65;color:#797d83;margin:0 0 4px 0;">The Pacmedia &mdash; Forging Identity. Engineering Digital Infrastructure.</p>
+                                    <p class="muted-text" style="font-family:'Trebuchet MS',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;line-height:1.65;color:#797d83;margin:0 0 4px 0;">{{ $footerName }} &mdash; {{ $footerTagline }}</p>
                                     <p class="muted-text" style="font-family:'Trebuchet MS',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;line-height:1.65;color:#797d83;margin:0;">
-                                        <a href="mailto:hello@thepacmedia.com" class="footer-link" style="color:#797d83;text-decoration:none;">hello&#64;thepacmedia.com</a>
+                                        <a href="mailto:{{ $footerEmail }}" class="footer-link" style="color:#797d83;text-decoration:none;">{{ $footerEmail }}</a>
                                         &nbsp;&middot;&nbsp;
-                                        <a href="https://thepacmedia.com" class="footer-link" style="color:#797d83;text-decoration:none;">thepacmedia.com</a>
+                                        <a href="{{ $footerWebsite }}" class="footer-link" style="color:#797d83;text-decoration:none;">{{ preg_replace('#^https?://#', '', $footerWebsite) }}</a>
                                         &nbsp;&middot;&nbsp;
-                                        <a href="https://thepacmedia.com/privacy" class="footer-link" style="color:#797d83;text-decoration:none;">Privacy</a>
+                                        <a href="{{ $footerPrivacy }}" class="footer-link" style="color:#797d83;text-decoration:none;">Privacy</a>
                                         &nbsp;&middot;&nbsp;
-                                        &copy; {{ now()->year }} The Pacmedia
+                                        &copy; {{ now()->year }} {{ $footerName }}
                                     </p>
                                 </td>
                                 <td class="hide-mobile" align="right" style="vertical-align:middle;padding-left:20px;">
@@ -257,7 +296,6 @@
                 </tr>
 
             </table>
-            {{-- /Container --}}
 
             <div style="height:32px;"></div>
 

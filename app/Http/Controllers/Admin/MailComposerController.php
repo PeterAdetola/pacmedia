@@ -11,7 +11,7 @@ class MailComposerController extends Controller
 {
     /**
      * Show the compose page.
-     * Route: GET /admin/mail/compose
+     * GET /admin/mail/compose
      */
     public function index()
     {
@@ -22,29 +22,37 @@ class MailComposerController extends Controller
 
     /**
      * Send the composed email.
-     * Route: POST /admin/mail/compose
+     * POST /admin/mail/compose
      */
     public function send(Request $request)
     {
         $validated = $request->validate([
-            'from_address'    => 'required|email',
-            'to'              => 'required|email',
-            'subject'         => 'required|string|max:255',
-            'email_type'      => 'required|string|max:60',
-            'index_label'     => 'nullable|string|max:60',
-            'heading'         => 'nullable|string|max:255',
+            'from_address'       => 'required|email',
+            'to'                 => 'required|email',
+            'subject'            => 'required|string|max:255',
+            'email_type'         => 'required|string|max:60',
+            'index_label'        => 'nullable|string|max:60',
+            'heading'            => 'nullable|string|max:255',
 
-            // Dynamic paragraphs — at least one required
-            'paragraphs'      => 'required|array|min:1',
-            'paragraphs.*'    => 'required|string',
+            // Dynamic body paragraphs — at least one required
+            'body_paragraphs'    => 'required|array|min:1',
+            'body_paragraphs.*'  => 'nullable|string',
 
-            'note'            => 'nullable|string',
-            'cta_url'         => 'nullable|url',
-            'cta_label'       => 'nullable|string|max:80',
+            'note'               => 'nullable|string',
+            'cta_url'            => 'nullable|url',
+            'cta_label'          => 'nullable|string|max:80',
+
+            // Signature fields
+            'sig_name'           => 'nullable|string|max:120',
+            'sig_role'           => 'nullable|string|max:120',
 
             // Optional detail rows
-            'detail_labels.*' => 'nullable|string|max:80',
-            'detail_values.*' => 'nullable|string|max:255',
+            'detail_labels.*'    => 'nullable|string|max:80',
+            'detail_values.*'    => 'nullable|string|max:255',
+
+            // Attachments
+            'attachments'        => 'nullable|array',
+            'attachments.*'      => 'nullable|file|max:10240', // 10MB per file
         ]);
 
         // Whitelist check
@@ -53,7 +61,7 @@ class MailComposerController extends Controller
             return back()->withErrors(['from_address' => 'Invalid sender address.'])->withInput();
         }
 
-        // Resolve sender name from config
+        // Resolve sender name
         $fromConfig = collect(config('mail.from_addresses'))
             ->firstWhere('address', $validated['from_address']);
         $fromName = $fromConfig['name'] ?? 'The Pacmedia';
@@ -68,39 +76,45 @@ class MailComposerController extends Controller
             }
         }
 
-        // Build paragraphs — filter empty, then split into bodyLine1/bodyLine2/extra
-        // base.blade.php supports bodyLine1 + bodyLine2 natively.
-        // For 3+ paragraphs we join the extras into bodyLine2 separated by double breaks.
-        $paragraphs = array_values(array_filter($validated['paragraphs'], fn($p) => trim($p) !== ''));
-
-        $bodyLine1 = $paragraphs[0] ?? '';
-        $bodyLine2 = null;
-
-        if (count($paragraphs) > 1) {
-            // Join remaining paragraphs — the template renders each as its own <p>
-            // We pass them as an array so the view can loop them
-            $bodyLine2 = implode("\n\n", array_slice($paragraphs, 1));
-        }
+        // Build paragraphs — filter blanks
+        $paragraphs = array_values(
+            array_filter(
+                $validated['body_paragraphs'] ?? [],
+                fn($p) => trim($p) !== ''
+            )
+        );
 
         $data = [
-            'subject'      => $validated['subject'],
-            'preheader'    => $bodyLine1,
-            'emailType'    => $validated['email_type'],
-            'indexLabel'   => $validated['index_label'] ?? '01 — Message',
-            'heading'      => $validated['heading']     ?? $validated['subject'],
-            'bodyLine1'    => $bodyLine1,
-            'bodyLine2'    => $bodyLine2,
-            'paragraphs'   => $paragraphs,   // full array — used by invoice-style templates
-            'note'         => $validated['note']      ?? null,
-            'details'      => $details,
-            'ctaUrl'       => $validated['cta_url']   ?? null,
-            'ctaLabel'     => $validated['cta_label'] ?? null,
+            'from_address' => $validated['from_address'],
+            'subject'    => $validated['subject'],
+            'preheader'  => $paragraphs[0] ?? '',
+            'emailType'  => $validated['email_type'],
+            'indexLabel' => $validated['index_label'] ?? '01 — Message',
+            'heading'    => $validated['heading']     ?? $validated['subject'],
+            'paragraphs' => $paragraphs,
+            'note'       => $validated['note']        ?? null,
+            'details'    => $details,
+            'ctaUrl'     => $validated['cta_url']     ?? null,
+            'ctaLabel'   => $validated['cta_label']   ?? null,
+            'sigName'    => $validated['sig_name']    ?? 'Peter',
+            'sigRole'    => $validated['sig_role']    ?? 'Founder, The Pacmedia',
         ];
 
-        Mail::to($validated['to'])
-            ->send(
-                (new GeneralMail($data))->from($validated['from_address'], $fromName)
-            );
+        $mailable = (new GeneralMail($data))->from($validated['from_address'], $fromName);
+
+        // Attach uploaded files
+        if ($request->hasFile('attachments')) {
+            foreach ($request->file('attachments') as $file) {
+                if ($file && $file->isValid()) {
+                    $mailable->attach($file->getRealPath(), [
+                        'as'   => $file->getClientOriginalName(),
+                        'mime' => $file->getMimeType(),
+                    ]);
+                }
+            }
+        }
+
+        Mail::to($validated['to'])->send($mailable);
 
         return back()->with('success', 'Email sent to ' . $validated['to'] . '.');
     }
