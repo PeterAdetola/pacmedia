@@ -764,11 +764,11 @@
                             </div>
                             <div><p class="pac-qa-lbl">Inbox</p><p class="pac-qa-sub">Check messages</p></div>
                         </a>
-                        <a href="{{ route('admin.chat.index') }}" class="pac-qa">
+                        <a href="{{ route('admin.mail.compose') }}" class="pac-qa">
                             <div class="pac-qa-ic" style="background: rgba(239,68,68,0.08);">
                                 <i class="ri ri-message-3-line" style="color:#b91c1c;"></i>
                             </div>
-                            <div><p class="pac-qa-lbl">Chat</p><p class="pac-qa-sub">Team messages</p></div>
+                            <div><p class="pac-qa-lbl">Mail</p><p class="pac-qa-sub">Compose Email</p></div>
                         </a>
                     </div>
                 </div>

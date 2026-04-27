@@ -249,7 +249,18 @@ class InvoiceController extends Controller
 
         // 2. Use $invoice (not $this->_invoice)
         if ($action === 'sent') {
-            SendInvoiceEmail::dispatch($invoice);
+            $subject = 'Invoice ' . $invoice->number . ' — The Pacmedia'
+                . ($invoice->project_name ? ' · ' . $invoice->project_name : '');
+
+            $message = "Dear {$invoice->client->name},\n\n"
+                . "Please find attached Invoice {$invoice->number}"
+                . ($invoice->project_name ? " for {$invoice->project_name}" : '') . ".\n\n"
+                . "Outstanding balance: " . $invoice->formatAmount(max(0, $invoice->completedOutstanding())) . "\n"
+                . "Due: {$invoice->due_date}\n\n"
+                . "Kindly process payment at your earliest convenience.\n\n"
+                . "Warm regards,\nPeter\nThe Pacmedia";
+
+            SendInvoiceEmail::dispatch($invoice->fresh(), $subject, $message);
         }
 
         // 3. Update the redirects to use the local $invoice variable

@@ -19,65 +19,71 @@
         a { text-decoration: none; }
         body { margin: 0 !important; padding: 0 !important; width: 100% !important; }
 
-        /* ── Light mode ────────────────────────────────── */
-        :root { color-scheme: light dark; }
-        body,
-        .email-wrapper   { background-color: #cfd2d7; }
-        .email-container { background-color: #d8dde7; border: 1px solid #8f93a1; }
-        .email-header    { border-bottom: 1px solid #8f93a1; }
-        .email-footer    { border-top: 1px solid #8f93a1; }
-        .brand-name      { color: #151617; }
-        .index-label     { color: #797d83; }
-        .heading-text    { color: #151617; }
-        .body-text       { color: #44474a; }
-        .muted-text      { color: #797d83; }
-        .divider         { background-color: #8f93a1; }
-        .cta-button      { background-color: #151617 !important; color: #f2f5fc !important; border: 1px solid #151617 !important; }
-        .note-block      { border-left: 2px solid #8f93a1; }
-        .note-text       { color: #797d83; }
-        .detail-block    { background-color: #cdd2dc; border: 1px solid #8f93a1; }
-        .detail-row      { border-bottom: 1px solid #8f93a1; }
-        .detail-label    { color: #797d83; }
-        .detail-value    { color: #151617; }
-        .peridot-dot     { background-color: #b8b800; }
-        .footer-link     { color: #797d83; }
-
-        /* ── Dark mode ─────────────────────────────────── */
-        @media (prefers-color-scheme: dark) {
-            body,
-            .email-wrapper   { background-color: #000000 !important; }
-            .email-container { background-color: #141414 !important; border-color: #535762 !important; }
-            .email-header    { border-bottom-color: #535762 !important; }
-            .email-footer    { border-top-color: #535762 !important; }
-            .brand-name      { color: #f2f5fc !important; }
-            .index-label     { color: #505258 !important; }
-            .heading-text    { color: #f2f5fc !important; }
-            .body-text       { color: #aeb5c5 !important; }
-            .muted-text      { color: #505258 !important; }
-            .divider         { background-color: #535762 !important; }
-            .cta-button      { background-color: #f2f5fc !important; color: #151617 !important; border-color: #f2f5fc !important; }
-            .note-block      { border-left-color: #535762 !important; }
-            .note-text       { color: #505258 !important; }
-            .detail-block    { background-color: #1c1c1c !important; border-color: #535762 !important; }
-            .detail-row      { border-bottom-color: #535762 !important; }
-            .detail-label    { color: #505258 !important; }
-            .detail-value    { color: #f2f5fc !important; }
-            .peridot-dot     { background-color: #e6e200 !important; }
-            .footer-link     { color: #505258 !important; }
+        /* ── Font stack ─────────────────────────────────── */
+        body, table, td, p, a, li, span, h1, h2, h3, h4 {
+            font-family: 'Trebuchet MS', -apple-system, BlinkMacSystemFont,
+            'Helvetica Neue', Helvetica, Arial, sans-serif;
         }
 
-        /* ── Responsive ────────────────────────────────── */
+        /* ── Light mode ─────────────────────────────────── */
+        :root { color-scheme: light dark; }
+        body                { background-color: #cfd2d7; }
+        .outer-td           { background-color: #cfd2d7; }
+        .email-container    { background-color: #d8dde7; border: 1px solid #8f93a1; }
+        .email-header       { border-bottom: 1px solid #8f93a1; }
+        .email-footer       { border-top: 1px solid #8f93a1; }
+        .brand-name         { color: #151617; }
+        .index-label        { color: #797d83; }
+        .heading-text       { color: #151617; }
+        .body-text          { color: #44474a; }
+        .muted-text         { color: #797d83; }
+        .divider            { background-color: #8f93a1; }
+        .cta-button         { background-color: #151617 !important; color: #f2f5fc !important; border: 1px solid #151617 !important; }
+        .note-block         { border-left: 2px solid #8f93a1; }
+        .note-text          { color: #797d83; }
+        .detail-block       { background-color: #cdd2dc; border: 1px solid #8f93a1; }
+        .detail-row         { border-bottom: 1px solid #8f93a1; }
+        .detail-label       { color: #797d83; }
+        .detail-value       { color: #151617; }
+        .peridot-dot        { background-color: #b8b800; }
+        .footer-link        { color: #797d83; }
+
+        /* ── Dark mode ──────────────────────────────────── */
+        @media (prefers-color-scheme: dark) {
+            body                { background-color: #000000 !important; }
+            .outer-td           { background-color: #000000 !important; }
+            .email-container    { background-color: #141414 !important; border-color: #535762 !important; }
+            .email-header       { border-bottom-color: #535762 !important; }
+            .email-footer       { border-top-color: #535762 !important; }
+            .brand-name         { color: #f2f5fc !important; }
+            .index-label        { color: #505258 !important; }
+            .heading-text       { color: #f2f5fc !important; }
+            .body-text          { color: #aeb5c5 !important; }
+            .muted-text         { color: #505258 !important; }
+            .divider            { background-color: #535762 !important; }
+            .cta-button         { background-color: #f2f5fc !important; color: #151617 !important; border-color: #f2f5fc !important; }
+            .note-block         { border-left-color: #535762 !important; }
+            .note-text          { color: #505258 !important; }
+            .detail-block       { background-color: #1c1c1c !important; border-color: #535762 !important; }
+            .detail-row         { border-bottom-color: #535762 !important; }
+            .detail-label       { color: #505258 !important; }
+            .detail-value       { color: #f2f5fc !important; }
+            .peridot-dot        { background-color: #e6e200 !important; }
+            .footer-link        { color: #505258 !important; }
+        }
+
+        /* ── Responsive ─────────────────────────────────── */
         @media only screen and (max-width: 600px) {
-            .email-container { width: 100% !important; border-radius: 0 !important; border-left: none !important; border-right: none !important; }
-            .email-padding   { padding: 28px 24px !important; }
-            .header-padding  { padding: 20px 24px !important; }
-            .footer-padding  { padding: 20px 24px !important; }
-            .cta-button      { display: block !important; width: 100% !important; text-align: center !important; }
+            .email-container    { width: 100% !important; border-radius: 0 !important; border-left: none !important; border-right: none !important; }
+            .email-padding      { padding: 28px 24px !important; }
+            .header-padding     { padding: 20px 24px !important; }
+            .footer-padding     { padding: 20px 24px !important; }
+            .cta-button         { display: block !important; width: 100% !important; text-align: center !important; }
             .detail-label-td,
-            .detail-value-td { display: block !important; width: 100% !important; }
-            .detail-label-td { padding-bottom: 2px !important; }
-            .detail-value-td { padding-top: 0 !important; padding-bottom: 12px !important; }
-            .hide-mobile     { display: none !important; }
+            .detail-value-td    { display: block !important; width: 100% !important; }
+            .detail-label-td    { padding-bottom: 2px !important; }
+            .detail-value-td    { padding-top: 0 !important; padding-bottom: 12px !important; }
+            .hide-mobile        { display: none !important; }
         }
     </style>
 </head>
@@ -87,34 +93,36 @@
 ║  The Pacmedia — Base Email Template                          ║
 ║  resources/views/emails/base.blade.php                       ║
 ║                                                              ║
-║  Variables (all optional — defaults provided):               ║
-║    $subject      Email subject / tab title                   ║
-║    $preheader    Hidden inbox preview text                   ║
-║    $emailType    Top-right tag e.g. "Confirmation"           ║
-║    $indexLabel   e.g. "01 — Message Received"                ║
-║    $heading      Main headline — HTML allowed                ║
-║    $bodyLine1    First body paragraph                        ║
-║    $bodyLine2    Second paragraph (optional)                 ║
-║    $note         Italic aside block (optional)               ║
-║    $details      Associative array ['Label' => 'Value']      ║
-║    $ctaUrl       CTA button URL                              ║
-║    $ctaLabel     CTA button text                             ║
+║  Variables:                                                  ║
+║    $subject      string   Email subject / tab title          ║
+║    $preheader    string   Hidden inbox preview text          ║
+║    $emailType    string   Top-right tag                      ║
+║    $indexLabel   string   Small text above headline          ║
+║    $heading      string   Main headline (HTML allowed)       ║
+║    $paragraphs   array    Body paragraphs — any number       ║
+║    $bodyLine1    string   Fallback if $paragraphs not set    ║
+║    $bodyLine2    string   Fallback second paragraph          ║
+║    $note         string   Italic aside (optional)            ║
+║    $details      array    ['Label' => 'Value'] (optional)    ║
+║    $ctaUrl       string   CTA button URL (optional)          ║
+║    $ctaLabel     string   CTA button text (optional)         ║
 ╚══════════════════════════════════════════════════════════════╝
 --}}
 <body>
 
-{{-- Preheader hidden text --}}
+{{-- Preheader --}}
 @if (!empty($preheader))
     <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;visibility:hidden;opacity:0;font-size:1px;color:#cfd2d7;">{{ $preheader }}&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;</div>
 @endif
 
-{{-- ══ OUTER WRAPPER — centres the container ══ --}}
-<table class="email-wrapper" width="100%" cellpadding="0" cellspacing="0" role="presentation"
-       style="background-color:#cfd2d7;width:100%;">
+{{-- Outer wrapper — full viewport background --}}
+<table width="100%" cellpadding="0" cellspacing="0" role="presentation"
+       style="width:100%;background-color:#cfd2d7;">
     <tr>
-        <td align="center" style="padding:40px 16px;">
+        <td class="outer-td" align="center" valign="top"
+            style="background-color:#cfd2d7;padding:40px 16px;">
 
-            {{-- ══ CONTAINER ══ --}}
+            {{-- Container --}}
             <table class="email-container" cellpadding="0" cellspacing="0" role="presentation"
                    style="max-width:580px;width:100%;background-color:#d8dde7;border:1px solid #8f93a1;border-radius:20px;overflow:hidden;">
 
@@ -124,7 +132,6 @@
                         style="padding:26px 40px;border-bottom:1px solid #8f93a1;">
                         <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
                             <tr>
-                                {{-- Dot + name --}}
                                 <td style="vertical-align:middle;">
                                     <table cellpadding="0" cellspacing="0" role="presentation">
                                         <tr>
@@ -137,7 +144,6 @@
                                         </tr>
                                     </table>
                                 </td>
-                                {{-- Email type --}}
                                 <td align="right" style="vertical-align:middle;">
                                     <span class="index-label" style="font-family:'Trebuchet MS',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;font-weight:400;letter-spacing:0.14em;text-transform:uppercase;color:#797d83;">{{ $emailType ?? 'Notification' }}</span>
                                 </td>
@@ -159,14 +165,28 @@
                         {{-- Rule --}}
                         <div class="divider" style="width:28px;height:1px;background-color:#8f93a1;margin:24px 0;font-size:0;line-height:0;">&nbsp;</div>
 
-                        {{-- Body line 1 --}}
-                        <p class="body-text" style="font-family:'Trebuchet MS',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;font-weight:400;line-height:1.8;color:#44474a;margin:0 0 16px 0;">{{ $bodyLine1 ?? 'We have received your submission and our team is reviewing it now.' }}</p>
-
-                        {{-- Body line 2 (optional) --}}
-                        @if (!empty($bodyLine2))
-                            <p class="body-text" style="font-family:'Trebuchet MS',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;font-weight:400;line-height:1.8;color:#44474a;margin:0 0 32px 0;">{{ $bodyLine2 }}</p>
+                        {{--
+                            PARAGRAPHS — supports any number.
+                            Priority: $paragraphs array > $bodyLine1/$bodyLine2 fallback.
+                            This ensures backward compatibility with contact-confirmation
+                            and internal-alert views that still set $bodyLine1/$bodyLine2.
+                        --}}
+                        @if (!empty($paragraphs) && is_array($paragraphs))
+                            @foreach ($paragraphs as $para)
+                                @if (trim($para))
+                                    <p class="body-text" style="font-family:'Trebuchet MS',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;font-weight:400;line-height:1.8;color:#44474a;margin:0 0 16px 0;">{{ $para }}</p>
+                                @endif
+                            @endforeach
+                            <div style="margin-bottom:16px;"></div>
                         @else
-                            <div style="margin-bottom:32px;"></div>
+                            {{-- Fallback for views that set $bodyLine1 / $bodyLine2 directly --}}
+                            @if (!empty($bodyLine1))
+                                <p class="body-text" style="font-family:'Trebuchet MS',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;font-weight:400;line-height:1.8;color:#44474a;margin:0 0 16px 0;">{{ $bodyLine1 }}</p>
+                            @endif
+                            @if (!empty($bodyLine2))
+                                <p class="body-text" style="font-family:'Trebuchet MS',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;font-weight:400;line-height:1.8;color:#44474a;margin:0 0 16px 0;">{{ $bodyLine2 }}</p>
+                            @endif
+                            <div style="margin-bottom:16px;"></div>
                         @endif
 
                         {{-- Detail block (optional) --}}
@@ -186,7 +206,7 @@
                             </table>
                         @endif
 
-                        {{-- CTA (optional) --}}
+                        {{-- CTA button (optional) --}}
                         @if (!empty($ctaUrl))
                             <table cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom:32px;">
                                 <tr>

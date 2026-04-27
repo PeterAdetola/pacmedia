@@ -102,7 +102,8 @@
 
             /* ── Invoice calculations ── */
             .invoice-calculations { min-inline-size: 200px; }
-            .invoice-actions .card { position: sticky; top: 80px; }
+            .invoice-actions .card { position: sticky; top: 80px; z-index: 10; }
+            .invoice-preview-card { isolation: isolate; }
 
             /* ── Submit error banner ── */
             #pac-submit-error {

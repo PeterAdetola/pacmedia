@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\InboxController;
 use App\Http\Controllers\Admin\ChatController;
 use App\Http\Controllers\Admin\LogController;
 use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Admin\MailComposerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -103,6 +104,10 @@ Route::prefix('settings')->name('admin.settings.')->group(function () {
     Route::get('/',  [SettingsController::class, 'index']) ->name('index');
     Route::put('/',  [SettingsController::class, 'update'])->name('update');
 });
+
+// Mail Composer (general emails)────────────────────────────────────────
+Route::get( '/mail/compose', [MailComposerController::class, 'index'])->name('admin.mail.compose');
+Route::post('/mail/compose', [MailComposerController::class, 'send'])->name('admin.mail.send');
 
 // ── Session keepalive ──────────────────────────────────────────────────
 Route::post('/ping', fn() => response()->noContent())->name('admin.ping');

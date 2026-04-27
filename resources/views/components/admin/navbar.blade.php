@@ -181,7 +181,7 @@
                                     ['route' => 'admin.projects.index',  'icon' => 'ri-layout-column-line', 'label' => 'Projects'],
                                     ['route' => 'admin.inbox.index',     'icon' => 'ri-inbox-line',         'label' => 'Inbox'],
                                     ['route' => 'admin.letters.index',   'icon' => 'ri-quill-pen-line',     'label' => 'Letters'],
-                                    ['route' => 'admin.chat.index',      'icon' => 'ri-message-3-line',     'label' => 'Chat'],
+                                    ['route' => 'admin.mail.compose',      'icon' => 'ri-message-3-line',     'label' => 'Send Mail'],
                                     ['route' => 'admin.logs.index',      'icon' => 'ri-history-line',       'label' => 'Logs'],
                                 ];
                             @endphp
