@@ -170,8 +170,8 @@
                                         @foreach($fromAddresses as $addr)
                                             <option value="{{ $addr['address'] }}"
                                                 {{ $addr['address'] === 'updates@thepacmedia.com' ? 'selected' : '' }}>
-{{--                                                {{ $addr['name'] }}--}}
-                                               {{ $addr['address'] }}
+                                                {{--                                                {{ $addr['name'] }}--}}
+                                                {{ $addr['address'] }}
                                             </option>
                                         @endforeach
                                     </select>
@@ -441,6 +441,7 @@
                             <div class="pac-dropzone" id="pac-dropzone">
                                 <input type="file"
                                        id="attachments-input"
+                                       name="attachments[]"
                                        multiple
                                        accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,image/jpeg,image/png,image/gif,image/webp">
                                 <div class="pac-dropzone-icon"><i class="ri ri-upload-cloud-2-line"></i></div>
@@ -588,6 +589,14 @@
                     return (b / 1048576).toFixed(1) + ' MB';
                 }
 
+                // Sync attachedFiles array back into the real file input so
+                // the browser submits them naturally — no submit-time injection needed.
+                function syncInput() {
+                    const dt = new DataTransfer();
+                    attachedFiles.forEach(f => dt.items.add(f));
+                    fileInput.files = dt.files;
+                }
+
                 function renderPills() {
                     pillList.innerHTML = '';
                     attachedFiles.forEach(function (file, idx) {
@@ -603,6 +612,7 @@
                 `;
                         pill.querySelector('.pac-pill-remove').addEventListener('click', function () {
                             attachedFiles.splice(idx, 1);
+                            syncInput();
                             renderPills();
                         });
                         pillList.appendChild(pill);
@@ -615,8 +625,8 @@
                             attachedFiles.push(f);
                         }
                     });
+                    syncInput();
                     renderPills();
-                    fileInput.value = '';
                 }
 
                 fileInput.addEventListener('change', () => addFiles(fileInput.files));
@@ -626,20 +636,6 @@
                     e.preventDefault();
                     dropzone.classList.remove('dragover');
                     addFiles(e.dataTransfer.files);
-                });
-
-                // Inject files into form on submit via DataTransfer
-                document.getElementById('pac-compose-form').addEventListener('submit', function () {
-                    if (!attachedFiles.length) return;
-                    const dt = new DataTransfer();
-                    attachedFiles.forEach(f => dt.items.add(f));
-                    const inp    = document.createElement('input');
-                    inp.type     = 'file';
-                    inp.name     = 'attachments[]';
-                    inp.multiple = true;
-                    inp.style.display = 'none';
-                    Object.defineProperty(inp, 'files', { value: dt.files });
-                    this.appendChild(inp);
                 });
 
                 // ── Auto-dismiss success alert ────────────────────

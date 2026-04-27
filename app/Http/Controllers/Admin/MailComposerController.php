@@ -88,31 +88,22 @@ class MailComposerController extends Controller
             'from_address' => $validated['from_address'],
             'subject'    => $validated['subject'],
             'preheader'  => $paragraphs[0] ?? '',
-            'emailType'  => $validated['email_type'],
-            'indexLabel' => $validated['index_label'] ?? '01 — Message',
+            'email_type' => $validated['email_type'],
+            'index_label'=> $validated['index_label'] ?? '01 — Message',
             'heading'    => $validated['heading']     ?? $validated['subject'],
             'body_paragraphs' => $paragraphs,
             'note'       => $validated['note']        ?? null,
             'details'    => $details,
-            'ctaUrl'     => $validated['cta_url']     ?? null,
-            'ctaLabel'   => $validated['cta_label']   ?? null,
-            'sigName'    => $validated['sig_name']    ?? 'Peter',
-            'sigRole'    => $validated['sig_role']    ?? 'Founder, The Pacmedia',
+            'cta_url'    => $validated['cta_url']     ?? null,
+            'cta_label'  => $validated['cta_label']   ?? null,
+            'sig_name'   => $validated['sig_name']    ?? 'Peter',
+            'sig_role'   => $validated['sig_role']    ?? 'Founder, The Pacmedia',
         ];
 
-        $mailable = (new GeneralMail($data))->from($validated['from_address'], $fromName);
+        // Pass uploaded files into $data so GeneralMail::attachments() can stream them
+        $data['attachments'] = $request->file('attachments') ?? [];
 
-        // Attach uploaded files
-        if ($request->hasFile('attachments')) {
-            foreach ($request->file('attachments') as $file) {
-                if ($file && $file->isValid()) {
-                    $mailable->attach($file->getRealPath(), [
-                        'as'   => $file->getClientOriginalName(),
-                        'mime' => $file->getMimeType(),
-                    ]);
-                }
-            }
-        }
+        $mailable = (new GeneralMail($data))->from($validated['from_address'], $fromName);
 
         Mail::to($validated['to'])->send($mailable);
 
