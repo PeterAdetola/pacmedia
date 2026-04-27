@@ -91,7 +91,7 @@ class MailComposerController extends Controller
             'emailType'  => $validated['email_type'],
             'indexLabel' => $validated['index_label'] ?? '01 — Message',
             'heading'    => $validated['heading']     ?? $validated['subject'],
-            'paragraphs' => $paragraphs,
+            'body_paragraphs' => $paragraphs,
             'note'       => $validated['note']        ?? null,
             'details'    => $details,
             'ctaUrl'     => $validated['cta_url']     ?? null,
