@@ -135,11 +135,12 @@
                                 <td style="vertical-align:middle;">
                                     <table cellpadding="0" cellspacing="0" role="presentation">
                                         <tr>
-                                            <td style="vertical-align:middle;padding-right:9px;">
-                                                <div class="peridot-dot" style="width:8px;height:8px;background-color:#b8b800;border-radius:50%;display:inline-block;vertical-align:middle;"></div>
-                                            </td>
                                             <td style="vertical-align:middle;">
-                                                <span class="brand-name" style="font-family:'Trebuchet MS',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#151617;">The Pacmedia</span>
+                                                <img src="https://thepacmedia.com/img/pac-symbol.png"
+                                                     alt="The Pacmedia"
+                                                     width="32"
+                                                     height="32"
+                                                     style="display:block; width:32px; height:32px; object-fit:contain;" />
                                             </td>
                                         </tr>
                                     </table>
