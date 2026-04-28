@@ -51,7 +51,7 @@ class Invoice extends Model
 
     public function currencySymbol(): string
     {
-        return static::$currencySymbols[$this->currency ?? 'USD'] ?? ($this->currency ?? 'USD');
+        return static::$currencySymbols[$this->currency ?? 'NGN'] ?? ($this->currency ?? 'NGN');
     }
 
     public function formatAmount(float $amount): string
@@ -89,18 +89,25 @@ class Invoice extends Model
     }
 
     /* ─────────────────────────────────────────
-     | Sectional Totals
+     | Sectional Totals — Completed
      ───────────────────────────────────────── */
 
     public function completedSubtotal(): float
     {
-        return $this->completedItems->sum(fn($i) => $i->qty * $i->unit_price);
+        return (float) $this->completedItems->sum(fn($i) => $i->qty * $i->unit_price);
     }
 
     public function completedTax(): float
     {
-        if (!$this->tax_enabled || !in_array($this->tax_applies_to, ['completed', 'both', 'all'])) return 0;
-        return round($this->completedItems->where('taxable', true)->sum(fn($i) => $i->qty * $i->unit_price) * ($this->tax_rate / 100), 2);
+        if (!$this->tax_enabled) return 0;
+        // FIX: 'all' added consistently (was missing in the original completedTax check)
+        if (!in_array($this->tax_applies_to, ['completed', 'both', 'all'])) return 0;
+
+        return round(
+            $this->completedItems->where('taxable', true)->sum(fn($i) => $i->qty * $i->unit_price)
+            * ($this->tax_rate / 100),
+            2
+        );
     }
 
     public function completedWht(): float
@@ -109,29 +116,83 @@ class Invoice extends Model
         return round($this->completedSubtotal() * ($this->wht_rate / 100), 2);
     }
 
+    /**
+     * What the client still owes for the Completed section.
+     * Formula: subtotal + tax − discount − paid_amount − WHT
+     *
+     * NOTE: paid_amount and WHT are intentionally applied only to the
+     * completed section because that is the payable/billable section.
+     * Subscription is a recurring charge; Proposed is not yet approved.
+     */
     public function completedOutstanding(): float
     {
-        return $this->completedSubtotal() + $this->completedTax() - $this->completed_discount - $this->paid_amount - $this->completedWht();
+        return $this->completedSubtotal()
+            + $this->completedTax()
+            - (float) $this->completed_discount
+            - (float) $this->paid_amount
+            - $this->completedWht();
     }
+
+    /* ─────────────────────────────────────────
+     | Sectional Totals — Subscription
+     ───────────────────────────────────────── */
 
     public function subscriptionSubtotal(): float
     {
-        return $this->subscriptionItems->sum(fn($i) => $i->qty * $i->unit_price);
+        return (float) $this->subscriptionItems->sum(fn($i) => $i->qty * $i->unit_price);
     }
 
     public function subscriptionTax(): float
     {
-        if (!$this->tax_enabled || !in_array($this->tax_applies_to, ['subscription', 'all'])) return 0;
-        return round($this->subscriptionItems->where('taxable', true)->sum(fn($i) => $i->qty * $i->unit_price) * ($this->tax_rate / 100), 2);
+        if (!$this->tax_enabled) return 0;
+        // FIX: 'both' intentionally NOT included here — 'both' = completed + proposed only
+        if (!in_array($this->tax_applies_to, ['subscription', 'all'])) return 0;
+
+        return round(
+            $this->subscriptionItems->where('taxable', true)->sum(fn($i) => $i->qty * $i->unit_price)
+            * ($this->tax_rate / 100),
+            2
+        );
     }
 
     public function subscriptionOutstanding(): float
     {
-        return $this->subscriptionSubtotal() + $this->subscriptionTax() - $this->subscription_discount;
+        return $this->subscriptionSubtotal()
+            + $this->subscriptionTax()
+            - (float) $this->subscription_discount;
     }
 
     /* ─────────────────────────────────────────
-     | Combined Totals (Grand Totals)
+     | Sectional Totals — Proposed
+     ───────────────────────────────────────── */
+
+    public function proposedSubtotal(): float
+    {
+        return (float) $this->proposedItems->sum(fn($i) => $i->qty * $i->unit_price);
+    }
+
+    public function proposedTax(): float
+    {
+        if (!$this->tax_enabled) return 0;
+        // 'both' means completed + proposed; 'all' means everything
+        if (!in_array($this->tax_applies_to, ['proposed', 'both', 'all'])) return 0;
+
+        return round(
+            $this->proposedItems->where('taxable', true)->sum(fn($i) => $i->qty * $i->unit_price)
+            * ($this->tax_rate / 100),
+            2
+        );
+    }
+
+    public function proposedTotal(): float
+    {
+        return $this->proposedSubtotal()
+            + $this->proposedTax()
+            - (float) $this->proposed_discount;
+    }
+
+    /* ─────────────────────────────────────────
+     | Combined / Grand Totals
      ───────────────────────────────────────── */
 
     public function totalSubtotal(): float
@@ -141,41 +202,44 @@ class Invoice extends Model
 
     public function grandTotal(): float
     {
-        $completedNet = $this->completedSubtotal() + $this->completedTax() - $this->completed_discount;
-        $subscriptionNet = $this->subscriptionSubtotal() + $this->subscriptionTax() - $this->subscription_discount;
+        $completedNet    = $this->completedSubtotal() + $this->completedTax() - (float) $this->completed_discount;
+        $subscriptionNet = $this->subscriptionSubtotal() + $this->subscriptionTax() - (float) $this->subscription_discount;
         return $completedNet + $subscriptionNet;
     }
 
+    /**
+     * Grand outstanding = what is owed across Completed + Subscription,
+     * minus payment already received and WHT deduction.
+     *
+     * FIX: removed the double-subtraction of WHT that existed in the original.
+     * completedWht() is already subtracted inside completedOutstanding(),
+     * so grandOutstanding() must NOT subtract it a second time.
+     */
     public function grandOutstanding(): float
     {
-        return $this->grandTotal() - $this->paid_amount - $this->completedWht();
+        return $this->completedOutstanding() + $this->subscriptionOutstanding();
     }
 
     /* ─────────────────────────────────────────
-     | Proposed totals
+     | Invoice Number Generator
      ───────────────────────────────────────── */
-
-    public function proposedSubtotal(): float
-    {
-        return $this->proposedItems->sum(fn($i) => $i->qty * $i->unit_price);
-    }
-
-    public function proposedTax(): float
-    {
-        if (!$this->tax_enabled || !in_array($this->tax_applies_to, ['proposed', 'both', 'all'])) return 0;
-        return round($this->proposedItems->where('taxable', true)->sum(fn($i) => $i->qty * $i->unit_price) * ($this->tax_rate / 100), 2);
-    }
-
-    public function proposedTotal(): float
-    {
-        return $this->proposedSubtotal() + $this->proposedTax() - $this->proposed_discount;
-    }
 
     public static function generateNumber(): string
     {
         $prefix = 'P' . now()->format('dmY');
-        $last = static::withTrashed()->where('number', 'like', $prefix . '%')->orderByDesc('number')->value('number');
+        $last   = static::withTrashed()
+            ->where('number', 'like', $prefix . '%')
+            ->orderByDesc('number')
+            ->value('number');
         $seq = $last ? ((int) substr($last, -3)) + 1 : 1;
-        return $prefix . str_pad($seq, 3, '0', STR_PAD_LEFT);
+
+        // Guard against race conditions: keep incrementing until the number is free
+        do {
+            $number = $prefix . str_pad($seq, 3, '0', STR_PAD_LEFT);
+            $exists = static::withTrashed()->where('number', $number)->exists();
+            $seq++;
+        } while ($exists);
+
+        return $number;
     }
 }

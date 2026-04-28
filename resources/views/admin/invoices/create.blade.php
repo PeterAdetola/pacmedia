@@ -221,18 +221,12 @@
                                         <span class="h5 text-capitalize mb-0 text-nowrap">Invoice</span>
                                     </dt>
                                     <dd class="col-sm-7">
-                                        <div class="input-group input-group-merge input-group-sm">
-                                            <span class="input-group-text">P</span>
-                                            <input type="text"
-                                                   name="number"
-                                                   class="form-control @error('number') is-invalid @enderror"
-                                                   value="{{ old('number', substr($nextNumber, 1)) }}"
-                                                   placeholder="190420261"
-                                                   required>
-                                        </div>
-                                        @error('number')
-                                        <div class="text-danger" style="font-size:0.72rem;">{{ $message }}</div>
-                                        @enderror
+                                        <p class="mb-0 text-muted" style="font-size:0.78rem;">
+                                            Auto-assigned on save
+                                            <span class="badge bg-label-secondary ms-1" style="font-size:0.68rem; letter-spacing:0.04em;">
+                                                P{{ now()->format('dmY') }}###
+                                            </span>
+                                        </p>
                                     </dd>
                                     <dt class="col-sm-5 mb-2 d-md-flex align-items-center justify-content-start">
                                         <span class="fw-normal text-nowrap">Date Issued:</span>
@@ -614,8 +608,8 @@
                         <button type="submit" name="status_action" value="sent"
                                 class="btn btn-primary d-grid w-100 mb-4">
                             <span class="d-flex align-items-center justify-content-center text-nowrap">
-                                <i class="icon-base ri ri-send-plane-line icon-16px scaleX-n1-rtl me-2"></i>
-                                Save & Send
+                                <i class="icon-base ri ri-save-line icon-16px scaleX-n1-rtl me-2"></i>
+                                Save & View
                             </span>
                         </button>
                         <button type="submit" name="status_action" value="draft"
@@ -629,9 +623,21 @@
                 <div>
                     <div class="mb-6">
                         <label class="form-label fw-medium" style="font-size:0.82rem;">Status</label>
-                        <select name="status" class="form-select" id="status-select">
+                        <select class="form-select" id="status-select">
                             @foreach(['draft','sent','partial','paid','overdue'] as $s)
                                 <option value="{{ $s }}" {{ old('status','draft') === $s ? 'selected' : '' }}>{{ ucfirst($s) }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="form-label fw-medium" style="font-size:0.82rem;">Currency</label>
+                        <select name="currency" id="currency-select" class="form-select">
+                            @foreach(\App\Models\Invoice::$currencySymbols as $code => $symbol)
+                                <option value="{{ $code }}"
+                                    {{ old('currency', 'NGN') === $code ? 'selected' : '' }}>
+                                    {{ $code }} ({{ $symbol }})
+                                </option>
                             @endforeach
                         </select>
                     </div>
@@ -788,41 +794,7 @@
         </div>
     </template>
 
-    {{-- Send Invoice Offcanvas --}}
-    <div class="offcanvas offcanvas-end" id="sendInvoiceOffcanvas" aria-hidden="true">
-        <div class="offcanvas-header border-bottom">
-            <h5 class="offcanvas-title">Send Invoice</h5>
-            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        </div>
-        <div class="offcanvas-body flex-grow-1">
-            <div class="form-floating form-floating-outline mb-5">
-                <input type="email" class="form-control" id="invoice-from" value="hello@thepacmedia.com" placeholder="company@email.com">
-                <label for="invoice-from">From</label>
-            </div>
-            <div class="form-floating form-floating-outline mb-5">
-                <input type="email" class="form-control" id="invoice-to" placeholder="client@email.com">
-                <label for="invoice-to">To</label>
-            </div>
-            <div class="form-floating form-floating-outline mb-5">
-                <input type="text" class="form-control" id="invoice-subject" value="Invoice from The Pacmedia" placeholder="Invoice subject">
-                <label for="invoice-subject">Subject</label>
-            </div>
-            <div class="form-floating form-floating-outline mb-5">
-                <textarea class="form-control" id="invoice-message" style="height:190px">Dear Client, please find attached your invoice from The Pacmedia.</textarea>
-                <label for="invoice-message">Message</label>
-            </div>
-            <div class="mb-5">
-                <span class="badge bg-label-primary rounded-pill">
-                    <i class="icon-base ri ri-links-line icon-14px me-1"></i>
-                    <span class="align-middle">Invoice Attached</span>
-                </span>
-            </div>
-            <div class="mb-4 d-flex flex-wrap gap-3">
-                <button type="button" class="btn btn-primary" data-bs-dismiss="offcanvas">Send</button>
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="offcanvas">Cancel</button>
-            </div>
-        </div>
-    </div>
+    {{-- Send offcanvas removed: send happens via status_action=sent submit button --}}
 
     @push('page-js')
         <script src="{{ asset('admin/assets/vendor/libs/flatpickr/flatpickr.js') }}"></script>
@@ -870,6 +842,11 @@
                     } else {
                         hideError();
                     }
+                    // Prevent double submission
+                    this.querySelectorAll('button[name="status_action"]').forEach(btn => {
+                        btn.disabled = true;
+                    });
+
                 });
 
                 /* ── Client preview ── */

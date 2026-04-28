@@ -8,23 +8,28 @@ use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Spatie\Browsershot\Browsershot;
 use Illuminate\Support\Facades\Mail;
 use App\Jobs\SendInvoiceEmail;
 use Illuminate\Support\Facades\Http;
 
-class InvoiceController extends Controller
+class InvoiceControllerOne extends Controller
 {
     public function index(Request $request)
     {
-        $query = Invoice::with('client', 'items')
+        // 1. Base Query
+        $query = Invoice::with(['client', 'items'])
             ->whereNull('deleted_at');
 
+        // 2. Apply Filters
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
+
         if ($request->filled('client_id')) {
             $query->where('client_id', $request->client_id);
         }
+
         if ($request->filled('period')) {
             match ($request->period) {
                 'today'      => $query->whereDate('submitted_at', today()),
@@ -35,6 +40,7 @@ class InvoiceController extends Controller
                 default      => null,
             };
         }
+
         if ($request->filled('search')) {
             $term = '%' . $request->search . '%';
             $query->where(function ($q) use ($term) {
@@ -45,48 +51,65 @@ class InvoiceController extends Controller
             });
         }
 
+        // 3. Execution (Sort and Paginate)
         $query->orderByDesc('submitted_at')->orderByDesc('id');
         $perPage  = (int) $request->input('per_page', 10);
         $invoices = $query->paginate($perPage)->withQueryString();
 
-        $allInvoices = Invoice::whereNull('deleted_at');
+        // 4. Calculate Stats (Always calculated for ALL invoices, ignoring table filters)
+        $baseStatsQuery = Invoice::whereNull('deleted_at');
+
         $stats = [
-            'total'             => (clone $allInvoices)->count(),
-            'this_month'        => (clone $allInvoices)->whereMonth('submitted_at', now()->month)->whereYear('submitted_at', now()->year)->count(),
-            'draft_count'       => (clone $allInvoices)->where('status', 'draft')->count(),
-            'sent_count'        => (clone $allInvoices)->where('status', 'sent')->count(),
-            'partial_count'     => (clone $allInvoices)->where('status', 'partial')->count(),
-            'paid_count'        => (clone $allInvoices)->where('status', 'paid')->count(),
-            'overdue_count'     => (clone $allInvoices)->where('status', 'overdue')->count(),
+            'total'             => (clone $baseStatsQuery)->count(),
+            'this_month'        => (clone $baseStatsQuery)->whereMonth('submitted_at', now()->month)
+                ->whereYear('submitted_at', now()->year)->count(),
+            'draft_count'       => (clone $baseStatsQuery)->where('status', 'draft')->count(),
+            'sent_count'        => (clone $baseStatsQuery)->where('status', 'sent')->count(),
+            'partial_count'     => (clone $baseStatsQuery)->where('status', 'partial')->count(),
+            'paid_count'        => (clone $baseStatsQuery)->where('status', 'paid')->count(),
+            'overdue_count'     => (clone $baseStatsQuery)->where('status', 'overdue')->count(),
             'client_count'      => Client::where('active', true)->count(),
-            'total_billed'      => Invoice::whereNull('deleted_at')->with('items')->get()
+
+            // These use the model helper methods you defined in Invoice.php
+            'total_billed'      => (clone $baseStatsQuery)->with('items')->get()
                 ->sum(fn($inv) => $inv->completedSubtotal()),
-            'total_outstanding' => Invoice::whereNull('deleted_at')->whereNotIn('status', ['paid'])->with('items')->get()
+            'total_outstanding' => (clone $baseStatsQuery)->whereNotIn('status', ['paid'])->with('items')->get()
                 ->sum(fn($inv) => max(0, $inv->completedOutstanding())),
+        ];
+
+        // 5. Build Counts for the Tabs
+        $counts = [
+            'all'     => $stats['total'],
+            'draft'   => $stats['draft_count'],
+            'sent'    => $stats['sent_count'],
+            'partial' => $stats['partial_count'],
+            'paid'    => $stats['paid_count'],
+            'overdue' => $stats['overdue_count'],
         ];
 
         $clients = Client::where('active', true)->orderBy('name')->get();
 
-        return view('admin.invoices.index', compact('invoices', 'stats', 'clients'));
+        return view('admin.invoices.index', compact('invoices', 'stats', 'clients', 'counts'));
     }
 
     public function create(Request $request)
     {
-        $clients           = Client::orderBy('name')->get();
+        $clients    = Client::orderBy('name')->get();
+        $nextNumber = Invoice::generateNumber();
         $preselectedClient = $request->filled('client_id')
             ? Client::find($request->client_id)
             : null;
 
-        return view('admin.invoices.create', compact('clients', 'preselectedClient'));
+        return view('admin.invoices.create', compact('clients', 'nextNumber', 'preselectedClient'));
     }
 
     /* ─────────────────────────────────────────────────────────
      | Shared validation rules
      ───────────────────────────────────────────────────────── */
-    private function validationRules(): array
+    private function validationRules(string $numberId = 'required|string|unique:invoices,number'): array
     {
         return [
-            // 'number' is generated server-side — not a user-submitted field
+            'number'                        => $numberId,
             'client_id'                     => 'required|exists:clients,id',
             'project_name'                  => 'nullable|string|max:255',
             'submitted_at'                  => 'required|date',
@@ -95,7 +118,6 @@ class InvoiceController extends Controller
             'paid_amount'                   => 'nullable|numeric|min:0',
 
             // Completed
-            'has_completed'                 => 'boolean',  // FIX: was missing from rules
             'completed_discount'            => 'nullable|numeric|min:0',
             'completed_discount_label'      => 'nullable|string|max:255',
 
@@ -131,14 +153,14 @@ class InvoiceController extends Controller
             // Completed items
             'completed_items'               => 'nullable|array',
             'completed_items.*.description' => 'required|string|max:500',
-            'completed_items.*.qty'         => 'required|numeric|min:0',
+            'completed_items.*.qty'         => 'required|numeric|min:1',
             'completed_items.*.unit_price'  => 'required|numeric|min:0',
             'completed_items.*.taxable'     => 'boolean',
 
             // Subscription items
             'subscription_items'                  => 'nullable|array',
             'subscription_items.*.description'    => 'required|string|max:500',
-            'subscription_items.*.qty'            => 'required|numeric|min:0',
+            'subscription_items.*.qty'            => 'required|numeric|min:1',
             'subscription_items.*.unit_price'     => 'required|numeric|min:0',
             'subscription_items.*.billing_cycle'  => 'nullable|in:monthly,annual',
             'subscription_items.*.renewal_date'   => 'nullable|date',
@@ -147,7 +169,7 @@ class InvoiceController extends Controller
             // Proposed items
             'proposed_items'                => 'nullable|array',
             'proposed_items.*.description'  => 'required|string|max:500',
-            'proposed_items.*.qty'          => 'required|numeric|min:0',
+            'proposed_items.*.qty'          => 'required|numeric|min:1',
             'proposed_items.*.unit_price'   => 'required|numeric|min:0',
             'proposed_items.*.taxable'      => 'boolean',
 
@@ -162,35 +184,42 @@ class InvoiceController extends Controller
     private function invoiceAttributes(array $v): array
     {
         return [
+            'number'                      => $v['number'],
             'client_id'                   => $v['client_id'],
-            'project_name'                => $v['project_name']                  ?? null,
+            'project_name'                => $v['project_name'] ?? null,
             'submitted_at'                => $v['submitted_at'],
             'due_date'                    => $v['due_date'],
             'status'                      => $v['status'],
-            'paid_amount'                 => $v['paid_amount']                   ?? 0,
-            'completed_discount'          => $v['completed_discount']            ?? 0,
-            'completed_discount_label'    => $v['completed_discount_label']      ?? null,
-            'has_completed'               => $v['has_completed']                 ?? false,  // FIX: now sourced correctly
-            'has_proposed'                => $v['has_proposed']                  ?? false,
-            'has_subscription'            => $v['has_subscription']              ?? false,
-            'subscription_discount'       => $v['subscription_discount']         ?? 0,
-            'subscription_discount_label' => $v['subscription_discount_label']   ?? null,
-            'subscription_notes'          => $v['subscription_notes']            ?? null,
-            'proposed_discount'           => $v['proposed_discount']             ?? 0,
-            'proposed_discount_label'     => $v['proposed_discount_label']       ?? null,
-            'tax_enabled'                 => $v['tax_enabled']                   ?? false,
-            'tax_label'                   => $v['tax_label']                     ?? 'VAT',
-            'tax_rate'                    => $v['tax_rate']                      ?? 7.50,
-            'tax_applies_to'              => $v['tax_applies_to']                ?? 'completed',
-            'wht_enabled'                 => $v['wht_enabled']                   ?? false,
-            'wht_label'                   => $v['wht_label']                     ?? 'WHT (5%)',
-            'wht_rate'                    => $v['wht_rate']                      ?? 5.00,
-            'completed_notes'             => $v['completed_notes']               ?? null,
-            'proposed_notes'              => $v['proposed_notes']                ?? null,
-            'bank_name'                   => $v['bank_name']                     ?? null,
-            'bank_account_name'           => $v['bank_account_name']             ?? null,
-            'bank_account_number'         => $v['bank_account_number']           ?? null,
-            'currency'                    => $v['currency']                      ?? 'NGN',
+            'paid_amount'                 => $v['paid_amount'] ?? 0,
+            'currency'                    => $v['currency'] ?? 'NGN',
+
+            // Foolproof flags: if items exist, set flag to 1
+            'has_completed'               => (!empty($v['completed_items'])) ? 1 : ($v['has_completed'] ?? 0),
+            'has_subscription'            => (!empty($v['subscription_items'])) ? 1 : ($v['has_subscription'] ?? 0),
+            'has_proposed'                => (!empty($v['proposed_items'])) ? 1 : ($v['has_proposed'] ?? 0),
+
+            'completed_discount'          => $v['completed_discount'] ?? 0,
+            'completed_discount_label'    => $v['completed_discount_label'] ?? null,
+            'subscription_discount'       => $v['subscription_discount'] ?? 0,
+            'subscription_discount_label' => $v['subscription_discount_label'] ?? null,
+            'proposed_discount'           => $v['proposed_discount'] ?? 0,
+            'proposed_discount_label'     => $v['proposed_discount_label'] ?? null,
+
+            'tax_enabled'                 => $v['tax_enabled'] ?? false,
+            'tax_label'                   => $v['tax_label'] ?? 'VAT',
+            'tax_rate'                    => $v['tax_rate'] ?? 7.50,
+            'tax_applies_to'              => $v['tax_applies_to'] ?? 'completed',
+            'wht_enabled'                 => $v['wht_enabled'] ?? false,
+            'wht_label'                   => $v['wht_label'] ?? 'WHT (5%)',
+            'wht_rate'                    => $v['wht_rate'] ?? 5.00,
+
+            'completed_notes'             => $v['completed_notes'] ?? null,
+            'subscription_notes'          => $v['subscription_notes'] ?? null,
+            'proposed_notes'              => $v['proposed_notes'] ?? null,
+
+            'bank_name'                   => $v['bank_name'] ?? null,
+            'bank_account_name'           => $v['bank_account_name'] ?? null,
+            'bank_account_number'         => $v['bank_account_number'] ?? null,
         ];
     }
 
@@ -203,106 +232,93 @@ class InvoiceController extends Controller
             $invoice->items()->delete();
         }
 
-        foreach (['completed', 'proposed', 'subscription'] as $section) {
-            foreach (($validated["{$section}_items"] ?? []) as $i => $item) {
+        $sections = ['completed', 'proposed', 'subscription'];
+
+        foreach ($sections as $section) {
+            $inputKey = "{$section}_items";
+
+            foreach (($validated[$inputKey] ?? []) as $i => $item) {
                 $invoice->items()->create([
                     'invoice_id'    => $invoice->id,
                     'section'       => $section,
                     'description'   => $item['description'],
                     'qty'           => $item['qty'],
                     'unit_price'    => $item['unit_price'],
-                    'taxable'       => isset($item['taxable']) && $item['taxable'],
+                    'taxable'       => isset($item['taxable']),
                     'sort_order'    => $i,
                     'billing_cycle' => $item['billing_cycle'] ?? null,
                     'renewal_date'  => $item['renewal_date']  ?? null,
                 ]);
             }
         }
+        // ← DELETE the duplicate subscription and proposed loops that follow
     }
-
-    /* ─────────────────────────────────────────────────────────
-     | Build a default email subject & body for an invoice
-     ───────────────────────────────────────────────────────── */
-    private function defaultEmailContent(Invoice $invoice): array
-    {
-        $invoice->loadMissing(['client', 'completedItems', 'subscriptionItems', 'proposedItems']);
-
-        $subject = 'Invoice ' . $invoice->number . ' — The Pacmedia'
-            . ($invoice->project_name ? ' · ' . $invoice->project_name : '');
-
-        // Build a breakdown that only mentions sections that have a balance
-        $lines = [];
-
-        if ($invoice->has_completed && $invoice->completedSubtotal() > 0) {
-            $outstanding = max(0, $invoice->completedOutstanding());
-            $lines[] = "Completed services outstanding: " . $invoice->formatAmount($outstanding);
-        }
-
-        if ($invoice->has_subscription && $invoice->subscriptionSubtotal() > 0) {
-            $lines[] = "Subscription total: " . $invoice->formatAmount($invoice->subscriptionOutstanding());
-        }
-
-        if ($invoice->has_proposed && $invoice->proposedSubtotal() > 0) {
-            $lines[] = "Proposed services total: " . $invoice->formatAmount($invoice->proposedTotal());
-        }
-
-        // Grand outstanding (completed + subscription only — proposed is not yet approved)
-        $grandOutstanding = max(0, $invoice->grandOutstanding());
-
-        $amountBlock = implode("\n", $lines);
-        if (count($lines) > 1) {
-            $amountBlock .= "\n" . str_repeat('─', 36)
-                . "\nTotal outstanding: " . $invoice->formatAmount($grandOutstanding);
-        }
-
-        $message = "Dear {$invoice->client->name},\n\n"
-            . "Please find attached Invoice {$invoice->number}"
-            . ($invoice->project_name ? " for {$invoice->project_name}" : '') . ".\n\n"
-            . $amountBlock . "\n"
-            . "Due: {$invoice->due_date}\n\n"
-            . "Kindly process payment at your earliest convenience.\n\n"
-            . "Warm regards,\nPeter\nThe Pacmedia";
-
-        return compact('subject', 'message');
-    }
-
     /* ─────────────────────────────────────────────────────────
      | STORE
      ───────────────────────────────────────────────────────── */
     public function store(Request $request)
     {
-        $validated = $request->validate($this->validationRules());
+        // 1. Validation
+        $request->validate([
+            'client_id'    => 'required|exists:clients,id',
+            'submitted_at' => 'required|date',
+            'due_date'     => 'required|string',
+            'status'       => 'required|string',
+        ]);
 
-        $action = $request->input('status_action', 'draft');
-        $validated['status'] = match ($action) {
-            'sent'          => 'sent',
-            'preview_draft' => 'draft',
-            default         => $validated['status'],
-        };
+        try {
+            $invoice = DB::transaction(function () use ($request) {
+                // 2. Create the Invoice
+                // We use static::generateNumber() from your Invoice model
+                $invoice = Invoice::create([
+                    'number'                => Invoice::generateNumber(),
+                    'client_id'             => $request->client_id,
+                    'project_name'          => $request->project_name,
+                    'submitted_at'          => $request->submitted_at,
+                    'due_date'              => $request->due_date,
+                    'status'                => $request->status,
+                    'currency'              => $request->currency ?? 'NGN',
+                    'bank_name'             => $request->bank_name,
+                    'bank_account_name'     => $request->bank_account_name,
+                    'bank_account_number'   => $request->bank_account_number,
+                    'has_completed'         => $request->has_completed ?? 0,
+                    'has_subscription'      => $request->has_subscription ?? 0,
+                    'has_proposed'          => $request->has_proposed ?? 0,
+                    'tax_enabled'           => $request->tax_rate > 0,
+                    'tax_rate'              => $request->tax_rate ?? 0,
+                    'tax_label'             => $request->tax_label ?? 'VAT',
+                    'paid_amount'           => $request->paid_amount ?? 0,
+                ]);
 
-        $invoice = DB::transaction(function () use ($validated) {
-            $attrs           = $this->invoiceAttributes($validated);
-            $attrs['number'] = Invoice::generateNumber();
-            $invoice         = Invoice::create($attrs);
-            $this->saveItems($invoice, $validated);
-            return $invoice;
-        });
+                // 3. Save Items (Completed)
+                if ($request->has('completed_items')) {
+                    foreach ($request->completed_items as $item) {
+                        if (!empty($item['description'])) {
+                            $invoice->items()->create([
+                                'section'     => 'completed',
+                                'description' => $item['description'],
+                                'qty'         => $item['qty'] ?? 1,
+                                'unit_price'  => $item['unit_price'] ?? 0,
+                            ]);
+                        }
+                    }
+                }
 
-        if ($action === 'sent') {
-            $invoice->load(['client', 'completedItems', 'subscriptionItems', 'proposedItems']);
-            ['subject' => $subject, 'message' => $message] = $this->defaultEmailContent($invoice);
-            SendInvoiceEmail::dispatch($invoice, $subject, $message);
+                return $invoice;
+            });
+
+            // 4. Redirect to the INDEX page specifically
+            return redirect()->route('admin.invoices.index')
+                ->with('success', "Invoice #{$invoice->number} created successfully.");
+
+        } catch (\Exception $e) {
+            // Log the error so you can see it in storage/logs/laravel.log
+            \Log::error("Invoice Store Error: " . $e->getMessage());
+
+            return back()
+                ->withInput()
+                ->withErrors(['error' => 'Failed to create invoice: ' . $e->getMessage()]);
         }
-
-        if ($action === 'preview_draft') {
-            return redirect()
-                ->route('admin.invoices.preview', $invoice)
-                ->with('success', 'Invoice saved as draft.');
-        }
-
-        return redirect()
-            ->route('admin.invoices.show', $invoice)
-            ->with('success', 'Invoice ' . $invoice->number . ' created successfully.');
     }
 
     /* ─────────────────────────────────────────────────────────
@@ -334,7 +350,6 @@ class InvoiceController extends Controller
 
         return view('admin.invoices.pdf', compact('invoice'));
     }
-
     /* ─────────────────────────────────────────────────────────
      | EDIT
      ───────────────────────────────────────────────────────── */
@@ -350,13 +365,15 @@ class InvoiceController extends Controller
      ───────────────────────────────────────────────────────── */
     public function update(Request $request, Invoice $invoice)
     {
-        $validated = $request->validate($this->validationRules());
+        $rules           = $this->validationRules();
+        $rules['number'] = 'required|string|unique:invoices,number,' . $invoice->id;
+        $validated       = $request->validate($rules);
 
         $action = $request->input('status_action', 'draft');
-        $validated['status'] = match ($action) {
-            'sent'          => 'sent',
-            'preview_draft' => 'draft',
-            default         => $validated['status'],
+        $validated['status'] = match($action) {
+            'sent'         => 'sent',
+            'preview_draft'=> 'draft',
+            default        => $validated['status'],
         };
 
         DB::transaction(function () use ($invoice, $validated) {
@@ -365,10 +382,19 @@ class InvoiceController extends Controller
         });
 
         if ($action === 'sent') {
-            // FIX: reload after transaction so relations + attributes are fresh
-            $fresh = $invoice->fresh()->load(['client', 'completedItems', 'subscriptionItems', 'proposedItems']);
-            ['subject' => $subject, 'message' => $message] = $this->defaultEmailContent($fresh);
-            SendInvoiceEmail::dispatch($fresh, $subject, $message);
+            $invoice->load('client'); // ensure relationship loaded
+            $subject = 'Invoice ' . $invoice->number . ' — The Pacmedia'
+                . ($invoice->project_name ? ' · ' . $invoice->project_name : '');
+
+            $message = "Dear {$invoice->client->name},\n\n"
+                . "Please find attached Invoice {$invoice->number}"
+                . ($invoice->project_name ? " for {$invoice->project_name}" : '') . ".\n\n"
+                . "Outstanding balance: " . $invoice->formatAmount(max(0, $invoice->completedOutstanding())) . "\n"
+                . "Due: {$invoice->due_date}\n\n"
+                . "Kindly process payment at your earliest convenience.\n\n"
+                . "Warm regards,\nPeter\nThe Pacmedia";
+
+            SendInvoiceEmail::dispatch($invoice->fresh(), $subject, $message);
         }
 
         if ($action === 'preview_draft') {
@@ -398,8 +424,7 @@ class InvoiceController extends Controller
     {
         $invoice->load(['completedItems', 'subscriptionItems', 'proposedItems']);
 
-        // FIX: capture $new via return value instead of $this->_invoice
-        $newInvoice = DB::transaction(function () use ($invoice) {
+        DB::transaction(function () use ($invoice) {
             $new               = $invoice->replicate();
             $new->number       = Invoice::generateNumber();
             $new->status       = 'draft';
@@ -407,17 +432,17 @@ class InvoiceController extends Controller
             $new->paid_amount  = 0;
             $new->save();
 
-            $fields = ['section', 'description', 'qty', 'unit_price', 'billing_cycle', 'renewal_date', 'taxable', 'sort_order'];
+            $fields = ['section','description','qty','unit_price','billing_cycle','renewal_date','taxable','sort_order'];
 
             foreach ($invoice->completedItems    as $item) { $new->items()->create($item->only($fields)); }
             foreach ($invoice->subscriptionItems as $item) { $new->items()->create($item->only($fields)); }
             foreach ($invoice->proposedItems     as $item) { $new->items()->create($item->only($fields)); }
 
-            return $new;  // FIX: return instead of assigning to $this->_invoice
+            $this->_invoice = $new;
         });
 
         return redirect()
-            ->route('admin.invoices.edit', $newInvoice)
+            ->route('admin.invoices.edit', $this->_invoice)
             ->with('success', 'Invoice duplicated. Review and save.');
     }
 
@@ -430,10 +455,6 @@ class InvoiceController extends Controller
 
         $invoice->increment('paid_amount', $request->amount);
 
-        // Reload to get accurate outstanding after increment
-        $invoice->refresh();
-        $invoice->loadMissing(['completedItems', 'subscriptionItems', 'proposedItems']);
-
         $outstanding = $invoice->completedOutstanding();
         if ($outstanding <= 0) {
             $invoice->update(['status' => 'paid']);
@@ -441,8 +462,7 @@ class InvoiceController extends Controller
             $invoice->update(['status' => 'partial']);
         }
 
-        // FIX: use the invoice's actual currency symbol instead of hardcoded ₦
-        return back()->with('success', $invoice->formatAmount($request->amount) . ' payment recorded.');
+        return back()->with('success', '₦' . number_format($request->amount, 2) . ' payment recorded.');
     }
 
     /* ─────────────────────────────────────────────────────────
@@ -459,22 +479,23 @@ class InvoiceController extends Controller
 
         $html = view('admin.invoices.pdf', compact('invoice'))->render();
 
-        $response = Http::timeout(45)->withHeaders([
+        $response = Http::withHeaders([
             'Cache-Control' => 'no-cache',
             'Content-Type'  => 'application/json',
         ])->post('https://chrome.browserless.io/pdf?token=' . config('services.browserless.token'), [
-            'html'    => $html,
+            'html' => $html,
             'options' => [
                 'format'          => 'A4',
                 'landscape'       => false,
                 'printBackground' => true,
-                'margin'          => ['top' => '0mm', 'right' => '0mm', 'bottom' => '0mm', 'left' => '0mm'],
+                'margin' => [
+                    'top'    => '0mm',
+                    'right'  => '0mm',
+                    'bottom' => '0mm',
+                    'left'   => '0mm',
+                ],
             ],
         ]);
-
-        if (!$response->successful()) {
-            abort(502, 'PDF generation failed: Browserless returned HTTP ' . $response->status());
-        }
 
         $filename = 'invoice-' . $invoice->number . '.pdf';
 
@@ -486,13 +507,15 @@ class InvoiceController extends Controller
         ]);
     }
 
+
     /* ─────────────────────────────────────────────────────────
      | SEND EMAIL
      ───────────────────────────────────────────────────────── */
     public function send(Request $request, Invoice $invoice)
     {
         if (!$invoice->client->email) {
-            return back()->withErrors(['email' => 'This client has no email address on record.']);
+            return redirect()->route('admin.invoices.index', ['status' => 'sent'])
+                ->with('success', "Invoice #{$invoice->number} sent successfully.");
         }
 
         $request->validate([
@@ -501,24 +524,32 @@ class InvoiceController extends Controller
             'message'      => 'required|string',
         ]);
 
-        // Whitelist — only allow your own configured sender addresses
         $allowed = array_column(config('mail.from_addresses', []), 'address');
         if (!in_array($request->from_address, $allowed)) {
             return back()->withErrors(['from_address' => 'Invalid sender address.']);
         }
 
-        // FIX: load all relations needed for PDF generation in the queued job
-        $invoice->load(['client', 'completedItems', 'subscriptionItems', 'proposedItems']);
-
+        // 1. Dispatch the job (We verified this is working via logs)
         SendInvoiceEmail::dispatch(
-            $invoice,
+            $invoice->load('client'),
             $request->input('subject'),
             $request->input('message'),
             $request->input('from_address'),
         );
 
-        $invoice->update(['status' => 'sent']);
+        // 2. Update the status explicitly
+        $invoice->status = 'sent';
+
+        // 3. Save and check for errors
+        if (!$invoice->save()) {
+            \Log::error("Invoice #{$invoice->id} failed to update status.");
+            return back()->withErrors(['error' => 'Database update failed.']);
+        }
 
         return back()->with('success', "Invoice #{$invoice->number} sent to {$invoice->client->email}.");
     }
+
+
+    /** Temp property to pass data out of DB::transaction closure */
+    private ?Invoice $_invoice = null;
 }

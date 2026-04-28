@@ -312,13 +312,13 @@
         <div class="card-header border-bottom p-0">
             <div class="pac-status-tabs px-4">
                 <a href="{{ route('admin.invoices.index') }}" class="pac-status-tab {{ !request('status') ? 'active' : '' }}">
-                    All <span class="pac-tab-count">{{ $counts['all'] ?? 0 }}</span>
+                    All <span class="pac-tab-count">{{ $stats['total'] ?? 0 }}</span>
                 </a>
                 @foreach(['draft','sent','partial','paid','overdue'] as $st)
                     <a href="{{ route('admin.invoices.index', ['status' => $st]) }}"
                        class="pac-status-tab {{ request('status') === $st ? 'active' : '' }}">
                         {{ ucfirst($st) }}
-                        <span class="pac-tab-count">{{ $counts[$st] ?? 0 }}</span>
+                        <span class="pac-tab-count">{{ $stats[$st . '_count'] ?? 0 }}</span>
                     </a>
                 @endforeach
             </div>
@@ -482,13 +482,10 @@
                                         </li>
                                         @if($invoice->client->email)
                                             <li>
-                                                <form action="{{ route('admin.invoices.send', $invoice) }}"
-                                                      method="POST">
-                                                    @csrf
-                                                    <button type="submit" class="dropdown-item">
-                                                        <i class="ri ri-send-plane-line"></i> Send to Client
-                                                    </button>
-                                                </form>
+                                                <a class="dropdown-item"
+                                                   href="{{ route('admin.invoices.show', $invoice) }}#send">
+                                                    <i class="ri ri-send-plane-line"></i> Send to Client
+                                                </a>
                                             </li>
                                         @endif
                                         <li><hr class="dropdown-divider"></li>
@@ -534,6 +531,56 @@
             </div>
         @endif
     </div>
+
+
+    {{-- ══ Flash Toast (success / error) ══ --}}
+    @if(session('success') || session('error') || $errors->any())
+        <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:9999;">
+
+            @if(session('success'))
+                <div class="toast show align-items-center"
+                     style="background:#fff;border-left:4px solid #b5cc18;border-radius:.5rem;box-shadow:0 4px 20px rgba(0,0,0,.1);min-width:300px;"
+                     role="alert" aria-live="assertive" data-toast>
+                    <div class="d-flex">
+                        <div class="toast-body d-flex align-items-center gap-2" style="font-size:.83rem;color:#374151;">
+                            <i class="ri ri-checkbox-circle-line" style="color:#b5cc18;font-size:1.1rem;flex-shrink:0;"></i>
+                            {{ session('success') }}
+                        </div>
+                        <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+                    </div>
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div class="toast show align-items-center"
+                     style="background:#fff;border-left:4px solid #ef4444;border-radius:.5rem;box-shadow:0 4px 20px rgba(0,0,0,.1);min-width:300px;"
+                     role="alert" aria-live="assertive" data-toast>
+                    <div class="d-flex">
+                        <div class="toast-body d-flex align-items-center gap-2" style="font-size:.83rem;color:#374151;">
+                            <i class="ri ri-error-warning-line" style="color:#ef4444;font-size:1.1rem;flex-shrink:0;"></i>
+                            {{ session('error') }}
+                        </div>
+                        <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+                    </div>
+                </div>
+            @endif
+
+            @if($errors->any())
+                <div class="toast show align-items-center"
+                     style="background:#fff;border-left:4px solid #ef4444;border-radius:.5rem;box-shadow:0 4px 20px rgba(0,0,0,.1);min-width:300px;"
+                     role="alert" aria-live="assertive" data-toast>
+                    <div class="d-flex">
+                        <div class="toast-body d-flex align-items-center gap-2" style="font-size:.83rem;color:#374151;">
+                            <i class="ri ri-error-warning-line" style="color:#ef4444;font-size:1.1rem;flex-shrink:0;"></i>
+                            {{ $errors->first() }}
+                        </div>
+                        <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+                    </div>
+                </div>
+            @endif
+
+        </div>
+    @endif
 
     {{-- Safe placeholder for bulk form action --}}
     <form id="bulk-form" action="#" method="POST" style="display:none;">
@@ -597,7 +644,7 @@
                 };
 
                 /* Auto-dismiss toast */
-                document.querySelectorAll('.toast.show').forEach(t =>
+                document.querySelectorAll('[data-toast]').forEach(t =>
                     setTimeout(() => bootstrap.Toast.getOrCreateInstance(t).hide(), 4500)
                 );
 

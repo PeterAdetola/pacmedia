@@ -154,7 +154,7 @@
                                      fill="#b5cc18" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M0,0V92.7H92.7V0ZM44.13,85.55,25.84,68.33V48.91H44.13Zm0-40.42H25.84V24l18.29-4.59ZM66.44,63.74,48.15,66V48.91H66.44Zm0-18.61H48.15V26.91l18.29,2.87Z"/>
                                 </svg>
-{{--                                <span class="mb-0 app-brand-text fw-semibold">The Pacmedia</span>--}}
+                                {{--                                <span class="mb-0 app-brand-text fw-semibold">The Pacmedia</span>--}}
                             </div>
                             <p class="mb-1">Pacmedia Creatives</p>
                             <p class="mb-0">Lagos, Nigeria</p>
@@ -299,7 +299,7 @@
                                 @if($invoice->completed_discount > 0)
                                     <p class="mb-1">{{ $invoice->completed_discount_label ?: 'Discount' }}:</p>
                                 @endif
-                                @if($invoice->tax_enabled && in_array($invoice->tax_applies_to, ['completed','both']))
+                                @if($invoice->tax_enabled && in_array($invoice->tax_applies_to, ['completed','both','all']))
                                     <p class="mb-1">{{ $invoice->tax_label }} ({{ $invoice->tax_rate }}%):</p>
                                 @endif
                                 @if($invoice->paid_amount > 0)
@@ -319,7 +319,7 @@
                                 @if($invoice->completed_discount > 0)
                                     <p class="fw-medium mb-1 text-danger">-{{ $fmt($invoice->completed_discount) }}</p>
                                 @endif
-                                @if($invoice->tax_enabled && in_array($invoice->tax_applies_to, ['completed','both']))
+                                @if($invoice->tax_enabled && in_array($invoice->tax_applies_to, ['completed','both','all']))
                                     <p class="fw-medium mb-1">{{ $fmt($completedTax) }}</p>
                                 @endif
                                 @if($invoice->paid_amount > 0)
@@ -467,7 +467,7 @@
                                     @if($invoice->proposed_discount > 0)
                                         <p class="mb-1">{{ $invoice->proposed_discount_label ?: 'Discount' }}:</p>
                                     @endif
-                                    @if($invoice->tax_enabled && in_array($invoice->tax_applies_to, ['proposed','both']))
+                                    @if($invoice->tax_enabled && in_array($invoice->tax_applies_to, ['proposed','both','all']))
                                         <p class="mb-1">{{ $invoice->tax_label }} ({{ $invoice->tax_rate }}%):</p>
                                     @endif
                                     <p class="mb-0 pt-2 fw-bold border-top">Total:</p>
@@ -477,7 +477,7 @@
                                     @if($invoice->proposed_discount > 0)
                                         <p class="fw-medium mb-1 text-danger">-{{ $fmt($invoice->proposed_discount) }}</p>
                                     @endif
-                                    @if($invoice->tax_enabled && in_array($invoice->tax_applies_to, ['proposed','both']))
+                                    @if($invoice->tax_enabled && in_array($invoice->tax_applies_to, ['proposed','both','all']))
                                         <p class="fw-medium mb-1">{{ $fmt($proposedTax) }}</p>
                                     @endif
                                     <p class="fw-bold mb-0 pt-2 border-top">{{ $fmt($proposedTotal) }}</p>
@@ -587,59 +587,59 @@
     </div>
     {{-- / row --}}
 
-        {{-- ══════════════════════════════════════════════
-         SEND INVOICE OFFCANVAS
-        ═══════════════════════════════════════════════ --}}
-        <div class="offcanvas offcanvas-end" id="sendInvoiceOffcanvas" aria-hidden="true">
-            <div class="offcanvas-header border-bottom">
-                <h5 class="offcanvas-title">Send Invoice</h5>
-                <button type="button" class="btn-close text-reset"
-                        data-bs-dismiss="offcanvas" aria-label="Close"></button>
-            </div>
-            <div class="offcanvas-body flex-grow-1">
-                <form method="POST" action="{{ route('admin.invoices.send', $invoice) }}">
-                    @csrf
+    {{-- ══════════════════════════════════════════════
+     SEND INVOICE OFFCANVAS
+    ═══════════════════════════════════════════════ --}}
+    <div class="offcanvas offcanvas-end" id="sendInvoiceOffcanvas" aria-hidden="true">
+        <div class="offcanvas-header border-bottom">
+            <h5 class="offcanvas-title">Send Invoice</h5>
+            <button type="button" class="btn-close text-reset"
+                    data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body flex-grow-1">
+            <form method="POST" action="{{ route('admin.invoices.send', $invoice) }}">
+                @csrf
 
-                    {{-- From: sender address selector — default: updates@ --}}
-                    <div class="form-floating form-floating-outline mb-5">
-                        <select class="form-select @error('from_address') is-invalid @enderror"
-                                id="invoice-from" name="from_address" required>
-                            @foreach(config('mail.from_addresses', []) as $addr)
-                                <option value="{{ $addr['address'] }}"
-                                    {{ $addr['address'] === 'updates@thepacmedia.com' ? 'selected' : '' }}>
-{{--                                    {{ $addr['name'] }}--}}
-                                    {{ $addr['address'] }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <label for="invoice-from">From</label>
-                        @error('from_address')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
+                {{-- From: sender address selector — default: updates@ --}}
+                <div class="form-floating form-floating-outline mb-5">
+                    <select class="form-select @error('from_address') is-invalid @enderror"
+                            id="invoice-from" name="from_address" required>
+                        @foreach(config('mail.from_addresses', []) as $addr)
+                            <option value="{{ $addr['address'] }}"
+                                {{ $addr['address'] === 'updates@thepacmedia.com' ? 'selected' : '' }}>
+                                {{--                                    {{ $addr['name'] }}--}}
+                                {{ $addr['address'] }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <label for="invoice-from">From</label>
+                    @error('from_address')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
 
-                    {{-- To: display only — recipient is always the client on record --}}
-                    <div class="form-floating form-floating-outline mb-5">
-                        <input type="email" class="form-control" id="invoice-to"
-                               value="{{ $invoice->client->email ?? 'No email on file' }}"
-                               placeholder="client@email.com" disabled>
-                        <label for="invoice-to">To</label>
-                    </div>
+                {{-- To: display only — recipient is always the client on record --}}
+                <div class="form-floating form-floating-outline mb-5">
+                    <input type="email" class="form-control" id="invoice-to"
+                           value="{{ $invoice->client->email ?? 'No email on file' }}"
+                           placeholder="client@email.com" disabled>
+                    <label for="invoice-to">To</label>
+                </div>
 
-                    {{-- Subject: editable, submitted --}}
-                    <div class="form-floating form-floating-outline mb-5">
-                        <input type="text" class="form-control @error('subject') is-invalid @enderror"
-                               id="invoice-subject" name="subject" required
-                               value="{{ old('subject', 'Invoice ' . $invoice->number . ' — The Pacmedia' . ($invoice->project_name ? ' · ' . $invoice->project_name : '')) }}"
-                               placeholder="Invoice subject">
-                        <label for="invoice-subject">Subject</label>
-                        @error('subject')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
+                {{-- Subject: editable, submitted --}}
+                <div class="form-floating form-floating-outline mb-5">
+                    <input type="text" class="form-control @error('subject') is-invalid @enderror"
+                           id="invoice-subject" name="subject" required
+                           value="{{ old('subject', 'Invoice ' . $invoice->number . ' — The Pacmedia' . ($invoice->project_name ? ' · ' . $invoice->project_name : '')) }}"
+                           placeholder="Invoice subject">
+                    <label for="invoice-subject">Subject</label>
+                    @error('subject')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
 
-                    {{-- Message: editable, submitted --}}
-                    <div class="form-floating form-floating-outline mb-5">
+                {{-- Message: editable, submitted --}}
+                <div class="form-floating form-floating-outline mb-5">
                 <textarea class="form-control @error('message') is-invalid @enderror"
                           id="invoice-message" name="message"
                           style="height: 200px;" required>{{ old('message',
@@ -657,29 +657,29 @@ Kindly process payment at your earliest convenience.
 Warm regards,
 Peter
 The Pacmedia") }}</textarea>
-                        <label for="invoice-message">Message</label>
-                        @error('message')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
+                    <label for="invoice-message">Message</label>
+                    @error('message')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
 
-                    <div class="mb-5">
+                <div class="mb-5">
                 <span class="badge bg-label-primary rounded-pill">
                     <i class="icon-base ri ri-attachment-2 icon-14px me-1"></i>
                     <span class="align-middle">PDF Invoice Attached</span>
                 </span>
-                    </div>
+                </div>
 
-                    <div class="mb-4 d-flex flex-wrap gap-3">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="ri ri-send-plane-line me-1"></i> Send
-                        </button>
-                        <button type="button" class="btn btn-outline-secondary"
-                                data-bs-dismiss="offcanvas">Cancel</button>
-                    </div>
-                </form>
-            </div>
+                <div class="mb-4 d-flex flex-wrap gap-3">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="ri ri-send-plane-line me-1"></i> Send
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary"
+                            data-bs-dismiss="offcanvas">Cancel</button>
+                </div>
+            </form>
         </div>
+    </div>
 
     {{-- ══════════════════════════════════════════════
          ADD PAYMENT OFFCANVAS
@@ -702,7 +702,7 @@ The Pacmedia") }}</textarea>
                     @csrf
 
                     <div class="input-group input-group-merge mb-5">
-                        <span class="input-group-text">₦</span>
+                        <span class="input-group-text">{{ $invoice->currencySymbol() }}</span>
                         <div class="form-floating form-floating-outline">
                             <input type="number"
                                    id="invoiceAmount"

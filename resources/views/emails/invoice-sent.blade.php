@@ -243,11 +243,12 @@
                     </tr>
 
                     <!-- Subtotal -->
+                    <!-- Subtotal -->
                     <tr class="detail-row">
                         <td style="padding:14px 20px; border-bottom:1px solid #8f93a1; width:38%;">
                             <span class="detail-label"
                                   style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.12em; color:#797d83;">
-                                Subtotal
+                                {{ $invoice->has_subscription || $invoice->has_proposed ? 'Completed Subtotal' : 'Subtotal' }}
                             </span>
                         </td>
                         <td style="padding:14px 20px; border-bottom:1px solid #8f93a1;">
@@ -259,78 +260,178 @@
                     </tr>
 
                     @if($invoice->completed_discount > 0)
-                        <!-- Discount -->
                         <tr class="detail-row">
                             <td style="padding:14px 20px; border-bottom:1px solid #8f93a1; width:38%;">
-                            <span class="detail-label"
-                                  style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.12em; color:#797d83;">
-                                {{ $invoice->completed_discount_label ?: 'Discount' }}
-                            </span>
+                                <span class="detail-label"
+                                      style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.12em; color:#797d83;">
+                                    {{ $invoice->completed_discount_label ?: 'Discount' }}
+                                </span>
                             </td>
                             <td style="padding:14px 20px; border-bottom:1px solid #8f93a1;">
-                            <span class="detail-value"
-                                  style="font-size:14px; font-weight:400; color:#151617;">
-                                &minus; {{ $invoice->formatAmount($invoice->completed_discount) }}
-                            </span>
+                                <span class="detail-value"
+                                      style="font-size:14px; font-weight:400; color:#151617;">
+                                    &minus; {{ $invoice->formatAmount($invoice->completed_discount) }}
+                                </span>
                             </td>
                         </tr>
                     @endif
 
-                    @if($invoice->tax_enabled)
-                        <!-- Tax -->
+                    @if($invoice->tax_enabled && $invoice->completedTax() > 0)
                         <tr class="detail-row">
                             <td style="padding:14px 20px; border-bottom:1px solid #8f93a1; width:38%;">
-                            <span class="detail-label"
-                                  style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.12em; color:#797d83;">
-                                {{ $invoice->tax_label }} ({{ $invoice->tax_rate }}%)
-                            </span>
+                                <span class="detail-label"
+                                      style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.12em; color:#797d83;">
+                                    {{ $invoice->tax_label }} ({{ $invoice->tax_rate }}%)
+                                </span>
                             </td>
                             <td style="padding:14px 20px; border-bottom:1px solid #8f93a1;">
-                            <span class="detail-value"
-                                  style="font-size:14px; font-weight:400; color:#151617;">
-                                {{ $invoice->formatAmount($invoice->completedTax()) }}
-                            </span>
+                                <span class="detail-value"
+                                      style="font-size:14px; font-weight:400; color:#151617;">
+                                    {{ $invoice->formatAmount($invoice->completedTax()) }}
+                                </span>
                             </td>
                         </tr>
                     @endif
 
                     @if($invoice->wht_enabled)
-                        <!-- WHT -->
                         <tr class="detail-row">
                             <td style="padding:14px 20px; border-bottom:1px solid #8f93a1; width:38%;">
-                            <span class="detail-label"
-                                  style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.12em; color:#797d83;">
-                                {{ $invoice->wht_label }}
-                            </span>
+                                <span class="detail-label"
+                                      style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.12em; color:#797d83;">
+                                    {{ $invoice->wht_label }}
+                                </span>
                             </td>
                             <td style="padding:14px 20px; border-bottom:1px solid #8f93a1;">
-                            <span class="detail-value"
-                                  style="font-size:14px; font-weight:400; color:#151617;">
-                                &minus; {{ $invoice->formatAmount($invoice->completedWht()) }}
-                            </span>
+                                <span class="detail-value"
+                                      style="font-size:14px; font-weight:400; color:#151617;">
+                                    &minus; {{ $invoice->formatAmount($invoice->completedWht()) }}
+                                </span>
                             </td>
                         </tr>
                     @endif
 
                     @if($invoice->paid_amount > 0)
-                        <!-- Amount paid -->
                         <tr class="detail-row">
                             <td style="padding:14px 20px; border-bottom:1px solid #8f93a1; width:38%;">
-                            <span class="detail-label"
-                                  style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.12em; color:#797d83;">
-                                Paid
-                            </span>
+                                <span class="detail-label"
+                                      style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.12em; color:#797d83;">
+                                    Paid
+                                </span>
                             </td>
                             <td style="padding:14px 20px; border-bottom:1px solid #8f93a1;">
-                            <span class="detail-value"
-                                  style="font-size:14px; font-weight:400; color:#151617;">
-                                &minus; {{ $invoice->formatAmount($invoice->paid_amount) }}
-                            </span>
+                                <span class="detail-value"
+                                      style="font-size:14px; font-weight:400; color:#151617;">
+                                    &minus; {{ $invoice->formatAmount($invoice->paid_amount) }}
+                                </span>
                             </td>
                         </tr>
                     @endif
 
-                    <!-- Amount due — highlighted last row -->
+                    {{-- ── Subscription section (if present) ── --}}
+                    @if($invoice->has_subscription && $invoice->subscriptionSubtotal() > 0)
+                        <tr class="detail-row">
+                            <td style="padding:14px 20px; border-bottom:1px solid #8f93a1; width:38%;">
+                                <span class="detail-label"
+                                      style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.12em; color:#797d83;">
+                                    Subscription Subtotal
+                                </span>
+                            </td>
+                            <td style="padding:14px 20px; border-bottom:1px solid #8f93a1;">
+                                <span class="detail-value"
+                                      style="font-size:14px; font-weight:400; color:#151617;">
+                                    {{ $invoice->formatAmount($invoice->subscriptionSubtotal()) }}
+                                </span>
+                            </td>
+                        </tr>
+
+                        @if($invoice->subscription_discount > 0)
+                            <tr class="detail-row">
+                                <td style="padding:14px 20px; border-bottom:1px solid #8f93a1; width:38%;">
+                                    <span class="detail-label"
+                                          style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.12em; color:#797d83;">
+                                        {{ $invoice->subscription_discount_label ?: 'Subscription Discount' }}
+                                    </span>
+                                </td>
+                                <td style="padding:14px 20px; border-bottom:1px solid #8f93a1;">
+                                    <span class="detail-value"
+                                          style="font-size:14px; font-weight:400; color:#151617;">
+                                        &minus; {{ $invoice->formatAmount($invoice->subscription_discount) }}
+                                    </span>
+                                </td>
+                            </tr>
+                        @endif
+
+                        @if($invoice->tax_enabled && $invoice->subscriptionTax() > 0)
+                            <tr class="detail-row">
+                                <td style="padding:14px 20px; border-bottom:1px solid #8f93a1; width:38%;">
+                                    <span class="detail-label"
+                                          style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.12em; color:#797d83;">
+                                        {{ $invoice->tax_label }} — Subscriptions
+                                    </span>
+                                </td>
+                                <td style="padding:14px 20px; border-bottom:1px solid #8f93a1;">
+                                    <span class="detail-value"
+                                          style="font-size:14px; font-weight:400; color:#151617;">
+                                        {{ $invoice->formatAmount($invoice->subscriptionTax()) }}
+                                    </span>
+                                </td>
+                            </tr>
+                        @endif
+                    @endif
+
+                    {{-- ── Proposed section (if present) ── --}}
+                    @if($invoice->has_proposed && $invoice->proposedSubtotal() > 0)
+                        <tr class="detail-row">
+                            <td style="padding:14px 20px; border-bottom:1px solid #8f93a1; width:38%;">
+                                <span class="detail-label"
+                                      style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.12em; color:#797d83;">
+                                    Proposed Subtotal
+                                </span>
+                            </td>
+                            <td style="padding:14px 20px; border-bottom:1px solid #8f93a1;">
+                                <span class="detail-value"
+                                      style="font-size:14px; font-weight:400; color:#151617;">
+                                    {{ $invoice->formatAmount($invoice->proposedSubtotal()) }}
+                                </span>
+                            </td>
+                        </tr>
+
+                        @if($invoice->proposed_discount > 0)
+                            <tr class="detail-row">
+                                <td style="padding:14px 20px; border-bottom:1px solid #8f93a1; width:38%;">
+                                    <span class="detail-label"
+                                          style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.12em; color:#797d83;">
+                                        {{ $invoice->proposed_discount_label ?: 'Proposed Discount' }}
+                                    </span>
+                                </td>
+                                <td style="padding:14px 20px; border-bottom:1px solid #8f93a1;">
+                                    <span class="detail-value"
+                                          style="font-size:14px; font-weight:400; color:#151617;">
+                                        &minus; {{ $invoice->formatAmount($invoice->proposed_discount) }}
+                                    </span>
+                                </td>
+                            </tr>
+                        @endif
+
+                        @if($invoice->tax_enabled && $invoice->proposedTax() > 0)
+                            <tr class="detail-row">
+                                <td style="padding:14px 20px; border-bottom:1px solid #8f93a1; width:38%;">
+                                    <span class="detail-label"
+                                          style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.12em; color:#797d83;">
+                                        {{ $invoice->tax_label }} — Proposed
+                                    </span>
+                                </td>
+                                <td style="padding:14px 20px; border-bottom:1px solid #8f93a1;">
+                                    <span class="detail-value"
+                                          style="font-size:14px; font-weight:400; color:#151617;">
+                                        {{ $invoice->formatAmount($invoice->proposedTax()) }}
+                                    </span>
+                                </td>
+                            </tr>
+                        @endif
+                    @endif
+
+                    <!-- Amount Due — highlighted last row -->
                     <tr>
                         <td class="amount-cell" style="padding:18px 20px; background-color:#c4c9d4; width:38%;">
                             <span class="detail-label"
@@ -341,7 +442,7 @@
                         <td class="amount-cell" style="padding:18px 20px; background-color:#c4c9d4;">
                             <span class="detail-value"
                                   style="font-size:17px; font-weight:700; color:#151617;">
-                                {{ $invoice->formatAmount(max(0, $invoice->completedOutstanding())) }}
+                                {{ $invoice->formatAmount(max(0, $invoice->grandOutstanding())) }}
                             </span>
                         </td>
                     </tr>

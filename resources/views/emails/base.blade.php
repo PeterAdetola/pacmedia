@@ -176,7 +176,11 @@
                         <p class="index-label" style="font-family:'Trebuchet MS',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:#797d83;margin:0 0 16px 0;">{{ $indexLabel ?? '01 — Notice' }}</p>
 
                         {{-- Headline --}}
-                        <h2 class="heading-text" style="font-family:'Trebuchet MS',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:30px;font-weight:300;line-height:1.25;letter-spacing:-0.01em;color:#151617;margin:0;">{!! $heading ?? 'Your message<br/>has been received.' !!}</h2>
+                        <h2 class="heading-text" style="font-family:'Trebuchet MS',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:30px;font-weight:300;line-height:1.25;letter-spacing:-0.01em;color:#151617;margin:0;">
+                            @foreach(explode("\n", $heading ?? "Your message\nhas been received.") as $line)
+                                {{ $line }}@if(!$loop->last)<br>@endif
+                            @endforeach
+                        </h2>
 
                         {{-- Rule --}}
                         <div class="divider" style="width:28px;height:1px;background-color:#8f93a1;margin:24px 0;font-size:0;line-height:0;">&nbsp;</div>

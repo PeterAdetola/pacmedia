@@ -215,8 +215,9 @@
                     <div class="card-body pb-0">
                         <p class="pac-section-label mb-5">Template</p>
 
+                        {{-- Row 1: Email Type + Index Label --}}
                         <div class="row g-5 mb-5">
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="form-floating form-floating-outline">
                                     <select class="form-select" id="email_type" name="email_type">
                                         <option value="Message" selected>Message</option>
@@ -232,7 +233,7 @@
                                     </label>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="form-floating form-floating-outline">
                                     <input type="text" class="form-control"
                                            id="index_label" name="index_label"
@@ -244,16 +245,44 @@
                                     </label>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <div class="form-floating form-floating-outline">
-                                    <input type="text" class="form-control"
-                                           id="heading" name="heading"
-                                           value="{{ old('heading') }}"
-                                           placeholder="Main headline">
-                                    <label for="heading">Headline</label>
-                                </div>
-                            </div>
                         </div>
+
+
+                        {{-- Row 2: Headline — full width textarea --}}
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between align-items-baseline mb-1">
+                                <label for="heading" class="form-label mb-0"
+                                       style="font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:#9ca3af;">
+                                    Headline
+                                    <small class="text-muted fw-normal"
+                                           style="text-transform:none; letter-spacing:0;">
+                                        (wraps automatically in the email — no line breaks needed)
+                                    </small>
+                                </label>
+                                <span id="heading-counter" style="font-size:0.68rem; color:#9ca3af;">0 / 120</span>
+                            </div>
+                            <textarea id="heading"
+                                      name="heading"
+                                      class="form-control"
+                                      maxlength="120"
+                                      rows="1"
+                                      style="resize:none; overflow:hidden; line-height:1.5;"
+                                      placeholder="e.g. Your invoice is ready, Peter.">{{ old('heading') }}</textarea>
+                        </div>
+
+                        {{-- Live wrap preview — simulates ~580px email container --}}
+                        <div class="mb-5" style="background:rgba(0,0,0,0.02); border:1px dashed var(--bs-border-color); border-radius:0.5rem; padding:0.875rem 1rem;">
+                            <p style="font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:#9ca3af; margin:0 0 0.5rem;">
+                                Preview — at email width
+                            </p>
+                            <p id="heading-preview"
+                               style="font-size:1.5rem; font-weight:300; line-height:1.25; color:#9ca3af; margin:0; max-width:380px; word-break:break-word;">
+                                Your headline will appear here…
+                            </p>
+                        </div>
+                        <p class="text-muted mb-5" style="font-size:0.72rem;">
+                            Press <kbd style="font-size:0.68rem;">Enter</kbd> to control exactly where the headline breaks — just like the invoice email.
+                        </p>
 
                         <div class="pac-hint mb-5">
                             <strong>Structure:</strong>
@@ -642,6 +671,33 @@
                 document.querySelectorAll('.alert-success').forEach(function (el) {
                     setTimeout(() => el.remove(), 4000);
                 });
+
+                // ── Headline textarea constraints ─────────────────
+                const heading = document.getElementById('heading');
+                const counter = document.getElementById('heading-counter');
+                const preview = document.getElementById('heading-preview');
+
+                function autoGrow() {
+                    heading.style.height = 'auto';
+                    heading.style.height = heading.scrollHeight + 'px';
+                }
+
+                heading.addEventListener('input', function () {
+                    const len = this.value.length;
+                    counter.textContent = len + ' / 120';
+                    counter.style.color = len >= 110 ? '#ef4444'
+                        : len >= 90  ? '#f59e0b'
+                            :              '#9ca3af';
+                    // Render preview with line breaks
+                    preview.innerHTML = this.value
+                        ? this.value.split('\n').map(l => `<span style="display:block;">${l || '&nbsp;'}</span>`).join('')
+                        : '<span style="color:#9ca3af;">Your headline will appear here…</span>';
+                    autoGrow();
+                });
+
+                if (heading.value.length) {
+                    heading.dispatchEvent(new Event('input'));
+                }
 
             })();
         </script>
