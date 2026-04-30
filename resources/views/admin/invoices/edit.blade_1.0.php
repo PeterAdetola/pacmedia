@@ -5,84 +5,12 @@
         <link rel="stylesheet" href="{{ asset('admin/assets/css/pages/app-invoice.css') }}">
         <style>
             /* ── Repeater item rows ── */
-
-            /* No padding-top — labels are INSIDE the card, not floating above as column headers */
-            .invoice-edit .repeater-wrapper {
-                position: relative;
-                padding-top: 0 !important;
-                margin-top: 0 !important;
-            }
-
-            /* Neutralise app-invoice.css which uses position:absolute + negative inset
-               to lift .repeater-title above the card border as floating column headers.
-               Our two-zone design puts labels inside the card — restore to static flow. */
-            .invoice-edit .repeater-title {
-                position: static !important;
-                inset-block-start: auto !important;
-                top: auto !important;
-                font-size: 0.72rem !important;
-                font-weight: 700;
-                text-transform: uppercase;
-                letter-spacing: 0.06em;
-                color: #9ca3af;
-                margin-bottom: 0.4rem;
-                white-space: nowrap;
-            }
-
-            /* Remove the spacer the template creates for the first item */
-            #completed-items-container    .repeater-wrapper:first-child,
-            #subscription-items-container .repeater-wrapper:first-child,
-            #proposed-items-container     .repeater-wrapper:first-child {
-                margin-top: 0 !important;
-                padding-top: 0 !important;
-            }
-
-            /* ── Item card zone separator ── */
-            .item-zone-bottom {
-                border-top: 1px dashed #e5e7eb;
-                background: #f9fafb;
-            }
-            [data-bs-theme="dark"] .item-zone-bottom {
-                border-color: rgba(255,255,255,0.08);
-                background: rgba(255,255,255,0.02);
-            }
-
-            /* ── Item total display ── */
-            .item-total-display {
-                font-size: 1.05rem;
-                font-weight: 800;
-                color: #1e293b;
-                white-space: nowrap;
-                letter-spacing: -0.02em;
-                line-height: 1.2;
-            }
-            [data-bs-theme="dark"] .item-total-display { color: #f1f5f9; }
-
-            /* ── Remove icon button ── */
-            .remove-item-btn {
-                width: 28px;
-                height: 28px;
-                border-radius: 6px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                cursor: pointer;
-                color: #9ca3af;
-                transition: background 0.15s, color 0.15s;
-                flex-shrink: 0;
-            }
-            .remove-item-btn:hover {
-                background: rgba(239,68,68,0.08);
-                color: #ef4444;
-            }
-
-            /* ── Subscription item blue border ── */
-            .subs-item-card {
-                border-color: rgba(59,130,246,0.25) !important;
-            }
-            .subs-item-zone-bottom {
-                border-top: 1px dashed rgba(59,130,246,0.2);
-                background: rgba(59,130,246,0.02);
+            .repeater-wrapper { position: relative; }
+            .repeater-title {
+                font-size: 0.78rem;
+                font-weight: 600;
+                color: #374151;
+                margin-bottom: 0.5rem;
             }
 
             /* ── Shared section-toggle style ── */
@@ -100,46 +28,82 @@
             .pac-section-toggle-label { font-size: 0.83rem; font-weight: 600; }
             .pac-section-toggle-sub   { font-size: 0.72rem; color: #9ca3af; }
 
-            /* ── Completed toggle ── */
-            .pac-completed-toggle { background: rgba(234,88,12,0.04); border-color: rgba(234,88,12,0.3); margin-top: 0; }
+            /* ── Completed toggle — orange tint ── */
+            .pac-completed-toggle {
+                background: rgba(234,88,12,0.04);
+                border-color: rgba(234,88,12,0.3);
+                margin-top: 0;
+            }
             .pac-completed-toggle:hover { background: rgba(234,88,12,0.08); }
             .pac-completed-toggle .pac-section-toggle-label { color: #c2410c; }
-            .pac-completed-icon { width:34px; height:34px; border-radius:8px; background: rgba(234,88,12,0.12); display:flex; align-items:center; justify-content:center; }
+            .pac-completed-icon {
+                width:34px; height:34px; border-radius:8px;
+                background: rgba(234,88,12,0.12);
+                display:flex; align-items:center; justify-content:center;
+            }
             .pac-completed-icon i { color:#c2410c; font-size:1.1rem; }
 
-            /* ── Subscription toggle ── */
-            .pac-subscription-toggle { background: rgba(59,130,246,0.04); border-color: rgba(59,130,246,0.3); }
+            /* ── Subscription toggle — blue tint ── */
+            .pac-subscription-toggle {
+                background: rgba(59,130,246,0.04);
+                border-color: rgba(59,130,246,0.3);
+            }
             .pac-subscription-toggle:hover { background: rgba(59,130,246,0.08); }
             .pac-subscription-toggle .pac-section-toggle-label { color: #1d4ed8; }
-            .pac-subscription-icon { width:34px; height:34px; border-radius:8px; background: rgba(59,130,246,0.12); display:flex; align-items:center; justify-content:center; }
+            .pac-subscription-icon {
+                width:34px; height:34px; border-radius:8px;
+                background: rgba(59,130,246,0.12);
+                display:flex; align-items:center; justify-content:center;
+            }
             .pac-subscription-icon i { color:#1d4ed8; font-size:1.1rem; }
 
-            /* ── Proposed toggle ── */
-            .pac-proposed-toggle { background: rgba(181,204,24,0.04); border-color: rgba(181,204,24,0.3); }
+            /* ── Proposed toggle — lime tint ── */
+            .pac-proposed-toggle {
+                background: rgba(181,204,24,0.04);
+                border-color: rgba(181,204,24,0.3);
+            }
             .pac-proposed-toggle:hover { background: rgba(181,204,24,0.08); }
             .pac-proposed-toggle .pac-section-toggle-label { color: #96aa12; }
-            .pac-proposed-icon { width:34px; height:34px; border-radius:8px; background: rgba(181,204,24,0.12); display:flex; align-items:center; justify-content:center; }
+            .pac-proposed-icon {
+                width:34px; height:34px; border-radius:8px;
+                background: rgba(181,204,24,0.12);
+                display:flex; align-items:center; justify-content:center;
+            }
             .pac-proposed-icon i { color:#96aa12; font-size:1.1rem; }
 
             /* ── Section dividers ── */
-            .pac-section-divider { display: flex; align-items: center; gap: 0.75rem; margin: 1.5rem 0 1rem; }
+            .pac-section-divider {
+                display: flex; align-items: center; gap: 0.75rem; margin: 1.5rem 0 1rem;
+            }
             .pac-section-divider hr { flex: 1; margin: 0; }
-            .pac-section-badge { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; border-radius: 100px; padding: 3px 10px; white-space: nowrap; border: 1px solid; }
-            .pac-completed-badge    { color: #c2410c; background: rgba(234,88,12,0.1);   border-color: rgba(234,88,12,0.25); }
-            .pac-subscription-badge { color: #1d4ed8; background: rgba(59,130,246,0.1);  border-color: rgba(59,130,246,0.25); }
-            .pac-proposed-badge     { color: #96aa12; background: rgba(181,204,24,0.1);   border-color: rgba(181,204,24,0.25); }
+            .pac-section-badge {
+                font-size: 0.68rem; font-weight: 700; letter-spacing: 0.07em;
+                text-transform: uppercase;
+                border-radius: 100px; padding: 3px 10px; white-space: nowrap;
+                border: 1px solid;
+            }
+            .pac-completed-badge    { color:#c2410c; background:rgba(234,88,12,0.1);   border-color:rgba(234,88,12,0.25); }
+            .pac-subscription-badge { color:#1d4ed8; background:rgba(59,130,246,0.1);  border-color:rgba(59,130,246,0.25); }
+            .pac-proposed-badge     { color:#96aa12; background:rgba(181,204,24,0.1);  border-color:rgba(181,204,24,0.25); }
 
             /* ── Tax panel ── */
-            .pac-tax-panel { background: var(--bs-gray-50); border: 1px solid var(--bs-border-color); border-radius: 0.5rem; padding: 1rem 1.25rem; }
-            .pac-tax-grid  { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; margin-top: 0.75rem; }
+            .pac-tax-panel {
+                background: var(--bs-gray-50);
+                border: 1px solid var(--bs-border-color);
+                border-radius: 0.5rem;
+                padding: 1rem 1.25rem;
+            }
+            .pac-tax-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 0.75rem;
+                margin-top: 0.75rem;
+            }
 
             /* ── Invoice calculations ── */
             .invoice-calculations { min-inline-size: 200px; }
-            .invoice-calculations p { font-size: 0.83rem; color: #374151; margin-bottom: 0.4rem; }
-            .invoice-calculations .fw-bold { color: #111827; font-size: 0.9rem; }
-
-            /* ── Sticky actions ── */
-            .invoice-actions .card { position: sticky; top: 80px; }
+            .invoice-actions .card { position: sticky; top: 80px; z-index: 10; }
+            .invoice-preview-card { isolation: isolate; }
 
             /* ── Submit error banner ── */
             #pac-submit-error {
@@ -157,12 +121,21 @@
 
             /* ── Toast ── */
             #pac-toast {
-                position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999;
-                background: #1f2937; color: #fff; border-radius: 0.625rem;
-                padding: 0.875rem 1.25rem; font-size: 0.82rem;
-                display: flex; align-items: center; gap: 0.625rem;
+                position: fixed;
+                bottom: 1.5rem;
+                right: 1.5rem;
+                z-index: 9999;
+                background: #1f2937;
+                color: #fff;
+                border-radius: 0.625rem;
+                padding: 0.875rem 1.25rem;
+                font-size: 0.82rem;
+                display: flex;
+                align-items: center;
+                gap: 0.625rem;
                 box-shadow: 0 8px 24px rgba(0,0,0,0.18);
-                transform: translateY(120%); opacity: 0;
+                transform: translateY(120%);
+                opacity: 0;
                 transition: transform 0.3s cubic-bezier(.4,0,.2,1), opacity 0.3s ease;
                 max-width: 320px;
             }
@@ -171,6 +144,9 @@
 
             @media (max-width: 575.98px) {
                 .invoice-edit .invoice-preview-card .invoice-calculations { inline-size: 100%; }
+            }
+            @media (min-width: 768px) {
+                .invoice-edit .repeater-title { position: absolute; inset-block-start: -2.4rem; }
             }
             @media print {
                 .invoice-edit hr { margin-block: 1rem !important; }
@@ -296,25 +272,33 @@
                                 <h6>Payment Details:</h6>
                                 <table><tbody>
                                     <tr>
-                                        <td class="pe-4 text-nowrap align-middle" style="font-size:0.83rem;">Bank Name:</td>
+                                        <td class="pe-4 text-nowrap align-middle" style="font-size:0.83rem;">Currency:</td>
                                         <td>
-                                            <input type="text" name="bank_name" class="form-control form-control-sm"
-                                                   value="{{ old('bank_name', $invoice->bank_name) }}" placeholder="Bank Name">
+                                            <select name="currency" id="currency-select" class="form-select form-select-sm">
+                                                @foreach(\App\Models\Invoice::$currencySymbols as $code => $symbol)
+                                                    <option value="{{ $code }}"
+                                                            data-symbol="{{ $symbol }}"
+                                                        {{ old('currency', $invoice->currency ?? 'NGN') == $code ? 'selected' : '' }}>
+                                                        {{ $code }} ({{ $symbol }})
+                                                    </option>
+                                                @endforeach
+                                            </select>
                                         </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="pe-4 text-nowrap align-middle" style="font-size:0.83rem;">Bank Name:</td>
+                                        <td><input type="text" name="bank_name" class="form-control form-control-sm"
+                                                   value="{{ old('bank_name', $invoice->bank_name) }}" placeholder="Bank Name"></td>
                                     </tr>
                                     <tr>
                                         <td class="pe-4 text-nowrap align-middle" style="font-size:0.83rem;">Account Name:</td>
-                                        <td>
-                                            <input type="text" name="bank_account_name" class="form-control form-control-sm"
-                                                   value="{{ old('bank_account_name', $invoice->bank_account_name) }}" placeholder="Account Name">
-                                        </td>
+                                        <td><input type="text" name="bank_account_name" class="form-control form-control-sm"
+                                                   value="{{ old('bank_account_name', $invoice->bank_account_name) }}" placeholder="Account Name"></td>
                                     </tr>
                                     <tr>
                                         <td class="pe-4 text-nowrap align-middle" style="font-size:0.83rem;">Account Number:</td>
-                                        <td>
-                                            <input type="text" name="bank_account_number" class="form-control form-control-sm"
-                                                   value="{{ old('bank_account_number', $invoice->bank_account_number) }}" placeholder="Account Number">
-                                        </td>
+                                        <td><input type="text" name="bank_account_number" class="form-control form-control-sm"
+                                                   value="{{ old('bank_account_number', $invoice->bank_account_number) }}" placeholder="Account Number"></td>
                                     </tr>
                                     </tbody></table>
                             </div>
@@ -325,7 +309,7 @@
                     <hr class="mt-0 mb-6">
 
                     {{-- ══════════════════════════════════════
-                         SECTION TOGGLES
+                         SECTION TOGGLES — all three opt-in
                     ═══════════════════════════════════════ --}}
 
                     @php
@@ -337,13 +321,16 @@
                     <div class="card-body py-0 px-0">
 
                         {{-- ── COMPLETED SERVICES ── --}}
+                        {{-- has_completed lives outside the toggle so it always submits --}}
                         <input type="hidden" name="has_completed" id="has_completed"
                                value="{{ $hasCompOld ? '1' : '0' }}">
 
                         <div id="completed-toggle"
                              class="pac-section-toggle pac-completed-toggle"
                              style="{{ $hasCompOld ? 'display:none' : 'display:flex' }};">
-                            <div class="pac-completed-icon"><i class="ri ri-checkbox-circle-line"></i></div>
+                            <div class="pac-completed-icon">
+                                <i class="ri ri-checkbox-circle-line"></i>
+                            </div>
                             <div>
                                 <div class="pac-section-toggle-label">Add Completed Services</div>
                                 <div class="pac-section-toggle-sub">Work already delivered — ready to invoice</div>
@@ -402,17 +389,35 @@
                                 </div>
                                 <div class="col-md-6 d-flex justify-content-md-end mt-2">
                                     <div class="invoice-calculations">
-                                        <div class="d-flex justify-content-between mb-1"><span>Subtotal:</span><span class="fw-medium" id="c-subtotal">₦0.00</span></div>
-                                        <div class="d-flex justify-content-between mb-1" id="c-discount-row" style="display:none !important;"><span id="c-discount-label-display">Discount:</span><span class="fw-medium text-danger" id="c-discount-display">-₦0.00</span></div>
-                                        <div class="d-flex justify-content-between mb-1" id="c-tax-row" style="display:none !important;"><span id="c-tax-label-display">VAT:</span><span class="fw-medium" id="c-tax-display">₦0.00</span></div>
-                                        <div class="d-flex justify-content-between mb-1" id="c-paid-row" style="display:none !important;"><span>Paid:</span><span class="fw-medium text-success" id="c-paid-display">-₦0.00</span></div>
-                                        <div class="d-flex justify-content-between mb-1" id="c-wht-row" style="display:none !important;"><span id="c-wht-label-display">WHT:</span><span class="fw-medium text-danger" id="c-wht-display">-₦0.00</span></div>
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <span>Subtotal:</span><span class="fw-medium" id="c-subtotal">₦0.00</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-1" id="c-discount-row" style="display:none !important;">
+                                            <span id="c-discount-label-display">Discount:</span>
+                                            <span class="fw-medium text-danger" id="c-discount-display">-₦0.00</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-1" id="c-tax-row" style="display:none !important;">
+                                            <span id="c-tax-label-display">VAT:</span>
+                                            <span class="fw-medium" id="c-tax-display">₦0.00</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-1" id="c-paid-row" style="display:none !important;">
+                                            <span>Paid:</span>
+                                            <span class="fw-medium text-success" id="c-paid-display">-₦0.00</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-1" id="c-wht-row" style="display:none !important;">
+                                            <span id="c-wht-label-display">WHT:</span>
+                                            <span class="fw-medium text-danger" id="c-wht-display">-₦0.00</span>
+                                        </div>
                                         <hr class="my-2">
-                                        <div class="d-flex justify-content-between"><span>Outstanding:</span><span class="fw-bold" id="c-outstanding">₦0.00</span></div>
+                                        <div class="d-flex justify-content-between">
+                                            <span>Outstanding:</span>
+                                            <span class="fw-bold" id="c-outstanding">₦0.00</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        {{-- / completed section --}}
 
                         <hr class="my-6" id="completed-divider"
                             style="{{ $hasCompOld ? 'display:block' : 'display:none' }};">
@@ -474,15 +479,28 @@
                                 </div>
                                 <div class="col-md-6 d-flex justify-content-md-end mt-2">
                                     <div class="invoice-calculations">
-                                        <div class="d-flex justify-content-between mb-1"><span>Subtotal:</span><span class="fw-medium" id="s-subtotal">₦0.00</span></div>
-                                        <div class="d-flex justify-content-between mb-1" id="s-discount-row" style="display:none !important;"><span id="s-discount-label-display">Discount:</span><span class="fw-medium text-danger" id="s-discount-display">-₦0.00</span></div>
-                                        <div class="d-flex justify-content-between mb-1" id="s-tax-row" style="display:none !important;"><span id="s-tax-label-display">VAT:</span><span class="fw-medium" id="s-tax-display">₦0.00</span></div>
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <span>Subtotal:</span>
+                                            <span class="fw-medium" id="s-subtotal">₦0.00</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-1" id="s-discount-row" style="display:none !important;">
+                                            <span id="s-discount-label-display">Discount:</span>
+                                            <span class="fw-medium text-danger" id="s-discount-display">-₦0.00</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-1" id="s-tax-row" style="display:none !important;">
+                                            <span id="s-tax-label-display">VAT:</span>
+                                            <span class="fw-medium" id="s-tax-display">₦0.00</span>
+                                        </div>
                                         <hr class="my-2">
-                                        <div class="d-flex justify-content-between"><span>Total Due:</span><span class="fw-bold" id="s-total">₦0.00</span></div>
+                                        <div class="d-flex justify-content-between">
+                                            <span>Total Due:</span>
+                                            <span class="fw-bold" id="s-total">₦0.00</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        {{-- / subscription section --}}
 
                         <hr class="my-6" id="subscription-divider"
                             style="{{ $hasSubOld ? 'display:block' : 'display:none' }};">
@@ -506,6 +524,7 @@
                                     </div>
                                 </div>
                             </div>
+
                             <div id="tax-fields"
                                  style="{{ old('tax_enabled', $invoice->tax_enabled) ? 'display:block' : 'display:none' }};">
                                 <div class="pac-tax-grid">
@@ -541,6 +560,7 @@
                                     </div>
                                 </div>
                             </div>
+
                             <div id="wht-fields"
                                  style="{{ old('wht_enabled', $invoice->wht_enabled) ? 'display:block' : 'display:none' }};">
                                 <div class="pac-tax-grid">
@@ -583,9 +603,7 @@
                                 <span class="pac-section-badge pac-proposed-badge">Proposed Services</span>
                                 <hr>
                             </div>
-
                             <div id="proposed-items-container" class="mb-4"></div>
-
                             <div class="d-flex align-items-center gap-3">
                                 <button type="button" class="btn btn-primary btn-sm" id="add-proposed-item">
                                     <i class="icon-base ri ri-add-line icon-14px me-1"></i>Add Item
@@ -594,7 +612,6 @@
                                     Remove Section
                                 </button>
                             </div>
-
                             <hr class="my-6">
                             <div class="row row-gap-4">
                                 <div class="col-md-6">
@@ -620,15 +637,26 @@
                                 </div>
                                 <div class="col-md-6 d-flex justify-content-md-end mt-2">
                                     <div class="invoice-calculations">
-                                        <div class="d-flex justify-content-between mb-1"><span>Subtotal:</span><span class="fw-medium" id="p-subtotal">₦0.00</span></div>
-                                        <div class="d-flex justify-content-between mb-1" id="p-discount-row" style="display:none !important;"><span id="p-discount-label-display">Discount:</span><span class="fw-medium text-danger" id="p-discount-display">-₦0.00</span></div>
-                                        <div class="d-flex justify-content-between mb-1" id="p-tax-row" style="display:none !important;"><span id="p-tax-label-display">VAT:</span><span class="fw-medium" id="p-tax-display">₦0.00</span></div>
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <span>Subtotal:</span><span class="fw-medium" id="p-subtotal">₦0.00</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-1" id="p-discount-row" style="display:none !important;">
+                                            <span id="p-discount-label-display">Discount:</span>
+                                            <span class="fw-medium text-danger" id="p-discount-display">-₦0.00</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-1" id="p-tax-row" style="display:none !important;">
+                                            <span id="p-tax-label-display">VAT:</span>
+                                            <span class="fw-medium" id="p-tax-display">₦0.00</span>
+                                        </div>
                                         <hr class="my-2">
-                                        <div class="d-flex justify-content-between"><span>Total:</span><span class="fw-bold" id="p-total">₦0.00</span></div>
+                                        <div class="d-flex justify-content-between">
+                                            <span>Total:</span><span class="fw-bold" id="p-total">₦0.00</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        {{-- / proposed section --}}
 
                     </div>
 
@@ -643,10 +671,13 @@
 
                 <div class="card mb-6">
                     <div class="card-body">
+
+                        {{-- Inline error banner --}}
                         <div id="pac-submit-error">
                             <i class="ri ri-error-warning-line" style="font-size:1rem; flex-shrink:0;"></i>
                             <span>Add at least one item to any section before saving.</span>
                         </div>
+
                         <button type="submit" name="status_action" value="sent"
                                 class="btn btn-primary d-grid w-100 mb-4">
                             <span class="d-flex align-items-center justify-content-center text-nowrap">
@@ -673,33 +704,34 @@
                         </select>
                     </div>
 
-                    <div class="mb-6">
-                        <label class="form-label fw-medium" style="font-size:0.82rem;">Currency</label>
-                        <select name="currency" id="currency-select" class="form-select">
-                            @foreach(\App\Models\Invoice::$currencySymbols as $code => $symbol)
-                                <option value="{{ $code }}"
-                                    {{ old('currency', $invoice->currency ?? 'NGN') === $code ? 'selected' : '' }}>
-                                    {{ $code }} ({{ $symbol }})
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
+                    {{-- Live summary --}}
                     <div class="mb-4">
                         <label class="form-label fw-medium" style="font-size:0.82rem;">Summary</label>
-                        <div class="d-flex justify-content-between mb-2" id="sidebar-completed-row" style="font-size:0.8rem; display:none !important;">
-                            <span style="color:#c2410c;"><i class="ri ri-checkbox-circle-line me-1" style="font-size:0.75rem;"></i>Completed</span>
+
+                        <div class="d-flex justify-content-between mb-2" id="sidebar-completed-row"
+                             style="font-size:0.8rem; display:none !important;">
+                            <span style="color:#c2410c;">
+                                <i class="ri ri-checkbox-circle-line me-1" style="font-size:0.75rem;"></i>Completed
+                            </span>
                             <span class="fw-medium" id="sidebar-completed">₦0.00</span>
                         </div>
-                        <div class="d-flex justify-content-between mb-2" id="sidebar-subscription-row" style="font-size:0.8rem; display:none !important;">
-                            <span style="color:#1d4ed8;"><i class="ri ri-loop-right-line me-1" style="font-size:0.75rem;"></i>Subscriptions</span>
+
+                        <div class="d-flex justify-content-between mb-2" id="sidebar-subscription-row"
+                             style="font-size:0.8rem; display:none !important;">
+                            <span style="color:#1d4ed8;">
+                                <i class="ri ri-loop-right-line me-1" style="font-size:0.75rem;"></i>Subscriptions
+                            </span>
                             <span class="fw-medium" id="sidebar-subscription">₦0.00</span>
                         </div>
-                        <div class="d-flex justify-content-between mb-2" id="sidebar-proposed-row" style="font-size:0.8rem; display:none !important;">
+
+                        <div class="d-flex justify-content-between mb-2" id="sidebar-proposed-row"
+                             style="font-size:0.8rem; display:none !important;">
                             <span style="color:#96aa12;">Proposed</span>
                             <span class="fw-medium" id="sidebar-proposed">₦0.00</span>
                         </div>
-                        <div class="d-flex justify-content-between mb-2" id="sidebar-paid-row" style="font-size:0.8rem; display:none !important;">
+
+                        <div class="d-flex justify-content-between mb-2" id="sidebar-paid-row"
+                             style="font-size:0.8rem; display:none !important;">
                             <span class="text-success">Paid</span>
                             <span class="fw-medium text-success" id="sidebar-paid">-₦0.00</span>
                         </div>
@@ -728,119 +760,78 @@
          TEMPLATES
     ═══════════════════════════════════════════════ --}}
 
-    {{-- ─────────────────────────────────────────────────────────────────
-         Standard line item — two-zone card
-         Zone 1 (white): Description full-width + × remove button
-         Zone 2 (grey bg, dashed top): Unit Price · Qty · Total
-    ───────────────────────────────────────────────────────────────── --}}
     <template id="item-row-template">
-        <div class="repeater-wrapper mb-3" data-item-row>
-            <div class="border rounded overflow-hidden">
-
-                {{-- Zone 1: Description ── --}}
-                <div class="d-flex align-items-center gap-3 px-4 pt-4 pb-3">
-                    <div class="flex-grow-1">
-                        <p class="repeater-title">Description</p>
-                        <input type="text"
-                               class="form-control item-description"
-                               placeholder="Service description">
+        <div class="repeater-wrapper pt-0 pt-md-9 mb-4" data-item-row>
+            <div class="d-flex border rounded position-relative pe-0">
+                <div class="row w-100 p-5 gx-5">
+                    <div class="col-md-6 col-12 mb-md-0 mb-4">
+                        <p class="h6 repeater-title">Description</p>
+                        <input type="text" class="form-control item-description" placeholder="Service description">
                     </div>
-                    <div class="remove-item-btn remove-item flex-shrink-0 mt-3">
-                        <i class="ri ri-close-line icon-18px"></i>
+                    <div class="col-md-3 col-12 mb-md-0 mb-4">
+                        <p class="h6 repeater-title">Unit Price (₦)</p>
+                        <input type="number" class="form-control item-price" placeholder="0.00" min="0" step="0.01">
+                    </div>
+                    <div class="col-md-2 col-12 mb-md-0 mb-4">
+                        <p class="h6 repeater-title">Qty</p>
+                        <input type="number" class="form-control item-qty" value="1" min="1" step="1">
+                    </div>
+                    <div class="col-md-1 col-12 pe-0">
+                        <p class="h6 repeater-title">Total</p>
+                        <p class="mb-0 mt-2 text-heading fw-semibold item-total">₦0.00</p>
                     </div>
                 </div>
-
-                {{-- Zone 2: Price · Qty · Total ── --}}
-                <div class="item-zone-bottom d-flex align-items-center gap-4 px-4 py-3 flex-wrap">
-
-                    <div style="flex: 1; min-width: 120px;">
-                        <p class="repeater-title">Unit Price (₦)</p>
-                        <input type="number"
-                               class="form-control form-control-sm item-price"
-                               placeholder="0.00" min="0" step="0.01">
-                    </div>
-
-                    <div style="width: 80px; flex-shrink: 0;">
-                        <p class="repeater-title">Qty</p>
-                        <input type="number"
-                               class="form-control form-control-sm item-qty"
-                               value="1" min="1" step="1">
-                    </div>
-
-                    <div class="ms-auto text-end" style="flex-shrink: 0; min-width: 100px;">
-                        <p class="repeater-title" style="text-align: right;">Total</p>
-                        <p class="mb-0 item-total item-total-display">₦0.00</p>
-                    </div>
-
+                <div class="d-flex flex-column align-items-center justify-content-center border-start p-2">
+                    <i class="icon-base ri ri-close-line cursor-pointer icon-24px remove-item"
+                       style="color:#9ca3af; transition:color 0.15s;"
+                       onmouseover="this.style.color='#ef4444'"
+                       onmouseout="this.style.color='#9ca3af'"></i>
                 </div>
-
             </div>
         </div>
     </template>
 
-    {{-- ─────────────────────────────────────────────────────────────────
-         Subscription line item — two-zone card
-         Zone 1: Description · Cycle · Renewal Date + × remove
-         Zone 2: Amount · Qty · Total
-    ───────────────────────────────────────────────────────────────── --}}
     <template id="subscription-row-template">
-        <div class="repeater-wrapper mb-3" data-item-row>
-            <div class="border rounded overflow-hidden subs-item-card">
-
-                {{-- Zone 1: Description + meta ── --}}
-                <div class="d-flex align-items-start gap-3 px-4 pt-4 pb-3">
-                    <div class="flex-grow-1">
-                        <div class="row g-3">
-                            <div class="col-12 col-md-6">
-                                <p class="repeater-title">Description</p>
-                                <input type="text"
-                                       class="form-control item-description"
-                                       placeholder="e.g. Website Hosting — annual">
-                            </div>
-                            <div class="col-6 col-md-3">
-                                <p class="repeater-title">Cycle</p>
-                                <select class="form-select form-select-sm item-cycle">
-                                    <option value="annual">Annual</option>
-                                    <option value="monthly">Monthly</option>
-                                </select>
-                            </div>
-                            <div class="col-6 col-md-3">
-                                <p class="repeater-title">Renewal Date</p>
-                                <input type="text"
-                                       class="form-control form-control-sm item-renewal flatpickr-renewal"
-                                       placeholder="YYYY-MM-DD">
-                            </div>
-                        </div>
+        <div class="repeater-wrapper pt-0 pt-md-9 mb-4" data-item-row>
+            <div class="d-flex border rounded position-relative pe-0"
+                 style="border-color: rgba(59,130,246,0.25) !important;">
+                <div class="row w-100 p-5 gx-5">
+                    <div class="col-md-4 col-12 mb-md-0 mb-4">
+                        <p class="h6 repeater-title">Description</p>
+                        <input type="text" class="form-control item-description"
+                               placeholder="e.g. Website Hosting — annual">
                     </div>
-                    <div class="remove-item-btn remove-item flex-shrink-0" style="margin-top: 1.4rem;">
-                        <i class="ri ri-close-line icon-18px"></i>
+                    <div class="col-md-2 col-12 mb-md-0 mb-4">
+                        <p class="h6 repeater-title">Cycle</p>
+                        <select class="form-select form-select-sm item-cycle" style="margin-top:0.15rem;">
+                            <option value="annual">Annual</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 col-12 mb-md-0 mb-4">
+                        <p class="h6 repeater-title">Renewal Date</p>
+                        <input type="text" class="form-control form-control-sm item-renewal flatpickr-renewal"
+                               placeholder="YYYY-MM-DD">
+                    </div>
+                    <div class="col-md-2 col-12 mb-md-0 mb-4">
+                        <p class="h6 repeater-title">Amount (₦)</p>
+                        <input type="number" class="form-control item-price" placeholder="0.00" min="0" step="0.01">
+                    </div>
+                    <div class="col-md-1 col-12 mb-md-0 mb-4">
+                        <p class="h6 repeater-title">Qty</p>
+                        <input type="number" class="form-control item-qty" value="1" min="1" step="1">
+                    </div>
+                    <div class="col-md-1 col-12 pe-0">
+                        <p class="h6 repeater-title">Total</p>
+                        <p class="mb-0 mt-2 text-heading fw-semibold item-total">₦0.00</p>
                     </div>
                 </div>
-
-                {{-- Zone 2: Amount · Qty · Total ── --}}
-                <div class="subs-item-zone-bottom d-flex align-items-center gap-4 px-4 py-3 flex-wrap">
-
-                    <div style="flex: 1; min-width: 120px;">
-                        <p class="repeater-title">Amount (₦)</p>
-                        <input type="number"
-                               class="form-control form-control-sm item-price"
-                               placeholder="0.00" min="0" step="0.01">
-                    </div>
-
-                    <div style="width: 80px; flex-shrink: 0;">
-                        <p class="repeater-title">Qty</p>
-                        <input type="number"
-                               class="form-control form-control-sm item-qty"
-                               value="1" min="1" step="1">
-                    </div>
-
-                    <div class="ms-auto text-end" style="flex-shrink: 0; min-width: 100px;">
-                        <p class="repeater-title" style="text-align: right;">Total</p>
-                        <p class="mb-0 item-total item-total-display" style="color:#1d4ed8;">₦0.00</p>
-                    </div>
-
+                <div class="d-flex flex-column align-items-center justify-content-center border-start p-2">
+                    <i class="icon-base ri ri-close-line cursor-pointer icon-24px remove-item"
+                       style="color:#9ca3af; transition:color 0.15s;"
+                       onmouseover="this.style.color='#ef4444'"
+                       onmouseout="this.style.color='#9ca3af'"></i>
                 </div>
-
             </div>
         </div>
     </template>
@@ -912,21 +903,24 @@
                     setTimeout(() => toast.classList.remove('show'), 4000);
                 }
 
-                /* ── Error banner ── */
+                /* ── Inline error banner ── */
                 function showError(msg) {
                     const el = document.getElementById('pac-submit-error');
                     el.querySelector('span').textContent = msg;
                     el.style.display = 'flex';
                     el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 }
-                function hideError() { document.getElementById('pac-submit-error').style.display = 'none'; }
+                function hideError() {
+                    document.getElementById('pac-submit-error').style.display = 'none';
+                }
 
                 /* ── Submit guard ── */
                 document.getElementById('pac-invoice-form').addEventListener('submit', function (e) {
-                    const c = document.querySelectorAll('#completed-items-container [data-item-row]').length;
-                    const s = document.querySelectorAll('#subscription-items-container [data-item-row]').length;
-                    const p = document.querySelectorAll('#proposed-items-container [data-item-row]').length;
-                    if (c + s + p === 0) {
+                    const completedCount    = document.querySelectorAll('#completed-items-container [data-item-row]').length;
+                    const subscriptionCount = document.querySelectorAll('#subscription-items-container [data-item-row]').length;
+                    const proposedCount     = document.querySelectorAll('#proposed-items-container [data-item-row]').length;
+
+                    if (completedCount + subscriptionCount + proposedCount === 0) {
                         e.preventDefault();
                         const msg = 'Add at least one item to any section before saving.';
                         showError(msg);
@@ -952,7 +946,7 @@
                 const tpl     = document.getElementById('item-row-template');
                 const subsTpl = document.getElementById('subscription-row-template');
 
-                /* ── Add standard item ── */
+                /* ── Standard item ── */
                 function addItem(containerId, section, prefill) {
                     const container = document.getElementById(containerId);
                     const idx       = container.querySelectorAll('[data-item-row]').length;
@@ -971,7 +965,8 @@
                         descEl.value  = prefill.description || '';
                         priceEl.value = prefill.unit_price  || '';
                         qtyEl.value   = prefill.qty         || 1;
-                        row.querySelector('.item-total').textContent = fmt((parseFloat(prefill.qty) || 1) * (parseFloat(prefill.unit_price) || 0));
+                        const total   = (parseFloat(prefill.qty) || 1) * (parseFloat(prefill.unit_price) || 0);
+                        row.querySelector('.item-total').textContent = fmt(total);
                     }
 
                     const updateTotal = () => {
@@ -981,15 +976,13 @@
                     priceEl.addEventListener('input', updateTotal);
                     qtyEl.addEventListener('input',   updateTotal);
                     row.querySelector('.remove-item').addEventListener('click', () => {
-                        row.remove();
-                        reindex(containerId, section);
-                        recalc();
+                        row.remove(); reindex(containerId, section); recalc();
                     });
 
                     container.appendChild(clone);
                 }
 
-                /* ── Add subscription item ── */
+                /* ── Subscription item ── */
                 function addSubscriptionItem(prefill) {
                     const container = document.getElementById('subscription-items-container');
                     const idx       = container.querySelectorAll('[data-item-row]').length;
@@ -1009,14 +1002,15 @@
                     qtyEl.name     = `subscription_items[${idx}][qty]`;
 
                     if (prefill) {
-                        descEl.value    = prefill.description  || '';
-                        priceEl.value   = prefill.unit_price   || '';
-                        qtyEl.value     = prefill.qty          || 1;
-                        renewalEl.value = prefill.renewal_date || '';
+                        descEl.value    = prefill.description   || '';
+                        priceEl.value   = prefill.unit_price    || '';
+                        qtyEl.value     = prefill.qty           || 1;
+                        renewalEl.value = prefill.renewal_date  || '';
                         if (prefill.billing_cycle) {
                             [...cycleEl.options].forEach(o => o.selected = o.value === prefill.billing_cycle);
                         }
-                        row.querySelector('.item-total').textContent = fmt((parseFloat(prefill.qty) || 1) * (parseFloat(prefill.unit_price) || 0));
+                        const total = (parseFloat(prefill.qty) || 1) * (parseFloat(prefill.unit_price) || 0);
+                        row.querySelector('.item-total').textContent = fmt(total);
                     }
 
                     const updateTotal = () => {
@@ -1026,9 +1020,7 @@
                     priceEl.addEventListener('input', updateTotal);
                     qtyEl.addEventListener('input',   updateTotal);
                     row.querySelector('.remove-item').addEventListener('click', () => {
-                        row.remove();
-                        reindexSubscription();
-                        recalc();
+                        row.remove(); reindexSubscription(); recalc();
                     });
 
                     container.appendChild(clone);
@@ -1042,6 +1034,7 @@
                         row.querySelector('.item-qty').name         = `${section}_items[${i}][qty]`;
                     });
                 }
+
                 function reindexSubscription() {
                     document.querySelectorAll('#subscription-items-container [data-item-row]').forEach((row, i) => {
                         row.querySelector('.item-description').name = `subscription_items[${i}][description]`;
@@ -1094,9 +1087,9 @@
                     const subsVis = document.getElementById('has_subscription').value === '1';
                     const propVis = document.getElementById('has_proposed').value === '1';
 
-                    /* Completed */
+                    /* ── Completed ── */
                     const cSub = subtotal('completed-items-container');
-                    const cTax = taxOn && taxAppliesTo.completed    ? cSub * taxRate : 0;
+                    const cTax = taxOn && taxAppliesTo.completed ? cSub * taxRate : 0;
                     const cWht = whtOn ? cSub * whtRate : 0;
                     const cOut = cSub + cTax - cDisc - paid - cWht;
 
@@ -1114,7 +1107,7 @@
                     document.getElementById('c-wht-display').textContent       = '-' + fmt(cWht);
                     document.getElementById('c-outstanding').textContent = fmt(cOut);
 
-                    /* Subscription */
+                    /* ── Subscription ── */
                     const sSub = subtotal('subscription-items-container');
                     const sTax = taxOn && taxAppliesTo.subscription ? sSub * taxRate : 0;
                     const sTot = sSub + sTax - sDisc;
@@ -1128,9 +1121,9 @@
                     document.getElementById('s-tax-display').textContent       = fmt(sTax);
                     document.getElementById('s-total').textContent = fmt(sTot);
 
-                    /* Proposed */
+                    /* ── Proposed ── */
                     const pSub = subtotal('proposed-items-container');
-                    const pTax = taxOn && taxAppliesTo.proposed     ? pSub * taxRate : 0;
+                    const pTax = taxOn && taxAppliesTo.proposed ? pSub * taxRate : 0;
                     const pTot = pSub + pTax - pDisc;
 
                     document.getElementById('p-subtotal').textContent = fmt(pSub);
@@ -1142,13 +1135,15 @@
                     document.getElementById('p-tax-display').textContent       = fmt(pTax);
                     document.getElementById('p-total').textContent = fmt(pTot);
 
-                    /* Sidebar */
+                    /* ── Sidebar ── */
                     const totalOutstanding = (compVis ? cOut : 0) + (subsVis ? sTot : 0);
+
                     document.getElementById('sidebar-completed').textContent    = fmt(cSub);
                     document.getElementById('sidebar-subscription').textContent = fmt(sTot);
                     document.getElementById('sidebar-proposed').textContent     = fmt(pTot);
                     document.getElementById('sidebar-paid').textContent         = '-' + fmt(paid);
                     document.getElementById('sidebar-outstanding').textContent  = fmt(totalOutstanding);
+
                     show(document.getElementById('sidebar-completed-row'),    compVis && cSub > 0);
                     show(document.getElementById('sidebar-subscription-row'), subsVis && sSub > 0);
                     show(document.getElementById('sidebar-proposed-row'),     propVis && pSub > 0);
@@ -1169,10 +1164,11 @@
                     'completed_discount_label','subscription_discount_label','proposed_discount_label'
                 ].forEach(id => {
                     const el = document.getElementById(id);
-                    if (el) { el.addEventListener('input', recalc); el.addEventListener('change', recalc); }
+                    if (el) el.addEventListener('input',  recalc);
+                    if (el) el.addEventListener('change', recalc);
                 });
 
-                /* ── Section toggles ── */
+                /* ── Completed toggle ── */
                 document.getElementById('completed-toggle').addEventListener('click', () => {
                     document.getElementById('completed-section').style.display = 'block';
                     document.getElementById('completed-toggle').style.display  = 'none';
@@ -1190,6 +1186,7 @@
                     recalc();
                 });
 
+                /* ── Subscription toggle ── */
                 document.getElementById('subscription-toggle').addEventListener('click', () => {
                     document.getElementById('subscription-section').style.display = 'block';
                     document.getElementById('subscription-toggle').style.display  = 'none';
@@ -1207,6 +1204,7 @@
                     recalc();
                 });
 
+                /* ── Proposed toggle ── */
                 document.getElementById('proposed-toggle').addEventListener('click', () => {
                     document.getElementById('proposed-section').style.display = 'block';
                     document.getElementById('proposed-toggle').style.display  = 'none';
@@ -1230,6 +1228,7 @@
                 });
 
                 /* ── Init: load existing items ── */
+                // Completed — only show section if there are existing items
                 if (existingCompleted.length > 0) {
                     document.getElementById('completed-section').style.display = 'block';
                     document.getElementById('completed-toggle').style.display  = 'none';
@@ -1238,7 +1237,10 @@
                     existingCompleted.forEach(item => addItem('completed-items-container', 'completed', item));
                 }
 
+                // Subscription — section visibility driven by has_subscription flag (already set via Blade)
                 existingSubscription.forEach(item => addSubscriptionItem(item));
+
+                // Proposed — section visibility driven by has_proposed flag (already set via Blade)
                 existingProposed.forEach(item => addItem('proposed-items-container', 'proposed', item));
 
                 /* ── Session toast auto-hide ── */
