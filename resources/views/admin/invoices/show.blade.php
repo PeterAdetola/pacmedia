@@ -120,7 +120,7 @@
         $symbol = $invoice->currencySymbol();
         $fmt = fn($n) => $symbol . ' ' . number_format((float) $n, 2);
 
-        $outstanding   = $invoice->completedOutstanding();
+        $outstanding   = $invoice->grandOutstanding();
         $completedSub  = $invoice->completedSubtotal();
         $completedTax  = $invoice->completedTax();
         $completedWht  = $invoice->completedWht();
