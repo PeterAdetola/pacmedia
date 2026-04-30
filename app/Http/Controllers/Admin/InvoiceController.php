@@ -434,7 +434,8 @@ class InvoiceController extends Controller
         $invoice->refresh();
         $invoice->loadMissing(['completedItems', 'subscriptionItems', 'proposedItems']);
 
-        $outstanding = $invoice->completedOutstanding();
+//        $outstanding = $invoice->completedOutstanding();
+        $outstanding = $invoice->grandOutstanding();
         if ($outstanding <= 0) {
             $invoice->update(['status' => 'paid']);
         } elseif ($invoice->paid_amount > 0) {

@@ -217,7 +217,15 @@ class Invoice extends Model
      */
     public function grandOutstanding(): float
     {
-        return $this->completedOutstanding() + $this->subscriptionOutstanding();
+        $totalDue = $this->completedSubtotal()
+            + $this->completedTax()
+            - (float) $this->completed_discount
+            + $this->subscriptionSubtotal()
+            + $this->subscriptionTax()
+            - (float) $this->subscription_discount
+            - $this->completedWht();
+
+        return $totalDue - (float) $this->paid_amount;
     }
 
     /* ─────────────────────────────────────────

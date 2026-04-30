@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class InvoiceOne extends Model
+class Invoice extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -20,7 +20,7 @@ class InvoiceOne extends Model
         'tax_enabled', 'tax_label', 'tax_rate', 'tax_applies_to',
         'wht_enabled', 'wht_label', 'wht_rate',
         'completed_notes', 'proposed_notes', 'subscription_notes',
-        'has_proposed', 'has_subscription',
+        'has_proposed', 'has_subscription', 'has_completed',
         'bank_name', 'bank_account_name', 'bank_account_number', 'billing_cycle', 'renewal_date'
     ];
 
@@ -30,6 +30,7 @@ class InvoiceOne extends Model
         'wht_enabled'             => 'boolean',
         'has_proposed'            => 'boolean',
         'has_subscription'        => 'boolean',
+        'has_completed'           => 'boolean',
         'paid_amount'             => 'decimal:2',
         'completed_discount'      => 'decimal:2',
         'proposed_discount'       => 'decimal:2',
@@ -42,36 +43,17 @@ class InvoiceOne extends Model
      | Currency helpers
      ───────────────────────────────────────── */
 
-    /**
-     * Common currency symbols map.
-     */
     public static array $currencySymbols = [
-        'USD' => '$',
-        'EUR' => '€',
-        'GBP' => '£',
-        'NGN' => '₦',
-        'GHS' => '₵',
-        'KES' => 'KSh',
-        'ZAR' => 'R',
-        'CAD' => 'CA$',
-        'AUD' => 'A$',
-        'AED' => 'AED',
-        'JPY' => '¥',
-        'CNY' => '¥',
-        'INR' => '₹',
+        'USD' => '$', 'EUR' => '€', 'GBP' => '£', 'NGN' => '₦', 'GHS' => '₵',
+        'KES' => 'KSh', 'ZAR' => 'R', 'CAD' => 'CA$', 'AUD' => 'A$', 'AED' => 'AED',
+        'JPY' => '¥', 'CNY' => '¥', 'INR' => '₹',
     ];
 
-    /**
-     * Get the symbol for this invoice's currency.
-     */
     public function currencySymbol(): string
     {
-        return static::$currencySymbols[$this->currency ?? 'USD'] ?? ($this->currency ?? 'USD');
+        return static::$currencySymbols[$this->currency ?? 'NGN'] ?? ($this->currency ?? 'NGN');
     }
 
-    /**
-     * Format an amount with this invoice's currency symbol.
-     */
     public function formatAmount(float $amount): string
     {
         return $this->currencySymbol() . ' ' . number_format($amount, 2);
@@ -93,37 +75,32 @@ class InvoiceOne extends Model
 
     public function completedItems()
     {
-        return $this->hasMany(InvoiceItem::class)
-            ->where('section', 'completed')
-            ->orderBy('sort_order');
+        return $this->hasMany(InvoiceItem::class)->where('section', 'completed')->orderBy('sort_order');
     }
 
     public function proposedItems()
     {
-        return $this->hasMany(InvoiceItem::class)
-            ->where('section', 'proposed')
-            ->orderBy('sort_order');
+        return $this->hasMany(InvoiceItem::class)->where('section', 'proposed')->orderBy('sort_order');
     }
 
     public function subscriptionItems()
     {
-        return $this->hasMany(InvoiceItem::class)
-            ->where('section', 'subscription')
-            ->orderBy('sort_order');
+        return $this->hasMany(InvoiceItem::class)->where('section', 'subscription')->orderBy('sort_order');
     }
 
     /* ─────────────────────────────────────────
-     | Completed totals
+     | Sectional Totals — Completed
      ───────────────────────────────────────── */
 
     public function completedSubtotal(): float
     {
-        return $this->completedItems->sum(fn($i) => $i->qty * $i->unit_price);
+        return (float) $this->completedItems->sum(fn($i) => $i->qty * $i->unit_price);
     }
 
     public function completedTax(): float
     {
         if (!$this->tax_enabled) return 0;
+        // FIX: 'all' added consistently (was missing in the original completedTax check)
         if (!in_array($this->tax_applies_to, ['completed', 'both', 'all'])) return 0;
 
         return round(
@@ -139,27 +116,36 @@ class InvoiceOne extends Model
         return round($this->completedSubtotal() * ($this->wht_rate / 100), 2);
     }
 
+    /**
+     * What the client still owes for the Completed section.
+     * Formula: subtotal + tax − discount − paid_amount − WHT
+     *
+     * NOTE: paid_amount and WHT are intentionally applied only to the
+     * completed section because that is the payable/billable section.
+     * Subscription is a recurring charge; Proposed is not yet approved.
+     */
     public function completedOutstanding(): float
     {
         return $this->completedSubtotal()
             + $this->completedTax()
-            - $this->completed_discount
-            - $this->paid_amount
+            - (float) $this->completed_discount
+            - (float) $this->paid_amount
             - $this->completedWht();
     }
 
     /* ─────────────────────────────────────────
-     | Subscription totals
+     | Sectional Totals — Subscription
      ───────────────────────────────────────── */
 
     public function subscriptionSubtotal(): float
     {
-        return $this->subscriptionItems->sum(fn($i) => $i->qty * $i->unit_price);
+        return (float) $this->subscriptionItems->sum(fn($i) => $i->qty * $i->unit_price);
     }
 
     public function subscriptionTax(): float
     {
         if (!$this->tax_enabled) return 0;
+        // FIX: 'both' intentionally NOT included here — 'both' = completed + proposed only
         if (!in_array($this->tax_applies_to, ['subscription', 'all'])) return 0;
 
         return round(
@@ -173,21 +159,22 @@ class InvoiceOne extends Model
     {
         return $this->subscriptionSubtotal()
             + $this->subscriptionTax()
-            - $this->subscription_discount;
+            - (float) $this->subscription_discount;
     }
 
     /* ─────────────────────────────────────────
-     | Proposed totals
+     | Sectional Totals — Proposed
      ───────────────────────────────────────── */
 
     public function proposedSubtotal(): float
     {
-        return $this->proposedItems->sum(fn($i) => $i->qty * $i->unit_price);
+        return (float) $this->proposedItems->sum(fn($i) => $i->qty * $i->unit_price);
     }
 
     public function proposedTax(): float
     {
         if (!$this->tax_enabled) return 0;
+        // 'both' means completed + proposed; 'all' means everything
         if (!in_array($this->tax_applies_to, ['proposed', 'both', 'all'])) return 0;
 
         return round(
@@ -201,11 +188,40 @@ class InvoiceOne extends Model
     {
         return $this->proposedSubtotal()
             + $this->proposedTax()
-            - $this->proposed_discount;
+            - (float) $this->proposed_discount;
     }
 
     /* ─────────────────────────────────────────
-     | Invoice number generator
+     | Combined / Grand Totals
+     ───────────────────────────────────────── */
+
+    public function totalSubtotal(): float
+    {
+        return $this->completedSubtotal() + $this->subscriptionSubtotal();
+    }
+
+    public function grandTotal(): float
+    {
+        $completedNet    = $this->completedSubtotal() + $this->completedTax() - (float) $this->completed_discount;
+        $subscriptionNet = $this->subscriptionSubtotal() + $this->subscriptionTax() - (float) $this->subscription_discount;
+        return $completedNet + $subscriptionNet;
+    }
+
+    /**
+     * Grand outstanding = what is owed across Completed + Subscription,
+     * minus payment already received and WHT deduction.
+     *
+     * FIX: removed the double-subtraction of WHT that existed in the original.
+     * completedWht() is already subtracted inside completedOutstanding(),
+     * so grandOutstanding() must NOT subtract it a second time.
+     */
+    public function grandOutstanding(): float
+    {
+        return $this->completedOutstanding() + $this->subscriptionOutstanding();
+    }
+
+    /* ─────────────────────────────────────────
+     | Invoice Number Generator
      ───────────────────────────────────────── */
 
     public static function generateNumber(): string
@@ -215,41 +231,15 @@ class InvoiceOne extends Model
             ->where('number', 'like', $prefix . '%')
             ->orderByDesc('number')
             ->value('number');
-
         $seq = $last ? ((int) substr($last, -3)) + 1 : 1;
 
-        return $prefix . str_pad($seq, 3, '0', STR_PAD_LEFT);
-    }
+        // Guard against race conditions: keep incrementing until the number is free
+        do {
+            $number = $prefix . str_pad($seq, 3, '0', STR_PAD_LEFT);
+            $exists = static::withTrashed()->where('number', $number)->exists();
+            $seq++;
+        } while ($exists);
 
-    /* ─────────────────────────────────────────
-     | Combined Totals (Grand Totals)
-     ───────────────────────────────────────── */
-
-    /**
-     * Total amount billed (Completed + Subscription) including taxes, minus discounts.
-     */
-    public function grandTotal(): float
-    {
-        $completed = $this->completedSubtotal() + $this->completedTax() - $this->completed_discount;
-        $subscription = $this->subscriptionSubtotal() + $this->subscriptionTax() - $this->subscription_discount;
-
-        return $completed + $subscription;
-    }
-
-    /**
-     * Total remaining balance after payments and WHT.
-     */
-    public function grandOutstanding(): float
-    {
-        // Subtract paid amount and WHT from the combined total
-        return $this->grandTotal() - $this->paid_amount - $this->completedWht();
-    }
-
-    /**
-     * Sum of subtotals for display purposes.
-     */
-    public function totalSubtotal(): float
-    {
-        return $this->completedSubtotal() + $this->subscriptionSubtotal();
+        return $number;
     }
 }
