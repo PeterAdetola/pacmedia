@@ -294,6 +294,41 @@
             padding-left: 10px;
         }
 
+        /* ── PARTIAL PAYMENT SUMMARY PANEL ── */
+        .payment-summary-panel {
+            border: 1.5px solid rgba(245,158,11,0.35);
+            background: rgba(245,158,11,0.04);
+            border-radius: 6px;
+            padding: 16px 20px;
+            margin-bottom: 32px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 0;
+        }
+        .psp-cell {
+            padding: 0 16px;
+            border-right: 1px solid rgba(245,158,11,0.18);
+        }
+        .psp-cell:first-child { padding-left: 0; }
+        .psp-cell:last-child  { padding-right: 0; border-right: none; }
+        .psp-label {
+            font-size: 8.5px;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #9ca3af;
+            margin-bottom: 5px;
+        }
+        .psp-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            color: #1e293b;
+        }
+        .psp-value.paid   { color: #15803d; }
+        .psp-value.owed   { color: #b45309; }
+
         /* ── COMPLETED DIVIDER ── */
         .completed-divider {
             display: flex;
@@ -409,20 +444,20 @@
 
 
         /*@media print {*/
-            body {
-                background: #ffffff;
-                padding: 0;
-            }
-            .invoice-wrapper {
-                max-width: 100%;
-                box-shadow: none;
-                padding: 40px 50px 56px;
-                min-height: auto;
-            }
-            @page {
-                size: A4;
-                margin: 0;
-            }
+        body {
+            background: #ffffff;
+            padding: 0;
+        }
+        .invoice-wrapper {
+            max-width: 100%;
+            box-shadow: none;
+            padding: 40px 50px 56px;
+            min-height: auto;
+        }
+        @page {
+            size: A4;
+            margin: 0;
+        }
 
         /* ── SUBSCRIPTION DIVIDER ── */
         .subscription-divider {
@@ -467,9 +502,8 @@
             display: inline-block;
         }
 
-        /* Status-specific mapping */
-        .s-draft   { background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; }
-        .s-sent    { background: rgba(59, 130, 246, 0.1);  color: #1d4ed8; border: 1px solid rgba(59,130,246,0.2); }
+        /* Status-specific mapping — client-facing, no draft/sent distinction needed */
+        .s-unpaid  { background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; }
         .s-partial { background: rgba(245,158,11,0.1);  color: #b45309; border: 1px solid rgba(245,158,11,0.2); }
         .s-paid    { background: rgba(34,197,94,0.1);   color: #15803d; border: 1px solid rgba(34,197,94,0.2); }
         .s-overdue { background: rgba(239,68,68,0.1);   color: #b91c1c; border: 1px solid rgba(239,68,68,0.2); }
@@ -523,13 +557,23 @@
          $subTax        = $invoice->subscriptionTax();
          $subTotal      = $invoice->subscriptionOutstanding();
 
+         // Client-facing labels — "sent" is an internal workflow state
+         $statusLabels = [
+             'draft'   => 'Unpaid',
+             'sent'    => 'Unpaid',
+             'partial' => 'Partially Paid',
+             'paid'    => 'Paid',
+             'overdue' => 'Overdue',
+         ];
+
+         // Both draft and sent share the same neutral style client-side
          $statusClasses = [
-        'draft'   => 's-draft',
-        'sent'    => 's-sent',
-        'partial' => 's-partial',
-        'paid'    => 's-paid',
-        'overdue' => 's-overdue',
-    ];
+             'draft'   => 's-unpaid',
+             'sent'    => 's-unpaid',
+             'partial' => 's-partial',
+             'paid'    => 's-paid',
+             'overdue' => 's-overdue',
+         ];
     @endphp
 
     {{-- ── Logo: yellow strip + dark square + peridot Pacmedia mark ── --}}
@@ -567,10 +611,9 @@
         </div>
 
         <div class="inv-number-row" style="margin-top:6px; display: flex; align-items: center; gap: 8px;">
-            Status:
-            <span class="status-badge {{ $statusClasses[$invoice->status] ?? 's-draft' }}">
-        {{ $invoice->status }}
-    </span>
+            <span class="status-badge {{ $statusClasses[$invoice->status] ?? 's-unpaid' }}">
+                {{ $statusLabels[$invoice->status] ?? ucfirst($invoice->status) }}
+            </span>
         </div>
 
         <div class="inv-header-right">
@@ -601,6 +644,44 @@
         </div>
 
     </div>
+
+    {{-- ── Partial Payment Summary Panel ── --}}
+    {{-- Shown whenever paid_amount > 0 or status is partial.
+         Invoice Total = completed + subscription combined (both are payable);
+         proposed is excluded — it's a quote, not a charge. --}}
+    @if($invoice->paid_amount > 0 || $invoice->status === 'partial')
+        @php
+            // Completed portion (after discount, tax, WHT)
+            $completedNet = $completedSub
+                          + $completedTax
+                          - (float)($invoice->completed_discount ?? 0)
+                          - $completedWht;
+
+            // Subscription portion (after discount and tax)
+            $subscriptionNet = $invoice->has_subscription
+                             ? $subSub + $subTax - (float)($invoice->subscription_discount ?? 0)
+                             : 0;
+
+            // Combined payable total — proposed intentionally excluded (it's a quote)
+            $invoiceTotal = $completedNet + $subscriptionNet;
+            $amountPaid   = (float)($invoice->paid_amount ?? 0);
+            $balanceDue   = max(0, $invoiceTotal - $amountPaid);
+        @endphp
+        <div class="payment-summary-panel">
+            <div class="psp-cell">
+                <div class="psp-label">Total Payable</div>
+                <div class="psp-value">{{ $fmt($invoiceTotal) }}</div>
+            </div>
+            <div class="psp-cell">
+                <div class="psp-label">Amount Paid</div>
+                <div class="psp-value paid">{{ $fmt($amountPaid) }}</div>
+            </div>
+            <div class="psp-cell">
+                <div class="psp-label">Balance Due</div>
+                <div class="psp-value owed">{{ $fmt($balanceDue) }}</div>
+            </div>
+        </div>
+    @endif
 
     {{-- ══════════════════════════════════════
          COMPLETED SERVICES

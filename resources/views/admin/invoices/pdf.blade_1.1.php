@@ -467,9 +467,8 @@
             display: inline-block;
         }
 
-        /* Status-specific mapping */
-        .s-draft   { background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; }
-        .s-sent    { background: rgba(59, 130, 246, 0.1);  color: #1d4ed8; border: 1px solid rgba(59,130,246,0.2); }
+        /* Status-specific mapping — client-facing only, no "sent" class needed */
+        .s-unpaid  { background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; }
         .s-partial { background: rgba(245,158,11,0.1);  color: #b45309; border: 1px solid rgba(245,158,11,0.2); }
         .s-paid    { background: rgba(34,197,94,0.1);   color: #15803d; border: 1px solid rgba(34,197,94,0.2); }
         .s-overdue { background: rgba(239,68,68,0.1);   color: #b91c1c; border: 1px solid rgba(239,68,68,0.2); }
@@ -523,13 +522,24 @@
          $subTax        = $invoice->subscriptionTax();
          $subTotal      = $invoice->subscriptionOutstanding();
 
+         // Client-facing labels — "sent" is an internal workflow state;
+         // the recipient should see "Unpaid" instead.
+         $statusLabels = [
+             'draft'   => 'Unpaid',
+             'sent'    => 'Unpaid',
+             'partial' => 'Partially Paid',
+             'paid'    => 'Paid',
+             'overdue' => 'Overdue',
+         ];
+
+         // Both draft and sent render as "Unpaid" — share the same neutral style
          $statusClasses = [
-        'draft'   => 's-draft',
-        'sent'    => 's-sent',
-        'partial' => 's-partial',
-        'paid'    => 's-paid',
-        'overdue' => 's-overdue',
-    ];
+             'draft'   => 's-unpaid',
+             'sent'    => 's-unpaid',
+             'partial' => 's-partial',
+             'paid'    => 's-paid',
+             'overdue' => 's-overdue',
+         ];
     @endphp
 
     {{-- ── Logo: yellow strip + dark square + peridot Pacmedia mark ── --}}
@@ -567,9 +577,9 @@
         </div>
 
         <div class="inv-number-row" style="margin-top:6px; display: flex; align-items: center; gap: 8px;">
-            Status:
+{{--            Status:--}}
             <span class="status-badge {{ $statusClasses[$invoice->status] ?? 's-draft' }}">
-        {{ $invoice->status }}
+        {{ $statusLabels[$invoice->status] ?? ucfirst($invoice->status) }}
     </span>
         </div>
 

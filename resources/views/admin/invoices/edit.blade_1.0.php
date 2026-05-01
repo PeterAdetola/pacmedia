@@ -141,54 +141,7 @@
             /* ── Sticky actions ── */
             .invoice-actions .card { position: sticky; top: 80px; }
 
-            /* ── Partial payment callout (sidebar) ── */
-            #partial-payment-callout {
-                display: none;
-                border: 1.5px solid rgba(245,158,11,0.4);
-                background: rgba(245,158,11,0.05);
-                border-radius: 0.5rem;
-                padding: 0.875rem 1rem;
-                margin-bottom: 1.5rem;
-            }
-            #partial-payment-callout .callout-title {
-                font-size: 0.72rem;
-                font-weight: 800;
-                text-transform: uppercase;
-                letter-spacing: 0.07em;
-                color: #b45309;
-                margin-bottom: 0.35rem;
-                display: flex;
-                align-items: center;
-                gap: 0.4rem;
-            }
-            #partial-payment-callout .callout-body {
-                font-size: 0.75rem;
-                color: #92400e;
-                line-height: 1.5;
-            }
-            #partial-payment-callout .callout-action {
-                display: inline-flex;
-                align-items: center;
-                gap: 0.3rem;
-                margin-top: 0.6rem;
-                font-size: 0.72rem;
-                font-weight: 700;
-                color: #b45309;
-                cursor: pointer;
-                text-decoration: underline;
-                text-underline-offset: 2px;
-                background: none;
-                border: none;
-                padding: 0;
-            }
-
-            /* Highlight ring on paid_amount when partial is selected */
-            #paid_amount.partial-highlight {
-                border-color: rgba(245,158,11,0.7) !important;
-                box-shadow: 0 0 0 3px rgba(245,158,11,0.15) !important;
-                background: rgba(245,158,11,0.03);
-                transition: border-color 0.2s, box-shadow 0.2s;
-            }
+            /* ── Submit error banner ── */
             #pac-submit-error {
                 display: none;
                 background: rgba(239,68,68,0.08);
@@ -708,21 +661,6 @@
                 </div>
 
                 <div>
-                    {{-- Partial payment callout — visible only when status = partial --}}
-                    <div id="partial-payment-callout">
-                        <div class="callout-title">
-                            <i class="ri ri-error-warning-line"></i> Amount Paid Required
-                        </div>
-                        <div class="callout-body">
-                            You've set this invoice to <strong>Partially Paid</strong>.
-                            Enter the amount already received in the <strong>Amount&nbsp;Paid</strong>
-                            field so the PDF shows the correct balance due.
-                        </div>
-                        <button type="button" class="callout-action" id="goto-paid-amount">
-                            <i class="ri ri-arrow-right-line"></i> Go to Amount Paid field
-                        </button>
-                    </div>
-
                     <div class="mb-6">
                         <label class="form-label fw-medium" style="font-size:0.82rem;">Status</label>
                         <select class="form-select" id="status-select">
@@ -1289,42 +1227,6 @@
                     btn.addEventListener('click', function () {
                         document.getElementById('form-status').value = this.value;
                     });
-                });
-
-                /* ── Partial status: callout + paid_amount highlight ── */
-                function handlePartialStatus(status) {
-                    const callout   = document.getElementById('partial-payment-callout');
-                    const paidField = document.getElementById('paid_amount');
-                    const isPartial = status === 'partial';
-
-                    callout.style.display = isPartial ? 'block' : 'none';
-
-                    if (isPartial) {
-                        // Open completed section if not already open — paid_amount lives there
-                        if (document.getElementById('has_completed').value !== '1') {
-                            document.getElementById('completed-toggle').click();
-                        }
-                        paidField?.classList.add('partial-highlight');
-                    } else {
-                        paidField?.classList.remove('partial-highlight');
-                    }
-                }
-
-                // Run on page load for pre-selected partial status
-                handlePartialStatus(document.getElementById('status-select').value);
-
-                // Update whenever status changes
-                document.getElementById('status-select').addEventListener('change', function () {
-                    document.getElementById('form-status').value = this.value;
-                    handlePartialStatus(this.value);
-                });
-
-                // "Go to Amount Paid" button — scroll & focus
-                document.getElementById('goto-paid-amount')?.addEventListener('click', () => {
-                    const paidField = document.getElementById('paid_amount');
-                    if (!paidField) return;
-                    paidField.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    setTimeout(() => paidField.focus(), 350);
                 });
 
                 /* ── Init: load existing items ── */
