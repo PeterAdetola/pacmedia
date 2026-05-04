@@ -517,5 +517,30 @@
 
 @stack('scripts')
 <x-cookie-consent />
+<script>
+    (function () {
+        const header  = document.getElementById('header');
+        const contact = document.getElementById('contact');
+        if (!header || !contact) return;
+
+        // We only need to watch the TOP portion of #contact (the form zone,
+        // not the yellow CTA or the footer). A rootMargin trick lets us
+        // trigger when the header bar itself (~60px) enters the section.
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                header.classList.toggle('header--over-contact', entry.isIntersecting);
+            },
+            {
+                // Fire when the top of #contact crosses the bottom of the
+                // header bar. Adjust the negative top margin to match your
+                // actual fixed header height.
+                rootMargin: '-60px 0px 0px 0px',
+                threshold: 0,
+            }
+        );
+
+        observer.observe(contact);
+    })();
+</script>
 </body>
 </html>
