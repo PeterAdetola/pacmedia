@@ -217,15 +217,22 @@ class Invoice extends Model
      */
     public function grandOutstanding(): float
     {
-        $totalDue = $this->completedSubtotal()
+        // Completed net (subtotal + tax − discount − WHT)
+        $completedNet = $this->completedSubtotal()
             + $this->completedTax()
             - (float) $this->completed_discount
-            + $this->subscriptionSubtotal()
-            + $this->subscriptionTax()
-            - (float) $this->subscription_discount
             - $this->completedWht();
 
-        return $totalDue - (float) $this->paid_amount;
+        // Subscription net — only if invoice has subscription
+        $subscriptionNet = $this->has_subscription
+            ? $this->subscriptionSubtotal()
+            + $this->subscriptionTax()
+            - (float) $this->subscription_discount
+            : 0;
+
+        // Proposed is intentionally excluded — it's a quote, not a charge
+
+        return ($completedNet + $subscriptionNet) - (float) $this->paid_amount;
     }
 
     /* ─────────────────────────────────────────

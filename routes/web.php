@@ -5,11 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\Auth\SocialAuthController;
 
-//Route::get('/', function () {
-//    return view('index');
-//});
-
-Route::middleware(['auth', 'verified'])->prefix('admin')->group(base_path('routes/admin.php'));
+// ── Admin Routes (auth + verified + approved) ────────────────────────────────
+Route::middleware(['auth', 'verified', 'approved'])->prefix('admin')->group(base_path('routes/admin.php'));
 
 Route::get('/error/{code}', function ($code) {
     return app(\App\Http\Controllers\ErrorController::class)->show((int) $code);
@@ -24,18 +21,8 @@ Route::get('/services/{slug}', [ServiceController::class, 'show'])
     ->name('service.show')
     ->where('slug', 'brand-architecture|interface-craftsmanship|performance-engineering|intelligent-automation');
 
-
-// ── Primary dynamic route ────────────────────────────────────────────────────
-Route::get('/services/{slug}', [ServiceController::class, 'show'])
-    ->name('service.show')
-    ->where('slug', 'brand-architecture|interface-craftsmanship|performance-engineering|intelligent-automation');
-
-
-// ── Named aliases (slug pre-bound — no {slug} wildcard needed in URL) ────────
-// These resolve correctly because ->defaults() injects the slug value before
-// the controller receives it, bypassing the route parameter entirely.
-
-Route::get('/services/brand-architecture',    [ServiceController::class, 'show'])
+// ── Named aliases (slug pre-bound) ───────────────────────────────────────────
+Route::get('/services/brand-architecture', [ServiceController::class, 'show'])
     ->defaults('slug', 'brand-architecture')
     ->name('service.brand');
 
@@ -51,47 +38,36 @@ Route::get('/services/intelligent-automation', [ServiceController::class, 'show'
     ->defaults('slug', 'intelligent-automation')
     ->name('service.automation');
 
-// ── Legal Pages ───────────────────────────────────────────────
-// Add these two lines to your routes/web.php
+// ── Legal Pages ───────────────────────────────────────────────────────────────
+Route::get('/terms', [App\Http\Controllers\LegalController::class, 'terms'])->name('terms');
+Route::get('/privacy', [App\Http\Controllers\LegalController::class, 'privacy'])->name('privacy');
 
-Route::get('/terms', [App\Http\Controllers\LegalController::class, 'terms'])
-    ->name('terms');
-
-Route::get('/privacy', [App\Http\Controllers\LegalController::class, 'privacy'])
-    ->name('privacy');
-
-// ── Contact Form ─────────────────────────────────────────────────────────────
+// ── Contact Form ──────────────────────────────────────────────────────────────
 Route::post('/contact', [App\Http\Controllers\ContactController::class, 'submit'])
     ->name('contact.submit')
-    ->middleware('throttle:6,1'); // extra layer: 6 requests per minute via Laravel's built-in throttle
+    ->middleware('throttle:6,1');
 
-
-
-
-
-
-
+// ── Dashboard (auth + verified + approved) ────────────────────────────────────
 Route::get('/dashboard', function () {
     return view('admin.dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth', 'verified', 'approved'])->name('dashboard');
 
+// ── Profile ───────────────────────────────────────────────────────────────────
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Redirect to provider (Google / LinkedIn / GitHub)
+// ── Social Auth ───────────────────────────────────────────────────────────────
 Route::get('/auth/{provider}', [SocialAuthController::class, 'redirect'])
     ->name('auth.social.redirect')
     ->where('provider', 'google|linkedin|github');
 
-// Provider redirects back here after authentication
 Route::get('/auth/{provider}/callback', [SocialAuthController::class, 'callback']);
 
 
-// ── Debug routes ─────────────────────────────────────────────────────────────
-
+// ── Debug routes ──────────────────────────────────────────────────────────────
 Route::get('/system-check', function() {
     return [
         'opcache' => function_exists('opcache_get_status') ? 'Enabled' : 'Disabled',

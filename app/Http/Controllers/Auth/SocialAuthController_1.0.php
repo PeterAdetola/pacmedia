@@ -13,7 +13,6 @@ class SocialAuthController extends Controller
 {
     /**
      * Map route param → [db column, socialite driver]
-     * LinkedIn's socialite driver is 'linkedin-openid' in Socialite v5+
      */
     protected array $providers = [
         'google'   => ['column' => 'google_id',   'driver' => 'google'],
@@ -27,9 +26,7 @@ class SocialAuthController extends Controller
     public function redirect(string $provider)
     {
         $this->abortIfUnsupported($provider);
-
         $driver = $this->providers[$provider]['driver'];
-
         return Socialite::driver($driver)->redirect();
     }
 
@@ -61,7 +58,7 @@ class SocialAuthController extends Controller
 
         if ($user) {
             Auth::login($user, true);
-            return redirect()->intended(route('dashboard'));
+            return $this->redirectAfterLogin($user); // Updated
         }
 
         // 2. Find existing user by email and link the provider
@@ -75,16 +72,15 @@ class SocialAuthController extends Controller
                 ]);
 
                 Auth::login($user, true);
-                return redirect()->intended(route('dashboard'));
+                return $this->redirectAfterLogin($user); // Updated
             }
         }
 
-        // 3. No email returned (can happen with GitHub private email setting)
+        // 3. No email returned
         if (!$email) {
             return redirect()->route('login')
                 ->withErrors(['email' =>
-                    ucfirst($provider) . ' did not return an email address. ' .
-                    'Please make your email public on ' . ucfirst($provider) . ' and try again.'
+                    ucfirst($provider) . ' did not return an email address.'
                 ]);
         }
 
@@ -103,12 +99,25 @@ class SocialAuthController extends Controller
             'email'             => $email,
             $idColumn           => $socialId,
             'email_verified_at' => now(),
-            'password'          => Hash::make(Str::random(32)), // ✅ Never null
+            'password'          => Hash::make(Str::random(32)),
+            'status'            => 'pending', // Explicitly setting default
         ]);
 
         Auth::login($user, true);
 
-        return redirect()->intended(route('dashboard'));
+        return $this->redirectAfterLogin($user); // Updated
+    }
+
+    /**
+     * Custom redirection logic based on user status.
+     */
+    protected function redirectAfterLogin(User $user)
+    {
+        if ($user->status === 'approved') {
+            return redirect()->intended(route('dashboard'));
+        }
+
+        return redirect()->route('verification.notice');
     }
 
     /**

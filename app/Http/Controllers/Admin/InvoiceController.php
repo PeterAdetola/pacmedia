@@ -430,19 +430,23 @@ class InvoiceController extends Controller
 
         $invoice->increment('paid_amount', $request->amount);
 
-        // Reload to get accurate outstanding after increment
         $invoice->refresh();
         $invoice->loadMissing(['completedItems', 'subscriptionItems', 'proposedItems']);
 
-//        $outstanding = $invoice->completedOutstanding();
         $outstanding = $invoice->grandOutstanding();
-        if ($outstanding <= 0) {
+        \Log::info('Payment debug', [
+            'paid_amount'      => $invoice->paid_amount,
+            'grandOutstanding' => $invoice->grandOutstanding(),
+            'has_subscription' => $invoice->has_subscription,
+            'subTotal'         => $invoice->subscriptionSubtotal(),
+        ]);
+
+        if (round($outstanding, 2) <= 0) {
             $invoice->update(['status' => 'paid']);
         } elseif ($invoice->paid_amount > 0) {
             $invoice->update(['status' => 'partial']);
         }
 
-        // FIX: use the invoice's actual currency symbol instead of hardcoded ₦
         return back()->with('success', $invoice->formatAmount($request->amount) . ' payment recorded.');
     }
 

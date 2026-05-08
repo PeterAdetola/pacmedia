@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Notifications\NewUserPendingApprovalNotification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -57,8 +59,12 @@ class SocialAuthController extends Controller
         $user = User::where($idColumn, $socialId)->first();
 
         if ($user) {
-            Auth::login($user, true);
-            return $this->redirectAfterLogin($user); // Updated
+            // Ensure email is marked verified (social provider confirmed it)
+            if (!$user->email_verified_at) {
+                $user->update(['email_verified_at' => now()]);
+            }
+
+            return $this->loginOrRejectPending($user);
         }
 
         // 2. Find existing user by email and link the provider
@@ -71,20 +77,19 @@ class SocialAuthController extends Controller
                     'email_verified_at' => $user->email_verified_at ?? now(),
                 ]);
 
-                Auth::login($user, true);
-                return $this->redirectAfterLogin($user); // Updated
+                return $this->loginOrRejectPending($user);
             }
         }
 
-        // 3. No email returned
+        // 3. No email returned by provider — cannot create account
         if (!$email) {
             return redirect()->route('login')
                 ->withErrors(['email' =>
-                    ucfirst($provider) . ' did not return an email address.'
+                    ucfirst($provider) . ' did not return an email address. Please use a different sign-in method.'
                 ]);
         }
 
-        // 4. Create a brand new user
+        // 4. Create a brand new user — always status=pending
         $baseUsername = Str::slug(Str::lower($name), '_');
         $username     = $baseUsername;
         $counter      = 1;
@@ -98,26 +103,54 @@ class SocialAuthController extends Controller
             'username'          => $username,
             'email'             => $email,
             $idColumn           => $socialId,
-            'email_verified_at' => now(),
+            'email_verified_at' => now(),   // Social = provider already verified the email
             'password'          => Hash::make(Str::random(32)),
-            'status'            => 'pending', // Explicitly setting default
+            'status'            => 'pending', // Always pending — admin must approve
         ]);
 
-        Auth::login($user, true);
+        // Notify admins a new user is awaiting approval
+        $this->notifyAdmins($user);
 
-        return $this->redirectAfterLogin($user); // Updated
+        // Do NOT log them in — redirect straight to pending notice
+        return redirect()->route('login')
+            ->with('status', 'Your account has been created and is awaiting admin approval. You will be notified by email once approved.');
     }
 
     /**
-     * Custom redirection logic based on user status.
+     * Log the user in only if approved; otherwise log out and redirect with message.
+     * Used for returning users (found by provider ID or email).
      */
-    protected function redirectAfterLogin(User $user)
+    protected function loginOrRejectPending(User $user)
     {
         if ($user->status === 'approved') {
-            return redirect()->intended(route('dashboard'));
+            Auth::login($user, true);
+            return redirect()->intended(route('admin.dashboard'));
         }
 
-        return redirect()->route('verification.notice');
+        // Suspended or still pending — do not allow login
+        $message = $user->status === 'suspended'
+            ? 'Your account has been suspended. Please contact support.'
+            : 'Your account is pending admin approval. You will be notified by email once approved.';
+
+        return redirect()->route('login')->with('error', $message);
+    }
+
+    /**
+     * Notify all admin users that a new user is awaiting approval.
+     */
+    protected function notifyAdmins(User $newUser): void
+    {
+        try {
+            $admins = User::where('status', 'approved')
+                ->whereNotNull('email_verified_at')
+                ->get(); // Adjust this query if you have a role/permission system
+
+            if ($admins->isNotEmpty()) {
+                Notification::send($admins, new NewUserPendingApprovalNotification($newUser));
+            }
+        } catch (\Exception $e) {
+            \Log::error('Failed to notify admins of new user: ' . $e->getMessage());
+        }
     }
 
     /**

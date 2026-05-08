@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\ChatController;
 use App\Http\Controllers\Admin\LogController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\MailComposerController;
+use App\Http\Controllers\Admin\UserApprovalController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,6 +22,14 @@ use App\Http\Controllers\Admin\MailComposerController;
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->name('admin.dashboard');
 
+// ── User Approvals ─────────────────────────────────────────────────────
+Route::prefix('users')->name('admin.users.')->group(function () {
+    Route::get('/',                          [UserApprovalController::class, 'index'])  ->name('index');
+    Route::patch('/{user}/approve',          [UserApprovalController::class, 'approve'])->name('approve');
+    Route::patch('/{user}/suspend',          [UserApprovalController::class, 'suspend'])->name('suspend');
+    Route::patch('/{user}/restore',          [UserApprovalController::class, 'restore'])->name('restore');
+});
+
 // ── Invoices ───────────────────────────────────────────────────────────
 Route::prefix('invoices')->name('admin.invoices.')->group(function () {
     Route::get('/',           [InvoiceController::class, 'index'])  ->name('index');
@@ -31,26 +40,20 @@ Route::prefix('invoices')->name('admin.invoices.')->group(function () {
     Route::put('/{invoice}',          [InvoiceController::class, 'update']) ->name('update');
     Route::delete('/{invoice}',       [InvoiceController::class, 'destroy'])->name('destroy');
 
-    // Invoice actions
     Route::post('/{invoice}/send',      [InvoiceController::class, 'send'])         ->name('send');
     Route::post('/{invoice}/duplicate', [InvoiceController::class, 'duplicate'])    ->name('duplicate');
     Route::get('/{invoice}/pdf',        [InvoiceController::class, 'pdf'])          ->name('pdf');
     Route::post('/{invoice}/payment',   [InvoiceController::class, 'recordPayment'])->name('payment');
-
-    // ← ADD THIS: renders the PDF blade as plain HTML in the browser (no Browsershot)
     Route::get('/{invoice}/preview',    [InvoiceController::class, 'preview'])      ->name('preview');
 });
 
 // ── Clients ────────────────────────────────────────────────────────────
 Route::prefix('clients')->name('admin.clients.')->group(function () {
-    // 1. Custom routes MUST come first
     Route::get('data', [ClientController::class, 'data'])->name('data');
     Route::patch('{id}/restore', [ClientController::class, 'restore'])->name('restore');
 
-    // 2. Standard CRUD Resource
-    // We use an empty string '' because the 'clients' prefix is already in the group
     Route::resource('', ClientController::class)
-        ->parameters(['' => 'client']) // Tells Laravel to use {client} as the wildcard name
+        ->parameters(['' => 'client'])
         ->names([
             'index'   => 'index',
             'create'  => 'create',
@@ -105,7 +108,7 @@ Route::prefix('settings')->name('admin.settings.')->group(function () {
     Route::put('/',  [SettingsController::class, 'update'])->name('update');
 });
 
-// Mail Composer (general emails)────────────────────────────────────────
+// ── Mail Composer ──────────────────────────────────────────────────────
 Route::get( '/mail/compose', [MailComposerController::class, 'index'])->name('admin.mail.compose');
 Route::post('/mail/compose', [MailComposerController::class, 'send'])->name('admin.mail.send');
 

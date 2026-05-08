@@ -576,6 +576,7 @@
          ];
     @endphp
 
+
     {{-- ── Logo: yellow strip + dark square + peridot Pacmedia mark ── --}}
     <div class="logo-container">
         <svg version="1.0" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
