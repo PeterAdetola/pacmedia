@@ -101,3 +101,115 @@
   text-align: center;
   margin-top: 1.25rem;
 }
+
+
+/* ================================================ */
+/* SHADOW CONTROL                              */
+/* ================================================ */
+
+/* Default: no shadow, border-only style */
+[data-card-style="flat"] .card,
+[data-card-style="flat"] .card-hover {
+    box-shadow: none;
+    border: 1px solid color-mix(in sRGB, var(--bs-base-color) 10%, var(--bs-paper-bg));
+}
+
+/* Elevated: soft shadows */
+[data-card-style="elevated"] .card {
+    box-shadow: 0 2px 8px rgba(38, 43, 67, 0.08), 0 0 1px rgba(38, 43, 67, 0.04);
+    border: 1px solid transparent;
+}
+
+/* Floating: more dramatic */
+[data-card-style="floating"] .card {
+    box-shadow: 0 8px 24px rgba(38, 43, 67, 0.12), 0 2px 6px rgba(38, 43, 67, 0.06);
+    border: 1px solid transparent;
+}
+
+
+/* ── Card style toggle ───────────────────────────────────────────────────────
+   Segmented button group that lives in the navbar. The group itself uses a
+   subtle pill-track background. Each button is icon-only on sm/md and gains
+   a text label on xl+ via Bootstrap's d-none d-xl-inline on .pac-cst-label.
+──────────────────────────────────────────────────────────────────────────── */
+
+.pac-cst-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 3px;
+    background: rgba(38, 43, 67, 0.04);
+    border: 1px solid var(--bs-border-color);
+    border-radius: 8px;
+}
+
+.pac-cst-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 8px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--bs-secondary-color);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    cursor: pointer;
+    line-height: 1;
+    transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+    white-space: nowrap;
+}
+
+.pac-cst-btn:hover {
+    color: var(--bs-body-color);
+    background: rgba(38, 43, 67, 0.06);
+}
+
+.pac-cst-btn.active {
+    background: var(--bs-paper-bg, #fff);
+    color: var(--bs-heading-color);
+    box-shadow: 0 1px 3px rgba(38, 43, 67, 0.1), 0 0 0 0.5px rgba(38, 43, 67, 0.08);
+}
+
+/* Icon inherits font-size from button — no explicit sizing needed */
+.pac-cst-btn i {
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+/* Mobile fallback buttons inside the user dropdown */
+.pac-cst-btn--mobile {
+    border: 1px solid var(--bs-border-color) !important;
+    background: transparent !important;
+    color: var(--bs-secondary-color) !important;
+    border-radius: 6px !important;
+    padding: 6px 8px !important;
+    justify-content: center;
+}
+
+.pac-cst-btn--mobile.active {
+    background: color-mix(in sRGB, var(--bs-primary) 8%, var(--bs-paper-bg, #fff)) !important;
+    border-color: color-mix(in sRGB, var(--bs-primary) 30%, transparent) !important;
+    color: var(--bs-primary) !important;
+    box-shadow: none !important;
+}
+
+.pac-cst-btn--mobile:hover:not(.active) {
+    background: rgba(38, 43, 67, 0.04) !important;
+    color: var(--bs-body-color) !important;
+}
+
+/* Dark mode adjustments */
+[data-bs-theme="dark"] .pac-cst-group {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-bs-theme="dark"] .pac-cst-btn.active {
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 0 0 0.5px rgba(255, 255, 255, 0.08);
+}
+
+[data-bs-theme="dark"] .pac-cst-btn--mobile.active {
+    background: color-mix(in sRGB, var(--bs-primary) 15%, transparent) !important;
+}

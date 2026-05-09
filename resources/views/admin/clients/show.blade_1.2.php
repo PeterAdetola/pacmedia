@@ -40,8 +40,7 @@
 
             /* ── Client hero card ────────────────────────────────────────────── */
             .client-hero-card {
-                border: var(--bs-card-border-width) solid var(--bs-card-border-color);
-                box-shadow: var(--bs-card-box-shadow);
+                border: 1px solid color-mix(in sRGB, var(--bs-base-color) 10%, var(--bs-paper-bg));
                 border-radius: var(--bs-border-radius-lg);
                 background: var(--bs-paper-bg);
                 overflow: hidden;
@@ -542,7 +541,7 @@
 
         {{-- ── Hero card ─────────────────────────────────────────────────── --}}
         <div class="{{ count($currencyTotals) > 0 ? 'col-xl-8 col-lg-7' : 'col-12' }}">
-            <div class="client-hero-card card">
+            <div class="client-hero-card">
                 <div class="client-hero-card__stripe"></div>
 
                 <div class="client-hero-card__body">
@@ -690,7 +689,7 @@
         {{-- ── Financial summary ─────────────────────────────────────────── --}}
         @if (count($currencyTotals) > 0)
             <div class="col-xl-4 col-lg-5">
-                <div class="fin-card card">
+                <div class="fin-card">
                     <div class="fin-card__header">
                         <h5 class="fin-card__title">Financial summary</h5>
                         <span class="badge bg-label-secondary rounded-pill" style="font-size:.6875rem;">
@@ -742,7 +741,7 @@
     {{-- ══════════════════════════════════════════════════════════════════ --}}
     {{-- Row 2: Invoice table (full width)                                 --}}
     {{-- ══════════════════════════════════════════════════════════════════ --}}
-    <div class="invoices-card card">
+    <div class="invoices-card">
 
         <div class="invoices-card__header">
             <div>

@@ -6,6 +6,7 @@
     data-skin="default"
     data-bs-theme="light"
     data-assets-path="{{ asset('admin/assets/') }}"
+    data-card-style="{{ auth()->user()->preferences['card_style'] ?? 'flat' }}"
     data-template="vertical-menu-template-bordered">
 <head>
     <meta charset="utf-8">
@@ -37,8 +38,24 @@
 
     <!-- Helpers — must load before config in <head> -->
     <script src="{{ asset('admin/assets/vendor/js/helpers.js') }}"></script>
-{{--    <script src="{{ asset('admin/assets/vendor/js/template-customizer.js') }}"></script>--}}
+    {{--    <script src="{{ asset('admin/assets/vendor/js/template-customizer.js') }}"></script>--}}
     <script src="{{ asset('admin/assets/js/config.js') }}"></script>
+
+    {{--
+        ── Card style: restore from localStorage BEFORE first paint ──────────
+        Runs inline in <head> so there is zero flash of the server-default
+        style on pages where the user has chosen a different preference.
+        We read localStorage and, if a value is found, immediately overwrite
+        the server-rendered data-card-style attribute on <html>.
+    --}}
+    <script>
+        (function () {
+            var saved = localStorage.getItem('card_style');
+            if (saved) {
+                document.documentElement.setAttribute('data-card-style', saved);
+            }
+        })();
+    </script>
 
     <!-- Brand overrides -->
     <style>
@@ -86,8 +103,6 @@
 
         /* ── Peridot focus rings ── */
         :focus-visible { outline-color: var(--pac-peridot) !important; }
-
-
 
         /* Pac navbar search bar */
         .pac-search-bar {
@@ -149,6 +164,7 @@
         }
         .pac-shortcut-item i   { font-size: 1.2rem; color: var(--pac-peridot-dim); }
         .pac-shortcut-item span { font-size: 0.68rem; color: #374151; font-weight: 600; }
+
         /* Dark mode */
         [data-bs-theme="dark"] .pac-search-bar { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); }
         [data-bs-theme="dark"] .pac-search-bar:focus-within { background: rgba(255,255,255,0.08); }
@@ -159,24 +175,24 @@
 
         /* ── Responsive logo swap ── */
         .pac-logo-full {
-            height: 2.25rem;      /* ← was 1.75rem, now matches the mark */
+            height: 2.25rem;
             width: auto;
             display: block;
-            max-width: 180px;     /* ← slightly wider allowance for the taller height */
+            max-width: 180px;
             object-fit: contain;
         }
         .pac-logo-mark {
-            height: 2.25rem;      /* ← same value */
+            height: 2.25rem;
             width: auto;
             display: none;
             object-fit: contain;
         }
 
-        /* Collapsed state — html element gets this class from menu.js */
+        /* Collapsed state */
         .layout-menu-collapsed .pac-logo-full { display: none; }
         .layout-menu-collapsed .pac-logo-mark { display: block; }
 
-        /* Hovering the collapsed sidebar (template expands it temporarily) */
+        /* Hovering the collapsed sidebar */
         .layout-menu-collapsed:not(.layout-menu-hover) .pac-logo-full { display: none; }
         .layout-menu-collapsed:not(.layout-menu-hover) .pac-logo-mark { display: block; }
         .layout-menu-collapsed.layout-menu-hover .pac-logo-full  { display: block; }
@@ -302,42 +318,97 @@
 <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
 
-{{-- Session timeout — auto logout after configured session lifetime --}}
+{{-- ── Session timeout ─────────────────────────────────────────────────────
+     Auto-logs out the user after the configured session lifetime of
+     inactivity. Warns 2 minutes before expiry with an option to stay in.
+     Fix applied: logout timer is explicitly cleared when user confirms
+     "stay logged in", so only the fresh resetTimer() cycle runs — the
+     old logout can no longer fire after a successful ping.
+────────────────────────────────────────────────────────────────────────── --}}
 <script>
     (function () {
-        var timeout  = {{ config('session.lifetime') * 60 * 1000 }};
-        var warnAt   = timeout - (2 * 60 * 1000);
+        var timeout = {{ config('session.lifetime') * 60 * 1000 }};
+        var warnAt  = timeout - (2 * 60 * 1000);
 
         function resetTimer() {
             clearTimeout(window._pacWarn);
             clearTimeout(window._pacLogout);
 
             window._pacWarn = setTimeout(function () {
+                // Clearing logout here so it cannot fire while confirm() is blocking
+                clearTimeout(window._pacLogout);
+
                 if (confirm('Your session will expire in 2 minutes due to inactivity. Click OK to stay logged in.')) {
-                    fetch('{{ route("admin.ping") }}', { method: 'POST', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' } });
+                    fetch('{{ route("admin.ping") }}', {
+                        method: 'POST',
+                        headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+                    });
+                    // Full timer reset — starts both warn and logout fresh
                     resetTimer();
+                } else {
+                    // User dismissed — restart only the logout leg for the remaining 2 min
+                    window._pacLogout = setTimeout(logout, 2 * 60 * 1000);
                 }
             }, warnAt);
 
-            window._pacLogout = setTimeout(function () {
-                var f = document.createElement('form');
-                f.method = 'POST';
-                f.action = '{{ route("logout") }}';
-                var t = document.createElement('input');
-                t.type = 'hidden'; t.name = '_token'; t.value = '{{ csrf_token() }}';
-                f.appendChild(t);
-                document.body.appendChild(f);
-                f.submit();
-            }, timeout);
+            window._pacLogout = setTimeout(logout, timeout);
         }
 
-        ['mousemove','keydown','click','scroll','touchstart'].forEach(function(e) {
+        function logout() {
+            var f = document.createElement('form');
+            f.method = 'POST';
+            f.action = '{{ route("logout") }}';
+            var t = document.createElement('input');
+            t.type = 'hidden';
+            t.name  = '_token';
+            t.value = '{{ csrf_token() }}';
+            f.appendChild(t);
+            document.body.appendChild(f);
+            f.submit();
+        }
+
+        ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'].forEach(function (e) {
             document.addEventListener(e, resetTimer, { passive: true });
         });
 
         resetTimer();
     })();
 </script>
+
+{{-- ── Card style preference ───────────────────────────────────────────────
+     Syncs the [data-card-style] attribute on <html> with localStorage so
+     the user's chosen card appearance persists across page loads.
+     The early-restore script in <head> handles the initial paint —
+     this block handles button interactions and active state management.
+────────────────────────────────────────────────────────────────────────── --}}
+<script>
+    (function () {
+        function applyCardStyle(style) {
+            document.documentElement.setAttribute('data-card-style', style);
+            localStorage.setItem('card_style', style);
+
+            // Sync active class on all toggle buttons
+            document.querySelectorAll('[data-set-card-style]').forEach(function (btn) {
+                btn.classList.toggle('active', btn.dataset.setCardStyle === style);
+            });
+        }
+
+        // Bind click handlers
+        document.querySelectorAll('[data-set-card-style]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                applyCardStyle(btn.dataset.setCardStyle);
+            });
+        });
+
+        // Sync button active states to whatever style is currently applied
+        // (may have been set by the <head> restore script or the server attribute)
+        var current = document.documentElement.getAttribute('data-card-style') || 'flat';
+        document.querySelectorAll('[data-set-card-style]').forEach(function (btn) {
+            btn.classList.toggle('active', btn.dataset.setCardStyle === current);
+        });
+    })();
+</script>
+
 <x-admin.pac-ui />
 @stack('page-js')
 {{--@include('components.admin.notifications')--}}

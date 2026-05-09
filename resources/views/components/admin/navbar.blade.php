@@ -1,5 +1,5 @@
 {{--
-    navbar.blade.php — The Pacmedia Admin (v5 — definitive)
+    navbar.blade.php — The Pacmedia Admin
 
     ROOT CAUSE OF ALL PREVIOUS FAILURES:
     main.js line: container: '#autocomplete'
@@ -12,77 +12,11 @@
     Our styled search look is achieved via CSS on the wrapper, not by replacing
     the Algolia hook element.
 
-    CSS TO ADD TO admin.blade.php <style> block (append before </style>):
-    ────────────────────────────────────────────────────────────────────────
-        /* Pac navbar search bar */
-        .pac-search-bar {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: rgba(0,0,0,0.03);
-            border: 1px solid var(--bs-border-color);
-            border-radius: 0.5rem;
-            padding: 0.375rem 0.875rem;
-            width: 260px;
-            transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
-        }
-        .pac-search-bar:focus-within {
-            border-color: var(--pac-peridot);
-            box-shadow: 0 0 0 3px rgba(181,204,24,0.12);
-            background: #fff;
-        }
-        .pac-search-icon {
-            font-size: 1rem;
-            color: #9ca3af;
-            flex-shrink: 0;
-        }
-        .pac-search-input {
-            border: none;
-            background: transparent;
-            outline: none;
-            font-size: 0.82rem;
-            color: var(--bs-body-color);
-            flex: 1;
-            min-width: 0;
-        }
-        .pac-search-input::placeholder { color: #9ca3af; }
-        .pac-kbd {
-            font-size: 0.67rem;
-            font-family: ui-monospace, monospace;
-            background: #f3f4f6;
-            border: 1px solid #e5e7eb;
-            border-radius: 4px;
-            padding: 1px 6px;
-            color: #9ca3af;
-            flex-shrink: 0;
-        }
-        .pac-shortcut-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.3rem;
-            padding: 0.65rem 0.25rem;
-            border-radius: 0.5rem;
-            border: 1px solid #f0f0f0;
-            text-decoration: none;
-            transition: background 0.15s, border-color 0.15s;
-            text-align: center;
-        }
-        .pac-shortcut-item:hover {
-            background: color-mix(in sRGB, var(--pac-peridot) 8%, white);
-            border-color: rgba(181,204,24,0.4);
-        }
-        .pac-shortcut-item i   { font-size: 1.2rem; color: var(--pac-peridot-dim); }
-        .pac-shortcut-item span { font-size: 0.68rem; color: #374151; font-weight: 600; }
-        /* Dark mode */
-        [data-bs-theme="dark"] .pac-search-bar { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); }
-        [data-bs-theme="dark"] .pac-search-bar:focus-within { background: rgba(255,255,255,0.08); }
-        [data-bs-theme="dark"] .pac-kbd { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.12); color: #6b7280; }
-        [data-bs-theme="dark"] .pac-shortcut-item { border-color: rgba(255,255,255,0.08); }
-        [data-bs-theme="dark"] .pac-shortcut-item:hover { background: rgba(181,204,24,0.1); border-color: rgba(181,204,24,0.3); }
-        [data-bs-theme="dark"] .pac-shortcut-item span { color: rgba(255,255,255,0.75); }
-    ────────────────────────────────────────────────────────────────────────
-    END CSS
+    CARD STYLE TOGGLE:
+    Sits between shortcuts and notifications. On xl+ it shows icon + text label.
+    On smaller screens the text labels collapse and only icons show, keeping the
+    toggle compact. The group itself is hidden below sm (phones) and tucked into
+    the user dropdown instead — see the dropdown additions at the bottom.
 --}}
 
 <nav class="layout-navbar container-xxl navbar-detached navbar navbar-expand-xl align-items-center bg-navbar-theme"
@@ -95,14 +29,9 @@
         </a>
     </div>
 
-    {{-- EXACT template structure — justify-content-end, no w-100 --}}
     <div class="navbar-nav-right d-flex align-items-center justify-content-end" id="navbar-collapse">
 
-        {{--
-            SEARCH — static placeholder, no Algolia dependency.
-            Wire up later: connect to a real search route or re-enable Algolia
-            by adding search-vertical.json to public/admin/assets/json/
-        --}}
+        {{-- Search — desktop only --}}
         <div class="navbar-nav align-items-center d-none d-xl-flex">
             <div class="nav-item mb-0">
                 <div class="pac-search-bar">
@@ -119,10 +48,9 @@
             </div>
         </div>
 
-        {{-- Right icons — ms-md-auto exactly as template --}}
         <ul class="navbar-nav flex-row align-items-center ms-md-auto">
 
-            {{-- Theme switcher — exact template markup --}}
+            {{-- Theme switcher --}}
             <li class="nav-item dropdown me-sm-1 me-xl-0">
                 <a class="nav-link dropdown-toggle hide-arrow btn btn-icon btn-text-secondary rounded-pill"
                    id="nav-theme"
@@ -181,7 +109,7 @@
                                     ['route' => 'admin.projects.index',  'icon' => 'ri-layout-column-line', 'label' => 'Projects'],
                                     ['route' => 'admin.inbox.index',     'icon' => 'ri-inbox-line',         'label' => 'Inbox'],
                                     ['route' => 'admin.letters.index',   'icon' => 'ri-quill-pen-line',     'label' => 'Letters'],
-                                    ['route' => 'admin.mail.compose',      'icon' => 'ri-message-3-line',     'label' => 'Send Mail'],
+                                    ['route' => 'admin.mail.compose',    'icon' => 'ri-message-3-line',     'label' => 'Send Mail'],
                                     ['route' => 'admin.logs.index',      'icon' => 'ri-history-line',       'label' => 'Logs'],
                                 ];
                             @endphp
@@ -198,7 +126,46 @@
                 </div>
             </li>
 
-            {{-- Notifications — template's exact class structure (main.js depends on it) --}}
+            {{-- ── Card style toggle ────────────────────────────────────────────
+                 Visible from sm upward (hidden on xs phones — available in the
+                 user dropdown below instead). Labels collapse at sm–md so only
+                 the icons show, keeping the navbar tidy on tablets.
+            ──────────────────────────────────────────────────────────────────── --}}
+            <li class="nav-item d-none d-sm-flex align-items-center me-sm-1 me-xl-2">
+                <div class="pac-cst-group" role="group" aria-label="Card shadow style">
+
+                    <button type="button"
+                            class="pac-cst-btn"
+                            data-set-card-style="flat"
+                            title="Flat — no shadow"
+                            aria-label="Flat cards">
+                        <i class="ri ri-layout-line"></i>
+                        <span class="pac-cst-label d-none d-xl-inline">Flat</span>
+                    </button>
+
+                    <button type="button"
+                            class="pac-cst-btn"
+                            data-set-card-style="elevated"
+                            title="Elevated — subtle shadow"
+                            aria-label="Elevated cards">
+                        <i class="ri ri-stack-line"></i>
+                        <span class="pac-cst-label d-none d-xl-inline">Elevated</span>
+                    </button>
+
+                    <button type="button"
+                            class="pac-cst-btn"
+                            data-set-card-style="floating"
+                            title="Floating — deep shadow"
+                            aria-label="Floating cards">
+                        <i class="ri ri-drop-line"></i>
+                        <span class="pac-cst-label d-none d-xl-inline">Floating</span>
+                    </button>
+
+                </div>
+            </li>
+            {{-- /Card style toggle --}}
+
+            {{-- Notifications --}}
             <li class="nav-item dropdown-notifications navbar-dropdown dropdown me-4 me-xl-1">
                 <a class="nav-link dropdown-toggle hide-arrow btn btn-icon btn-text-secondary rounded-pill"
                    href="javascript:void(0);"
@@ -356,6 +323,40 @@
                             <span class="align-middle">Activity Log</span>
                         </a>
                     </li>
+
+                    {{-- ── Card style — mobile fallback (xs only, hidden sm+) ──────
+                         On phones the toggle group is hidden from the navbar.
+                         These three items expose the same functionality inside
+                         the user dropdown so it's never inaccessible.
+                    ────────────────────────────────────────────────────────────── --}}
+                    <li class="d-sm-none"><div class="dropdown-divider"></div></li>
+                    <li class="d-sm-none px-4 py-2">
+                        <p class="text-body-secondary mb-2" style="font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.07em;">
+                            Card style
+                        </p>
+                        <div class="d-flex gap-2">
+                            <button type="button"
+                                    class="btn btn-sm flex-fill pac-cst-btn pac-cst-btn--mobile"
+                                    data-set-card-style="flat"
+                                    style="font-size:0.75rem;">
+                                <i class="ri ri-layout-line me-1"></i>Flat
+                            </button>
+                            <button type="button"
+                                    class="btn btn-sm flex-fill pac-cst-btn pac-cst-btn--mobile"
+                                    data-set-card-style="elevated"
+                                    style="font-size:0.75rem;">
+                                <i class="ri ri-stack-line me-1"></i>Elevated
+                            </button>
+                            <button type="button"
+                                    class="btn btn-sm flex-fill pac-cst-btn pac-cst-btn--mobile"
+                                    data-set-card-style="floating"
+                                    style="font-size:0.75rem;">
+                                <i class="ri ri-drop-line me-1"></i>Float
+                            </button>
+                        </div>
+                    </li>
+                    {{-- /Card style mobile fallback --}}
+
                     <li><div class="dropdown-divider"></div></li>
                     <li>
                         <div class="d-grid px-4 pt-2 pb-1">

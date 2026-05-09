@@ -141,6 +141,12 @@ class ClientController extends Controller
         // Build per-currency totals for the detail page
         $currencyTotals = [];
         foreach ($invoices as $invoice) {
+            // Paid invoices are fully settled; draft haven't been sent yet —
+            // exclude both from the outstanding balance card.
+            if (in_array($invoice->status, ['paid', 'draft'])) {
+                continue;
+            }
+
             $currency = $invoice->currency ?? 'USD';
             if (!isset($currencyTotals[$currency])) {
                 $currencyTotals[$currency] = [
@@ -150,9 +156,11 @@ class ClientController extends Controller
                     'outstanding' => 0,
                 ];
             }
-            $currencyTotals[$currency]['invoiced']    += $invoice->completedSubtotal();
+            $currencyTotals[$currency]['invoiced']    += $invoice->completedSubtotal()
+                + $invoice->subscriptionSubtotal();
             $currencyTotals[$currency]['paid']        += (float) $invoice->paid_amount;
-            $currencyTotals[$currency]['outstanding'] += $invoice->completedOutstanding();
+            $currencyTotals[$currency]['outstanding'] += $invoice->completedOutstanding()
+                + $invoice->subscriptionOutstanding();
         }
 
         return view('admin.clients.show', compact('client', 'invoices', 'currencyTotals'));

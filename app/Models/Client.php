@@ -70,6 +70,12 @@ class Client extends Model
         $totals = [];
 
         foreach ($invoices as $invoice) {
+            // Paid invoices are fully settled; draft invoices haven't been sent yet.
+            // Neither should contribute to the outstanding balance shown on listings.
+            if (in_array($invoice->status, ['paid', 'draft'])) {
+                continue;
+            }
+
             $currency = $invoice->currency ?? 'USD';
             $balance  = $invoice->completedOutstanding();
 
