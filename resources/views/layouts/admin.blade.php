@@ -31,6 +31,7 @@
     <link rel="stylesheet" href="{{ asset('admin/assets/vendor/libs/pickr/pickr-themes.css') }}">
     <link rel="stylesheet" href="{{ asset('admin/assets/vendor/css/core.css') }}">
     <link rel="stylesheet" href="{{ asset('admin/assets/css/demo.css') }}">
+    <link rel="stylesheet" href="{{ asset('admin/assets/css/admin_custom.css') }}">
     <link rel="stylesheet" href="{{ asset('admin/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}">
 
     <!-- Algolia — required by template before helpers -->

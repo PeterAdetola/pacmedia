@@ -14,6 +14,8 @@
         cancel:  'Cancel',              // optional, default 'Cancel'
     }).then(() => {
         // user confirmed — run your action here
+    }).catch(() => {
+        // user cancelled — optional, safe to leave empty
     });
 
     // Toast notifications
@@ -183,35 +185,55 @@
         /* ════════════════════════════════════════════
            CONFIRMATION MODAL
         ════════════════════════════════════════════ */
+
+        // Both resolve AND reject are stored so:
+        // - OK button  → resolves  the Promise → .then() fires
+        // - Cancel / backdrop / ESC → rejects the Promise → .catch() fires
+        // This means .then() will NEVER run unless the user explicitly clicked confirm.
         let _resolve = null;
+        let _reject  = null;
 
-        const modalEl   = document.getElementById('pacConfirmModal');
-        const bsModal   = modalEl ? new bootstrap.Modal(modalEl) : null;
+        const modalEl  = document.getElementById('pacConfirmModal');
+        const bsModal  = modalEl ? new bootstrap.Modal(modalEl) : null;
 
-        const elCircle  = document.getElementById('pac-confirm-icon-circle');
-        const elIcon    = document.getElementById('pac-confirm-icon');
-        const elTitle   = document.getElementById('pac-confirm-title');
-        const elMsg     = document.getElementById('pac-confirm-message');
-        const elOk      = document.getElementById('pac-confirm-ok');
-        const elCancel  = document.getElementById('pac-confirm-cancel');
+        const elCircle = document.getElementById('pac-confirm-icon-circle');
+        const elIcon   = document.getElementById('pac-confirm-icon');
+        const elTitle  = document.getElementById('pac-confirm-title');
+        const elMsg    = document.getElementById('pac-confirm-message');
+        const elOk     = document.getElementById('pac-confirm-ok');
+        const elCancel = document.getElementById('pac-confirm-cancel');
 
-        /* Confirm button click → resolve promise + close */
+        // Confirm button → resolve then close
+        // Clearing _reject before hide() prevents the hidden.bs.modal listener
+        // from also firing the reject after we've already resolved.
         if (elOk) {
             elOk.addEventListener('click', function () {
+                const res = _resolve;
+                _resolve  = null;
+                _reject   = null;
                 bsModal.hide();
-                if (_resolve) { _resolve(true); _resolve = null; }
+                if (res) res();
             });
         }
 
-        /* Cancel / backdrop / ESC → resolve promise with false */
+        // Any close path that isn't the OK button (Cancel, backdrop, ESC, data-bs-dismiss)
+        // fires hidden.bs.modal — we reject here so .then() is skipped entirely.
         if (modalEl) {
             modalEl.addEventListener('hidden.bs.modal', function () {
-                if (_resolve) { _resolve(false); _resolve = null; }
+                if (_reject) {
+                    const rej = _reject;
+                    _resolve  = null;
+                    _reject   = null;
+                    rej();
+                }
             });
         }
 
         /**
-         * Pac.confirm(options) → Promise<boolean>
+         * Pac.confirm(options) → Promise
+         *
+         * Resolves  when the user clicks the confirm button  → .then() runs
+         * Rejects   when the user cancels in any way          → .catch() runs
          *
          * options = {
          *   title:   string,
@@ -223,34 +245,36 @@
          */
         function confirm(opts) {
             if (!bsModal) {
-                return Promise.resolve(window.confirm(opts.message || opts.title));
+                // Fallback for environments without Bootstrap modal
+                const ok = window.confirm((opts.title || '') + '\n' + (opts.message || ''));
+                return ok ? Promise.resolve() : Promise.reject();
             }
 
             opts = Object.assign({ icon: 'warning', confirm: 'Confirm', cancel: 'Cancel' }, opts);
 
-            /* Set icon */
+            /* Icon */
             const iconCls = ICONS[opts.icon] || ICONS.warning;
             elCircle.className = 'pac-icon-' + opts.icon +
                 ' d-inline-flex align-items-center justify-content-center rounded-circle mb-4';
             elCircle.style.cssText = 'width:72px; height:72px;';
             elIcon.className = iconCls;
 
-            /* Set text */
-            elTitle.textContent = opts.title || 'Are you sure?';
+            /* Text */
+            elTitle.textContent = opts.title   || 'Are you sure?';
             elMsg.textContent   = opts.message || '';
 
-            /* Set confirm button */
-            elOk.textContent  = opts.confirm;
-            elOk.className    = 'btn pac-btn-' + opts.icon;
+            /* Confirm button */
+            elOk.textContent = opts.confirm;
+            elOk.className   = 'btn pac-btn-' + opts.icon;
 
-            /* Set cancel button */
+            /* Cancel button */
             elCancel.textContent = opts.cancel;
 
-            /* Show */
             bsModal.show();
 
-            return new Promise(function (resolve) {
+            return new Promise(function (resolve, reject) {
                 _resolve = resolve;
+                _reject  = reject;
             });
         }
 
@@ -293,14 +317,13 @@
 
             /* Auto dismiss */
             const timer = setTimeout(function () { dismissToast(toastEl); }, duration);
-
             toastEl._pacTimer = timer;
         }
 
         function dismissToast(el) {
             clearTimeout(el._pacTimer);
             el.classList.remove('show');
-            el.style.opacity = '0';
+            el.style.opacity   = '0';
             el.style.transition = 'opacity 0.25s';
             setTimeout(function () { el.remove(); }, 260);
         }

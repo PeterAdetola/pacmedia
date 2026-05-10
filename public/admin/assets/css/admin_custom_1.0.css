@@ -1,0 +1,137 @@
+/* ── Card style: shadow & depth rules ────────────────────────────────────────
+
+   FLAT
+   · Page/content background → card background color (light, unified surface)
+   · Cards → card background + border for demarcation, no shadow
+   · Sidebar → border-right (ONLY mode with a sidebar border)
+   · Navbar → no shadow at rest; border-bottom appears once page scrolls under
+     it (main.js adds .window-scrolled to .layout-page on scroll > 0)
+
+   ELEVATED
+   · Cards → soft shadow, no border
+   · Sidebar → no border, no shadow (clean structural element)
+   · Navbar → soft shadow at rest; stronger on scroll
+
+   FLOATING
+   · Cards → strong shadow, no border
+   · Sidebar → no border, no shadow
+   · Navbar → strong shadow at rest; deeper on scroll
+
+──────────────────────────────────────────────────────────────────────────── */
+
+
+/* ════════════════════════════════════════════════════════════════════════════
+   FLAT
+════════════════════════════════════════════════════════════════════════════ */
+
+/* Page and content wrapper take the card/paper background colour so cards
+   sit flush and the gaps between them read as the structural grid, not depth */
+[data-card-style="flat"] .layout-page,
+[data-card-style="flat"] .content-wrapper,
+[data-card-style="flat"] .container-xxl {
+    background-color: var(--bs-paper-bg, #fff) !important;
+}
+
+/* Cards — same background as page, border provides the only demarcation */
+[data-card-style="flat"] .card,
+[data-card-style="flat"] .card-hover {
+    background-color: var(--bs-paper-bg, #fff) !important;
+    box-shadow: none !important;
+    border: 1px solid var(--bs-border-color) !important;
+}
+
+/* Sidebar — border-right is the ONLY separation signal in flat mode */
+[data-card-style="flat"] .layout-menu {
+    box-shadow: none !important;
+    border-right: 1px solid var(--bs-border-color) !important;
+}
+
+/* Navbar — no shadow at rest */
+[data-card-style="flat"] .layout-navbar.navbar-detached {
+    box-shadow: none !important;
+    border-bottom: none !important;
+}
+
+/* Navbar — border-bottom appears only when content scrolls underneath.
+   main.js adds .window-scrolled to .layout-page when window.scrollY > 0 */
+[data-card-style="flat"] .layout-page.window-scrolled .layout-navbar.navbar-detached {
+    border-bottom: 1px solid var(--bs-border-color) !important;
+    box-shadow: none !important;
+}
+
+/* Dropdowns keep a functional shadow so they don't vanish on the flat bg */
+[data-card-style="flat"] .dropdown-menu {
+    box-shadow: 0 2px 8px rgba(38, 43, 67, 0.08) !important;
+}
+
+
+/* ════════════════════════════════════════════════════════════════════════════
+   ELEVATED
+════════════════════════════════════════════════════════════════════════════ */
+
+[data-card-style="elevated"] .card,
+[data-card-style="elevated"] .card-hover {
+    box-shadow: 0 2px 8px rgba(38, 43, 67, 0.08), 0 0 1px rgba(38, 43, 67, 0.04) !important;
+    border: 1px solid transparent !important;
+}
+
+/* Sidebar — no border, no shadow */
+[data-card-style="elevated"] .layout-menu {
+    box-shadow: none !important;
+    border-right: none !important;
+}
+
+/* Navbar — soft shadow at rest, slightly stronger on scroll */
+[data-card-style="elevated"] .layout-navbar.navbar-detached {
+    box-shadow: 0 2px 8px rgba(38, 43, 67, 0.08), 0 0 1px rgba(38, 43, 67, 0.04) !important;
+    border-bottom: none !important;
+}
+
+[data-card-style="elevated"] .layout-page.window-scrolled .layout-navbar.navbar-detached {
+    box-shadow: 0 4px 12px rgba(38, 43, 67, 0.12), 0 0 1px rgba(38, 43, 67, 0.06) !important;
+}
+
+
+/* ════════════════════════════════════════════════════════════════════════════
+   FLOATING
+════════════════════════════════════════════════════════════════════════════ */
+
+[data-card-style="floating"] .card,
+[data-card-style="floating"] .card-hover {
+    box-shadow: 0 8px 24px rgba(38, 43, 67, 0.13), 0 2px 6px rgba(38, 43, 67, 0.06) !important;
+    border: 1px solid transparent !important;
+}
+
+/* Sidebar — no border, no shadow */
+[data-card-style="floating"] .layout-menu {
+    box-shadow: none !important;
+    border-right: none !important;
+}
+
+/* Navbar — strong shadow at rest, deeper on scroll */
+[data-card-style="floating"] .layout-navbar.navbar-detached {
+    box-shadow: 0 8px 24px rgba(38, 43, 67, 0.13), 0 2px 6px rgba(38, 43, 67, 0.06) !important;
+    border-bottom: none !important;
+}
+
+[data-card-style="floating"] .layout-page.window-scrolled .layout-navbar.navbar-detached {
+    box-shadow: 0 12px 32px rgba(38, 43, 67, 0.16), 0 4px 8px rgba(38, 43, 67, 0.08) !important;
+}
+
+
+/* ════════════════════════════════════════════════════════════════════════════
+   DARK MODE OVERRIDES
+════════════════════════════════════════════════════════════════════════════ */
+
+[data-bs-theme="dark"][data-card-style="flat"] .card,
+[data-bs-theme="dark"][data-card-style="flat"] .card-hover,
+[data-bs-theme="dark"][data-card-style="flat"] .layout-menu,
+[data-bs-theme="dark"][data-card-style="flat"] .layout-page.window-scrolled .layout-navbar.navbar-detached {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-bs-theme="dark"][data-card-style="flat"] .layout-page,
+[data-bs-theme="dark"][data-card-style="flat"] .content-wrapper,
+[data-bs-theme="dark"][data-card-style="flat"] .container-xxl {
+    background-color: var(--bs-paper-bg) !important;
+}
