@@ -784,7 +784,7 @@
                             'overdue' => 'bg-label-danger',
                         ];
                         $badgeClass  = $statusMap[$invoice->status] ?? 'bg-label-secondary';
-                        $outstanding = $invoice->completedOutstanding();
+                        $outstanding = $invoice->grandOutstanding();
                     @endphp
                     <tr>
                         <td>
@@ -962,33 +962,45 @@
 
                 // ── Archive ───────────────────────────────────────────────────────
                 $('.btn-archive-client').on('click', function () {
-                    if (!confirm('Archive this client? They can be restored later.')) return;
-                    $.ajax({
-                        url: destroyUrl, method: 'DELETE',
-                        data: { _token: csrfToken },
-                        success: function (res) {
-                            if (res.success) {
-                                toastSuccess(res.message);
-                                setTimeout(() => window.location.href = indexUrl, 1000);
-                            }
-                        },
-                        error: () => toastError('Could not archive client.')
+                    Pac.confirm({
+                        title:   'Archive Client?',
+                        message: 'They can be restored later.',
+                        confirm: 'Archive',
+                        type:    'danger',
+                    }).then(() => {
+                        $.ajax({
+                            url: destroyUrl, method: 'DELETE',
+                            data: { _token: csrfToken },
+                            success: function (res) {
+                                if (res.success) {
+                                    Pac.toast.success(res.message);
+                                    setTimeout(() => window.location.href = indexUrl, 1000);
+                                }
+                            },
+                            error: () => Pac.toast.error('Could not archive client.')
+                        });
                     });
                 });
 
                 // ── Restore ───────────────────────────────────────────────────────
                 $('.btn-restore-client').on('click', function () {
-                    if (!confirm('Restore this client?')) return;
-                    $.ajax({
-                        url: restoreUrl, method: 'PATCH',
-                        data: { _token: csrfToken },
-                        success: function (res) {
-                            if (res.success) {
-                                toastSuccess(res.message);
-                                setTimeout(() => location.reload(), 800);
-                            }
-                        },
-                        error: () => toastError('Could not restore client.')
+                    Pac.confirm({
+                        title:   'Restore Client?',
+                        message: 'This client will become active again.',
+                        confirm: 'Restore',
+                        type:    'primary',
+                    }).then(() => {
+                        $.ajax({
+                            url: restoreUrl, method: 'PATCH',
+                            data: { _token: csrfToken },
+                            success: function (res) {
+                                if (res.success) {
+                                    Pac.toast.success(res.message);
+                                    setTimeout(() => location.reload(), 800);
+                                }
+                            },
+                            error: () => Pac.toast.error('Could not restore client.')
+                        });
                     });
                 });
 
@@ -997,12 +1009,8 @@
                     $(`#${formId} .is-invalid`).removeClass('is-invalid');
                     $(`#${formId} .invalid-feedback`).remove();
                 }
-                function toastSuccess(msg) {
-                    if (typeof toastr !== 'undefined') toastr.success(msg); else alert(msg);
-                }
-                function toastError(msg) {
-                    if (typeof toastr !== 'undefined') toastr.error(msg); else alert(msg);
-                }
+                function toastSuccess(msg) { Pac.toast.success(msg); }
+                function toastError(msg)   { Pac.toast.error(msg);   }
             });
         </script>
     @endpush

@@ -565,18 +565,14 @@
                         </form>
 
                         {{-- Delete --}}
-                        <form method="POST"
-                              action="{{ route('admin.invoices.destroy', $invoice) }}"
-                              onsubmit="return confirm('Delete invoice {{ $invoice->number }}? This cannot be undone.')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit"
-                                    class="btn btn-outline-danger d-grid w-100">
+                        <button type="button"
+                                class="btn btn-outline-danger d-grid w-100 btn-delete-invoice"
+                                data-invoice="{{ $invoice->id }}"
+                                data-number="{{ $invoice->number }}">
                                 <span class="d-flex align-items-center justify-content-center gap-2">
                                     <i class="ri ri-delete-bin-7-line"></i> Delete
                                 </span>
-                            </button>
-                        </form>
+                        </button>
 
                     </div>
                 </div>
@@ -774,6 +770,31 @@ The Pacmedia") }}</textarea>
                     }, 4000);
                 });
             })();
+
+            $('.btn-delete-invoice').on('click', function () {
+                const id     = $(this).data('invoice');
+                const number = $(this).data('number');
+
+                Pac.confirm({
+                    title:   'Delete Invoice?',
+                    message: `Delete ${number}? This cannot be undone.`,
+                    confirm: 'Delete',
+                    type:    'danger',
+                }).then(() => {
+                    $.ajax({
+                        url:    `/admin/invoices/${id}`,
+                        method: 'POST',
+                        data:   { _token: '{{ csrf_token() }}', _method: 'DELETE' },
+                        success: function (res) {
+                            if (res.success) {
+                                Pac.toast.success(res.message);
+                                setTimeout(() => window.location.href = '{{ route('admin.invoices.index') }}', 800);
+                            }
+                        },
+                        error: () => Pac.toast.error('Could not delete invoice.')
+                    });
+                });
+            });
         </script>
     @endpush
 

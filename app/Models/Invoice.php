@@ -120,12 +120,18 @@ class Invoice extends Model
      * What the client still owes for the Completed section.
      * Formula: subtotal + tax − discount − paid_amount − WHT
      *
+     * Status-aware: if the invoice is marked 'paid', outstanding is always
+     * zero regardless of what paid_amount contains. This covers the common
+     * case where status is set to 'paid' without entering a paid_amount.
+     *
      * NOTE: paid_amount and WHT are intentionally applied only to the
      * completed section because that is the payable/billable section.
      * Subscription is a recurring charge; Proposed is not yet approved.
      */
     public function completedOutstanding(): float
     {
+        if ($this->status === 'paid') return 0.0;
+
         return $this->completedSubtotal()
             + $this->completedTax()
             - (float) $this->completed_discount
@@ -157,6 +163,8 @@ class Invoice extends Model
 
     public function subscriptionOutstanding(): float
     {
+        if ($this->status === 'paid') return 0.0;
+
         return $this->subscriptionSubtotal()
             + $this->subscriptionTax()
             - (float) $this->subscription_discount;
@@ -217,6 +225,8 @@ class Invoice extends Model
      */
     public function grandOutstanding(): float
     {
+        if ($this->status === 'paid') return 0.0;
+
         // Completed net (subtotal + tax − discount − WHT)
         $completedNet = $this->completedSubtotal()
             + $this->completedTax()

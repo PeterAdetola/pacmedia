@@ -390,10 +390,14 @@
                             <div class="d-flex align-items-center gap-3">
                                 <div class="inv-client-av">{{ $initials }}</div>
                                 <div class="d-flex flex-column">
-                                    <a href="{{ route('admin.clients.show', $invoice->client) }}" class="inv-client-name">
-                                        {{ $invoice->client->name ?? 'N/A' }}
-                                    </a>
-                                    <span class="inv-sub">{{ $invoice->client->email ?? '' }}</span>
+                                    @if ($invoice->client)
+                                        <a href="{{ route('admin.clients.show', $invoice->client) }}" class="inv-client-name">
+                                            {{ $invoice->client->name }}
+                                        </a>
+                                        <span class="inv-sub">{{ $invoice->client->email }}</span>
+                                    @else
+                                        <span class="inv-client-name text-muted">N/A</span>
+                                    @endif
                                 </div>
                             </div>
                         </td>
@@ -480,7 +484,7 @@
                                                 </button>
                                             </form>
                                         </li>
-                                        @if($invoice->client->email)
+                                        @if($invoice->client?->email)
                                             <li>
                                                 <a class="dropdown-item"
                                                    href="{{ route('admin.invoices.show', $invoice) }}#send">
@@ -490,14 +494,11 @@
                                         @endif
                                         <li><hr class="dropdown-divider"></li>
                                         <li>
-                                            <form action="{{ route('admin.invoices.destroy', $invoice) }}"
-                                                  method="POST"
-                                                  onsubmit="return confirm('Delete invoice {{ $invoice->number }}? This cannot be undone.')">
-                                                @csrf @method('DELETE')
-                                                <button type="submit" class="dropdown-item text-danger">
-                                                    <i class="ri ri-delete-bin-line"></i> Delete
-                                                </button>
-                                            </form>
+                                            <button type="button"
+                                                    class="dropdown-item text-danger"
+                                                    data-invoice="{{ $invoice->id }}">
+                                                <i class="ri ri-delete-bin-line"></i> Delete
+                                            </button>
                                         </li>
                                     </ul>
                                 </div>
@@ -591,6 +592,30 @@
 
     @push('page-js')
         <script>
+            $(document).on('click', '.dropdown-item.text-danger[data-invoice]', function () {
+                const id = $(this).data('invoice');
+
+                Pac.confirm({
+                    title:   'Delete Invoice?',
+                    message: 'This cannot be undone.',
+                    confirm: 'Delete',
+                    type:    'danger',
+                }).then(() => {
+                    $.ajax({
+                        url:  `/admin/invoices/${id}`,
+                        method: 'POST',
+                        data: { _token: '{{ csrf_token() }}', _method: 'DELETE' },
+                        success: function (res) {
+                            if (res.success) {
+                                Pac.toast.success(res.message);
+                                setTimeout(() => location.reload(), 800);
+                            }
+                        },
+                        error: () => Pac.toast.error('Could not delete invoice.')
+                    });
+                });
+            });
+
             (function(){
                 const selAll = document.getElementById('sel-all');
                 const cbs    = document.querySelectorAll('.row-cb');
