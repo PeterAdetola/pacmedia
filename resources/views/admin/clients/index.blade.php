@@ -558,8 +558,8 @@
                             icon:    'warning',
                             confirm: 'Yes, Archive',
                             cancel:  'Cancel',
-                        }).then(function (confirmed) {
-                            if (!confirmed) return;
+                        }).then(function () {
+                            // No `confirmed` param — .then() only fires on OK now
                             $.ajax({
                                 url:    `${ROUTES.destroy}/${id}`,
                                 method: 'DELETE',
@@ -574,10 +574,10 @@
                                     Pac.toast.error('Could not archive client. Please try again.');
                                 }
                             });
-                        });
+                        }).catch(function () {}); // cancel — do nothing
                     });
 
-                    // ── Restore ───────────────────────────────────────────────────────
+// ── Restore ───────────────────────────────────────────────────────
                     $(document).on('click', '.btn-restore', function () {
                         const id   = $(this).data('id');
                         const name = $(this).data('name');
@@ -587,8 +587,7 @@
                             icon:    'success',
                             confirm: 'Yes, Restore',
                             cancel:  'Cancel',
-                        }).then(function (confirmed) {
-                            if (!confirmed) return;
+                        }).then(function () {
                             $.ajax({
                                 url:    `${ROUTES.restore}/${id}/restore`,
                                 method: 'PATCH',
@@ -603,7 +602,7 @@
                                     Pac.toast.error('Could not restore client. Please try again.');
                                 }
                             });
-                        });
+                        }).catch(function () {}); // cancel — do nothing
                     });
 
                     // ── Helpers ───────────────────────────────────────────────────────
