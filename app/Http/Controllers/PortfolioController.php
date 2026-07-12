@@ -105,8 +105,8 @@ class PortfolioController extends Controller
         // OG meta for this project page
         $metaTitle       = $project['title'] . ' — Pacmedia';
         $metaDescription = $project['tagline'] ?? $project['brief_intro'] ?? null;
-        $metaOgImage     = $project['card_image']
-            ? asset($project['card_image'])
+        $metaOgImage     = file_exists(public_path('img/works/' . $slug . '/card.jpg'))
+            ? asset('img/works/' . $slug . '/card.jpg')
             : asset('img/og-image.jpg');
 
         return view('portfolio.show', compact(
