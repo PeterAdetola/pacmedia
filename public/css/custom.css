@@ -101,13 +101,14 @@
 /* ── Sister brand chapter break ─────────────────────────────── */
 #portfolio-detail .pf-chapter-break {
     display: flex;
-    align-items: center;
+    flex-direction: column;   /* stack rule above label */
+    align-items: flex-start;
     gap: 2rem;
-    padding-top: 6rem;
+    padding-top: 8rem;        /* more air above — this is a major section break */
     padding-bottom: 0;
 }
 #portfolio-detail .pf-chapter-rule {
-    flex: 1;
+    width: 100%;              /* full width now that it's not sharing a row */
     height: 1px;
     background: var(--stroke-elements);
 }
@@ -120,7 +121,6 @@
     text-transform: uppercase;
     color: var(--t-muted);
     margin: 0;
-    white-space: nowrap;
 }
 /* Sister heading — smaller than main h1 */
 #portfolio-detail .pf-sister-heading {

@@ -260,7 +260,7 @@
 
                                 @elseif ($block['type'] === 'sister-brand')
 
-                                    {{-- Chapter break — rule + label ──────── --}}
+                                    {{-- Chapter break — full rule, label below it flush left ── --}}
                                     <div class="content__block pf-chapter-break animate-in-up">
                                         <div class="pf-chapter-rule"></div>
                                         <p class="pf-chapter-label tagline-chapter">
@@ -269,7 +269,7 @@
                                         </p>
                                     </div>
 
-                                    {{-- Sister name + tagline ──────────────── --}}
+                                    {{-- Sister name + tagline ──────────────────────────────── --}}
                                     <div class="content__block grid-block section-tagline-title animate-in-up">
                                         <h2 class="pf-proj-title pf-sister-heading reveal-type">{{ $block['name'] }}</h2>
                                         <p class="pf-eyebrow mt-4">{{ $block['tagline'] }}</p>
