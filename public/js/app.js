@@ -146,7 +146,7 @@ gsap.to(toTop, {
 // --------------------------------------------- //
 
 // --------------------------------------------- //
-// Stacking Cards Start
+// Stacking Cards
 // --------------------------------------------- //
 const stackItems = document.querySelectorAll(".stack-item");
 const stickySpace = document.querySelector(".stack-offset");
@@ -159,25 +159,38 @@ if (stackItems.length > 0 && stickySpace) {
         animation.clear();
         cardHeight = stackItems[0].offsetHeight;
         stackItems.forEach((card, index) => {
+            gsap.set(card, { zIndex: stackItems.length - index });
             if (index > 0) {
                 gsap.set(card, { y: index * cardHeight });
-                animation.to(card, { y: 0, duration: index * 0.5, ease: "none" }, 0);
+                animation.to(card, {
+                    y: 0,
+                    duration: index * 0.5,
+                    ease: "none"
+                }, 0);
             }
         });
     }
-    initCards();
 
-    ScrollTrigger.create({
-        trigger: ".stack-wrapper",
-        start: "top top",
-        pin: true,
-        end: () => `+=${stackItems.length * cardHeight + stickySpace.offsetHeight}`,
-        scrub: true,
-        animation: animation,
-        invalidateOnRefresh: true,
-    });
+    // ← Wait for loader to fully finish before initialising
+    setTimeout(() => {
+        initCards();
 
-    ScrollTrigger.addEventListener("refreshInit", initCards);
+        ScrollTrigger.create({
+            trigger: ".stack-wrapper",
+            start: "top top",
+            pin: true,
+            end: () => `+=${(stackItems.length - 1) * cardHeight + stickySpace.offsetHeight}`,
+            scrub: 1,
+            animation: animation,
+            invalidateOnRefresh: true,
+        });
+
+        ScrollTrigger.addEventListener("refreshInit", initCards);
+
+        // Force ScrollTrigger to recalculate after init
+        ScrollTrigger.refresh();
+
+    }, 3300); // ← 3200ms loader + 100ms safety buffer
 }
 // --------------------------------------------- //
 // Stacking Cards End
@@ -722,30 +735,12 @@ function loadTheme(theme) {
 }
 
 function updateCalTheme(theme) {
-    if (window.Cal && Cal.ns && Cal.ns["15min"]) {
-        Cal.ns["15min"]("ui", {
-            "theme": theme,
-            "cssVarsPerTheme": {
-                "light": {
-                    "cal-brand":      "#383838",
-                    "cal-bg":         "#babec8",
-                    "cal-bg-subtle":  "#d8dde7",
-                    "cal-bg-muted":   "#989ba3",
-                    "cal-border":     "#8f93a1",
-                    "cal-text":       "#151617",
-                    "cal-text-muted": "#44474a"
-                },
-                "dark": {
-                    "cal-brand":      "#E6E200",
-                    "cal-bg":         "#141414",
-                    "cal-bg-subtle":  "#242424",
-                    "cal-bg-muted":   "#000000",
-                    "cal-border":     "#535762",
-                    "cal-text":       "#f2f5fc",
-                    "cal-text-muted": "#aeb5c5"
-                }
-            }
-        });
+    if (window.Cal) {
+        window.Cal.loaded = false;
+        window.Cal.ns = {};
+        setTimeout(function () {
+            initCal(theme);
+        }, 100);
     }
 }
 

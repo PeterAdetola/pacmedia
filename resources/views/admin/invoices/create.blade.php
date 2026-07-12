@@ -287,7 +287,7 @@
                                            name="project_name"
                                            class="form-control form-control-sm"
                                            value="{{ old('project_name') }}"
-                                           placeholder="e.g. Enamux Branding & Website">
+                                           placeholder="e.g. Company Branding & Website">
                                 </div>
                             </div>
 

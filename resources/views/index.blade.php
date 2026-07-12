@@ -2,6 +2,7 @@
 @section('content')
     @include('partials.hero')
     @include('partials.about')
+    @include('partials.portfolio-stack')
     @include('partials.process')
     @include('partials.service')
     @include('partials.faqs-testimonial-socialmedia')

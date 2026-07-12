@@ -15,6 +15,12 @@
                     </a>
                 </li>
                 <li class="menu__item">
+                    <a class="menu__link btn" href="#portfolio">
+                        <span class="menu__caption">Portfolio</span>
+                        <i class="ph ph-briefcase"></i>
+                    </a>
+                </li>
+                <li class="menu__item">
                     <a class="menu__link btn" href="#process">
                         <span class="menu__caption">Process</span>
                         <i class="ph ph-path"></i>
@@ -32,12 +38,12 @@
                         <i class="ph ph-chats"></i>
                     </a>
                 </li>
-                <li class="menu__item">
-                    <a class="menu__link btn" href="#contact">
-                        <span class="menu__caption">Contact Us</span>
-                        <i class="ph ph-envelope"></i>
-                    </a>
-                </li>
+{{--                <li class="menu__item">--}}
+{{--                    <a class="menu__link btn" href="#contact">--}}
+{{--                        <span class="menu__caption">Contact Us</span>--}}
+{{--                        <i class="ph ph-envelope"></i>--}}
+{{--                    </a>--}}
+{{--                </li>--}}
             </ul>
         </nav>
     </div>

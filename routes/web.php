@@ -4,6 +4,12 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\Auth\SocialAuthController;
+use App\Http\Controllers\PortfolioController;
+use App\Http\Controllers\LlmsFullController;
+
+// ── Llms Controller ────────────────────────────────
+Route::get('/llms-full.txt', [LlmsFullController::class, 'index']);
+Route::get('/llms-works.txt', [LlmsFullController::class, 'works']);
 
 // ── Admin Routes (auth + verified + approved) ────────────────────────────────
 Route::middleware(['auth', 'verified', 'approved'])->prefix('admin')->group(base_path('routes/admin.php'));
@@ -37,6 +43,11 @@ Route::get('/services/performance-engineering', [ServiceController::class, 'show
 Route::get('/services/intelligent-automation', [ServiceController::class, 'show'])
     ->defaults('slug', 'intelligent-automation')
     ->name('service.automation');
+
+// ── Portfolio Controller ───────────────────────────────────────────────────────────────
+
+// Portfolio detail — slug maps to a .md file
+Route::get('/work/{slug}', [PortfolioController::class, 'show'])->name('portfolio.show');
 
 // ── Legal Pages ───────────────────────────────────────────────────────────────
 Route::get('/terms', [App\Http\Controllers\LegalController::class, 'terms'])->name('terms');

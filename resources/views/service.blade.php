@@ -170,9 +170,3 @@
     </section>
 
 @endsection
-
-@push('styles')
-    <style>
-
-    </style>
-@endpush

@@ -21,12 +21,14 @@
         <div class="dropdown-divider"></div>
         <a href="#about" class="dropdown-item"><i class="menu-icon ph ph-user"></i>About</a>
         <div class="dropdown-divider"></div>
+        <a href="#portfolio" class="dropdown-item"><i class="menu-icon ph ph-briefcase"></i>Project</a>
+        <div class="dropdown-divider"></div>
         <a href="#process" class="dropdown-item"><i class="menu-icon ph ph-path"></i>Processes</a>
         <div class="dropdown-divider"></div>
         <a href="#services" class="dropdown-item"><i class="menu-icon ph ph-thumbs-up"></i>Capability</a>
         <div class="dropdown-divider"></div>
         <a href="#faqs" class="dropdown-item"><i class="menu-icon ph ph-chats"></i>FAQs</a>
-        <div class="dropdown-divider"></div>
-        <a href="#contact" class="dropdown-item"><i class="menu-icon ph ph-envelope"></i>Contact Us</a>
+{{--        <div class="dropdown-divider"></div>--}}
+{{--        <a href="#contact" class="dropdown-item"><i class="menu-icon ph ph-envelope"></i>Contact Us</a>--}}
     </div>
 </div>

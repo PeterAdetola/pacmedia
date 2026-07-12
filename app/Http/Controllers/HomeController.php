@@ -53,7 +53,17 @@ class HomeController extends Controller
         $aboutQuote = $aboutParts[1] ?? '';
         $aboutAttribution = $aboutParts[2] ?? '';
 
+        // ------------------------------------------------
+        // PORTFOLIO — resources/markdown/works/
+        // Format:
+        //   Body paragraphs (markdown)
+        //   ---
+        //   Blockquote text
+        //   ---
+        //   Attribution paragraph
+        // ------------------------------------------------
 
+        $cards = (new PortfolioController)->getCards();
 
         // ------------------------------------------------
         // PROCESS — resources/markdown/process.md
@@ -182,6 +192,7 @@ class HomeController extends Controller
             'aboutBody',
             'aboutQuote',
             'aboutAttribution',
+            'cards',
             'processTitle',
             'processes',
             'services',

@@ -1,0 +1,18 @@
+# Pacmedia Creatives
+> Tactical digital studio specializing in brand identity and digital infrastructure.
+
+## Services
+- Brand Identity Forging
+- Laravel Web Development
+- AI Automation Systems
+- Custom CRM & Inventory Solutions
+
+## Core Pages
+- [Home](https://thepacmedia.com/)
+- [Services](https://thepacmedia.com/services)
+- [Work](https://thepacmedia.com/work)
+- [Contact](https://thepacmedia.com/contact)
+
+## LLM Context Streams
+- [Full Site Context](https://thepacmedia.com/llms-full.txt): Complete compiled text for all core pages and individual service offerings.
+- [Portfolio Context](https://thepacmedia.com/llms-works.txt): Complete text database of all case studies and project works.

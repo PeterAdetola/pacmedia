@@ -135,3 +135,19 @@
 [data-bs-theme="dark"][data-card-style="flat"] .container-xxl {
     background-color: var(--bs-paper-bg) !important;
 }
+/* Hide the collapse toggle arrow when sidebar is collapsed in flat mode */
+html[data-card-style="flat"].layout-menu-collapsed #layout-menu .layout-menu-toggle {
+    display: none !important;
+}
+
+html[data-card-style="flat"].layout-menu-collapsed #layout-menu:hover .layout-menu-toggle {
+    display: flex !important;
+}
+
+/* Push search bar away from the left edge of the navbar when it has a border.
+   Only needed on elevated/floating since flat uses a full card border too. */
+[data-card-style="elevated"] .layout-navbar.navbar-detached,
+[data-card-style="floating"] .layout-navbar.navbar-detached {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+}

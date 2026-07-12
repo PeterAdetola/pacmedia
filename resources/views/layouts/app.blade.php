@@ -34,26 +34,26 @@
     <meta name="twitter:image:alt" content="{{ $metaTitle ?? 'Pacmedia Creatives' }}"/>
 
     <script type="application/ld+json">
-        {
-            "@@context": "https://schema.org",
-            "@@type": "ProfessionalService",
-            "name": "Pacmedia Creatives",
-            "alternateName": "Pacmedia",
-            "description": "Tactical digital studio specializing in forging brand identities and engineering mission-critical digital infrastructure via Laravel and AI automation.",
-            "url": "{{ url('/') }}",
-        "logo": "{{ url('img/logo.png') }}",
-        "image": "{{ url('img/og-image.jpg') }}",
-        "email": "reach@thepacmedia.com",
-        "areaServed": { "@type": "Place", "name": "Worldwide" },
-        "serviceType": [
-            "Brand Identity Forging",
-            "Digital Infrastructure Engineering",
-            "Laravel Web Development",
-            "AI Automation Systems",
-            "Custom CRM & Inventory Solutions"
-        ],
-        "priceRange": "$$"
-    }
+        {!! json_encode([
+            '@context'    => 'https://schema.org',
+            '@type'       => 'ProfessionalService',
+            'name'        => 'Pacmedia Creatives',
+            'alternateName' => 'Pacmedia',
+            'description' => 'Tactical digital studio specializing in forging brand identities and engineering mission-critical digital infrastructure via Laravel and AI automation.',
+            'url'         => url('/'),
+            'logo'        => url('img/logo.png'),
+            'image'       => url('img/og-image.jpg'),
+            'email'       => 'reach@thepacmedia.com',
+            'areaServed'  => ['@type' => 'Place', 'name' => 'Worldwide'],
+            'serviceType' => [
+                'Brand Identity Forging',
+                'Digital Infrastructure Engineering',
+                'Laravel Web Development',
+                'AI Automation Systems',
+                'Custom CRM & Inventory Solutions',
+            ],
+            'priceRange'  => '$$',
+        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) !!}
     </script>
 
     <link rel="icon" href="{{ asset('img/favicon/favicon.ico') }}" sizes="any"/>
@@ -210,6 +210,92 @@
     <i class="ph ph-arrow-up"></i>
 </a>
 
+{{-- ============================================================
+     FLOATING ACTION BUTTON — "Case Studies" / "View Gallery"
+     ─────────────────────────────────────────────────────────────
+     • Portfolio detail page  → "View Gallery"  (handled by show.blade.php)
+     • Every other page       → "Case Studies"  with upward dropdown
+
+     Project list: reads directly from resources/markdown/works/*.md
+     Ordered by frontmatter `order:`, capped at 5.
+     The #pf-gallery-btn in show.blade.php replaces this button
+     on portfolio detail pages — this one is hidden there via JS.
+============================================================ --}}
+@php
+    use Illuminate\Support\Facades\File;
+    use League\CommonMark\Environment\Environment;
+    use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
+    use League\CommonMark\Extension\FrontMatter\FrontMatterExtension;
+    use League\CommonMark\Extension\FrontMatter\Output\RenderedContentWithFrontMatter;
+    use League\CommonMark\MarkdownConverter;
+
+    $floatingProjects = [];
+    $worksPath = resource_path('markdown/works');
+
+    if (File::isDirectory($worksPath)) {
+        $mdEnv = new Environment();
+        $mdEnv->addExtension(new CommonMarkCoreExtension());
+        $mdEnv->addExtension(new FrontMatterExtension());
+        $mdConverter = new MarkdownConverter($mdEnv);
+
+        $floatingProjects = collect(File::files($worksPath))
+            ->filter(fn($f) => $f->getExtension() === 'md')
+            ->map(function ($f) use ($mdConverter) {
+                $result = $mdConverter->convert(File::get($f->getPathname()));
+                $matter = $result instanceof RenderedContentWithFrontMatter
+                    ? $result->getFrontMatter() : [];
+                $slug = $f->getFilenameWithoutExtension();
+                return [
+                    'slug'    => $slug,
+                    'order'   => $matter['order'] ?? 99,
+                    'title'   => $matter['title'] ?? $slug,
+                    'service' => $matter['service'] ?? null,
+                    'url'     => route('portfolio.show', $slug),
+                ];
+            })
+            ->sortBy('order')
+            ->take(5)
+            ->values()
+            ->all();
+    }
+@endphp
+
+@if (count($floatingProjects) > 0)
+    <div id="cs-btn-wrap" class="cs-btn-wrap">
+
+        {{-- Upward dropdown --}}
+        <div id="cs-dropdown" class="cs-dropdown" role="menu" aria-label="Case studies">
+            @foreach ($floatingProjects as $i => $fp)
+                <a href="{{ $fp['url'] }}"
+                   class="cs-dropdown__item"
+                   role="menuitem">
+                    <span class="cs-dropdown__index">{{ str_pad($i + 1, 2, '0', STR_PAD_LEFT) }}</span>
+                    <span class="cs-dropdown__info">
+            <span class="cs-dropdown__title">{{ $fp['title'] }}</span>
+            @if (!empty($fp['service']))
+                            <span class="cs-dropdown__tagline">{{ $fp['service'] }}</span>
+                        @endif
+        </span>
+                    <i class="ph ph-arrow-up-right cs-dropdown__arrow" aria-hidden="true"></i>
+                </a>
+            @endforeach
+        </div>
+
+        {{-- The button --}}
+        <button id="cs-fab"
+                class="cs-fab"
+                type="button"
+                aria-haspopup="true"
+                aria-expanded="false"
+                aria-controls="cs-dropdown">
+            <span class="cs-fab__label">Case Studies</span>
+            <i class="ph ph-briefcase cs-fab__icon" aria-hidden="true"></i>
+            <i class="ph ph-caret-up cs-fab__caret" aria-hidden="true"></i>
+        </button>
+
+    </div>
+@endif
+
 <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="pswp__bg"></div>
     <div class="pswp__scroll-wrap">
@@ -255,6 +341,13 @@
 <script src="{{ asset('js/app.js') }}"></script>
 
 <script>
+    document.querySelectorAll('.pf-grid__mockup--video').forEach(v => {
+        const card = v.closest('.pf-grid__card');
+        card.addEventListener('mouseenter', () => { v.currentTime = 0; v.play(); });
+        card.addEventListener('mouseleave', () => { v.pause(); v.currentTime = 0; });
+    });
+</script>
+<script>
     const menuToggle = document.getElementById('menu-toggle');
     const menuDropdown = document.getElementById('menu-dropdown');
 
@@ -279,7 +372,59 @@
     }
 </script>
 
+<script>
+    (function () {
+        'use strict';
+
+        var wrap    = document.getElementById('cs-btn-wrap');
+        var fab     = document.getElementById('cs-fab');
+        var dropdown = document.getElementById('cs-dropdown');
+        var toTop   = document.getElementById('to-top');
+
+        if (!wrap || !fab || !dropdown) return;
+
+        /* ── Hide on portfolio detail pages ───────────────────────
+           CSS :has() handles modern browsers. This is the JS fallback
+           for browsers that don't support :has() selector.
+        ──────────────────────────────────────────────────────────── */
+        if (document.getElementById('portfolio-detail')) {
+            wrap.style.display = 'none';
+            return;
+        }
+
+        /* ── Toggle dropdown ───────────────────────────────────── */
+        fab.addEventListener('click', function (e) {
+            e.stopPropagation();
+            var isOpen = dropdown.classList.contains('open');
+            dropdown.classList.toggle('open', !isOpen);
+            fab.setAttribute('aria-expanded', String(!isOpen));
+        });
+
+        /* ── Close on outside click ────────────────────────────── */
+        document.addEventListener('click', function (e) {
+            if (!wrap.contains(e.target)) {
+                dropdown.classList.remove('open');
+                fab.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        /* ── Close on Escape ───────────────────────────────────── */
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                dropdown.classList.remove('open');
+                fab.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        /* Position is handled entirely by CSS —
+           cs-btn-wrap sits to the left of #to-top at all times.
+           No JS scroll observation needed, #to-top never touched. */
+
+    })();
+</script>
+
 <script type="text/javascript">
+    // Load Cal.com embed script
     (function (C, A, L) {
         let p = function (a, ar) { a.q.push(ar); };
         let d = C.document;
@@ -291,27 +436,53 @@
         };
     })(window, "https://app.cal.com/embed/embed.js", "init");
 
-    Cal("init", "15min", {origin: "https://app.cal.com"});
-    Cal.ns["15min"]("inline", {
-        elementOrSelector: "#my-cal-inline-15min",
-        config: {"layout": "month_view", "useSlotsViewOnSmallScreen": "true"},
-        calLink: "peter-adetola-pwjdgz/15min",
-    });
-    Cal.ns["15min"]("ui", {
-        "hideEventTypeDetails": true,
-        "layout": "month_view",
-        "cssVarsPerTheme": {
-            "light": {
-                "cal-brand": "#383838", "cal-bg": "#babec8", "cal-bg-subtle": "#d8dde7",
-                "cal-bg-muted": "#989ba3", "cal-border": "#8f93a1",
-                "cal-text": "#151617", "cal-text-muted": "#44474a"
+    // Initialise Cal with a specific theme
+    function initCal(theme) {
+        const calContainer = document.getElementById('my-cal-inline-15min');
+        if (calContainer) calContainer.innerHTML = '';
+
+        Cal("init", "15min", {origin: "https://app.cal.com"});
+        Cal.ns["15min"]("inline", {
+            elementOrSelector: "#my-cal-inline-15min",
+            config: {
+                "layout": "month_view",
+                "useSlotsViewOnSmallScreen": "true",
+                "theme": theme
             },
-            "dark": {
-                "cal-brand": "#E6E200", "cal-bg": "#141414", "cal-bg-subtle": "#242424",
-                "cal-bg-muted": "#000000", "cal-border": "#535762",
-                "cal-text": "#f2f5fc", "cal-text-muted": "#aeb5c5"
+            calLink: "peter-adetola-pwjdgz/15min",
+        });
+        Cal.ns["15min"]("ui", {
+            "hideEventTypeDetails": true,
+            "layout": "month_view",
+            "theme": theme,
+            "cssVarsPerTheme": {
+                "light": {
+                    "cal-brand":      "#383838",
+                    "cal-bg":         "#babec8",
+                    "cal-bg-subtle":  "#d8dde7",
+                    "cal-bg-muted":   "#989ba3",
+                    "cal-border":     "#8f93a1",
+                    "cal-text":       "#151617",
+                    "cal-text-muted": "#44474a"
+                },
+                "dark": {
+                    "cal-brand":      "#E6E200",
+                    "cal-bg":         "#141414",
+                    "cal-bg-subtle":  "#242424",
+                    "cal-bg-muted":   "#000000",
+                    "cal-border":     "#535762",
+                    "cal-text":       "#f2f5fc",
+                    "cal-text-muted": "#aeb5c5"
+                }
             }
-        }
+        });
+    }
+
+    // Init on page load with current theme
+    window.addEventListener('DOMContentLoaded', function () {
+        const currentTheme = localStorage.getItem("template.theme") ||
+            (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        initCal(currentTheme);
     });
 </script>
 <script>
@@ -519,27 +690,31 @@
 <x-cookie-consent />
 <script>
     (function () {
-        const header  = document.getElementById('header');
-        const contact = document.getElementById('contact');
-        if (!header || !contact) return;
+        const darkenHex = (hex, amount, opacity) => {
+            let c = hex.replace('#', '');
+            if (c.length === 3) c = c.split('').map(x => x + x).join('');
+            const num = parseInt(c, 16);
+            const r = Math.max(0, (num >> 16) - amount);
+            const g = Math.max(0, ((num >> 8) & 0xff) - amount);
+            const b = Math.max(0, (num & 0xff) - amount);
+            return `rgba(${r},${g},${b},${opacity})`;
+        };
 
-        // We only need to watch the TOP portion of #contact (the form zone,
-        // not the yellow CTA or the footer). A rootMargin trick lets us
-        // trigger when the header bar itself (~60px) enters the section.
-        const observer = new IntersectionObserver(
-            ([entry]) => {
-                header.classList.toggle('header--over-contact', entry.isIntersecting);
-            },
-            {
-                // Fire when the top of #contact crosses the bottom of the
-                // header bar. Adjust the negative top margin to match your
-                // actual fixed header height.
-                rootMargin: '-60px 0px 0px 0px',
-                threshold: 0,
-            }
-        );
+        document.querySelectorAll('.pf-grid__card').forEach(card => {
+            const stage  = card.querySelector('.pf-grid__stage');
+            const mockup = card.querySelector('.pf-grid__mockup, .pf-grid__mockup--video');
+            if (!stage || !mockup) return;
 
-        observer.observe(contact);
+            const hex = stage.dataset.color || '#e0e0e0';
+
+            const softOn  = darkenHex(hex, 60, 0.45);
+            const tightOn = darkenHex(hex, 80, 0.30);
+            const softOff  = darkenHex(hex, 60, 0);
+            const tightOff = darkenHex(hex, 80, 0);
+
+            mockup.style.setProperty('--shadow-on',  `0 0 32px 10px ${softOn}, 0 0 10px 2px ${tightOn}`);
+            mockup.style.setProperty('--shadow-off', `0 0 32px 10px ${softOff}, 0 0 10px 2px ${tightOff}`);
+        });
     })();
 </script>
 </body>
