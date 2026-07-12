@@ -235,21 +235,23 @@
                                                 </div>
                                                 <div class="col-12 col-xl-8">
                                                     <div class="pf-feedback">
-                                                        <div class="pf-feedback__avatar">
-                                                            @if (!empty($block['avatar']))
-                                                                <img src="{{ asset($block['avatar']) }}" alt="{{ $block['name'] }}">
-                                                            @else
-                                                                <span>{{ mb_strtoupper(mb_substr($block['name'], 0, 2)) }}</span>
-                                                            @endif
-                                                        </div>
-                                                        <div class="pf-feedback__body">
-                                                            <p class="pf-feedback__name">{{ $block['name'] }}</p>
-                                                            <p class="pf-feedback__role">{{ $block['role'] }}</p>
-                                                            <div class="pf-feedback__stars" aria-label="5 out of 5 stars">
-                                                                @for ($i = 0; $i < 5; $i++)<i class="ph-fill ph-star"></i>@endfor
+                                                        <div class="pf-feedback__header">
+                                                            <div class="pf-feedback__avatar">
+                                                                @if (!empty($block['avatar']))
+                                                                    <img src="{{ asset($block['avatar']) }}" alt="{{ $block['name'] }}">
+                                                                @else
+                                                                    <span>{{ mb_strtoupper(mb_substr($block['name'], 0, 2)) }}</span>
+                                                                @endif
                                                             </div>
-                                                            <p class="pf-feedback__quote">{{ $block['quote'] }}</p>
+                                                            <div class="pf-feedback__meta">
+                                                                <p class="pf-feedback__name">{{ $block['name'] }}</p>
+                                                                <p class="pf-feedback__role">{{ $block['role'] }}</p>
+                                                                <div class="pf-feedback__stars" aria-label="5 out of 5 stars">
+                                                                    @for ($i = 0; $i < 5; $i++)<i class="ph-fill ph-star"></i>@endfor
+                                                                </div>
+                                                            </div>
                                                         </div>
+                                                        <p class="pf-feedback__quote">{{ $block['quote'] }}</p>
                                                     </div>
                                                 </div>
                                             </div>

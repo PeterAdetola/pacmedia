@@ -102,7 +102,17 @@ class PortfolioController extends Controller
         $pageTitle = $project['title'];
         $pageIcon  = 'ph-briefcase';
 
-        return view('portfolio.show', compact('project', 'pageTitle', 'pageIcon'));
+        // OG meta for this project page
+        $metaTitle       = $project['title'] . ' — Pacmedia';
+        $metaDescription = $project['tagline'] ?? $project['brief_intro'] ?? null;
+        $metaOgImage     = $project['card_image']
+            ? asset($project['card_image'])
+            : asset('img/og-image.jpg');
+
+        return view('portfolio.show', compact(
+            'project', 'pageTitle', 'pageIcon',
+            'metaTitle', 'metaDescription', 'metaOgImage'
+        ));
     }
 
 

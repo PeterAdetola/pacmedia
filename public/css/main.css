@@ -8960,19 +8960,21 @@ body:has(#portfolio-detail) .bottom__background { display: none; }
     margin-top: 0;
     padding-top: 6rem;
     padding-bottom: 8rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
     border-top: 1px solid var(--stroke-elements);
 }
 
 #portfolio-detail .pf-feedback {
     display: flex;
-    gap: 2.4rem;
-    align-items: flex-start;
+    flex-direction: column;
+    gap: 1.4rem;
 }
 
 #portfolio-detail .pf-feedback__avatar {
-    width: 7.2rem;
-    height: 7.2rem;
-    border-radius: 50%;
+    width: 8.8rem;
+    height: 8.8rem;
+    border-radius: 1.4rem;
     background: var(--base-tint);
     display: flex;
     align-items: center;
@@ -8988,6 +8990,12 @@ body:has(#portfolio-detail) .bottom__background { display: none; }
     object-fit: cover; display: block;
 }
 
+#portfolio-detail .pf-feedback__meta {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
 #portfolio-detail .pf-feedback__name {
     font: normal var(--font-weight-medium) 1.7rem/1.2 var(--_font-default);
     color: var(--t-bright);
@@ -8997,20 +9005,44 @@ body:has(#portfolio-detail) .bottom__background { display: none; }
 #portfolio-detail .pf-feedback__role {
     font-size: 1.3rem;
     color: var(--t-muted);
-    margin: 0.4rem 0 0.8rem;
+    margin: 0;
 }
 
 #portfolio-detail .pf-feedback__stars {
     color: var(--_accent);
     font-size: 1.4rem;
     letter-spacing: 0.15rem;
+    margin-top: 0.4rem;
 }
 
 #portfolio-detail .pf-feedback__quote {
     font: normal var(--font-weight-base) 1.6rem/1.85 var(--_font-default);
     color: var(--t-medium);
-    margin: 1.8rem 0 0;
-    max-width: 60rem;
+    margin: 0;
+}
+
+/* Desktop — Option B: avatar left, meta beside */
+@media only screen and (min-width: 768px) {
+    #portfolio-detail .pf-feedback {
+        gap: 1.8rem;
+    }
+
+    #portfolio-detail .pf-feedback__header {
+        display: flex;
+        align-items: center;
+        gap: 1.8rem;
+    }
+
+    #portfolio-detail .pf-feedback__avatar {
+        width: 9.6rem;
+        height: 9.6rem;
+        border-radius: 1.6rem;
+        font-size: 2.2rem;
+    }
+
+    #portfolio-detail .pf-feedback__quote {
+        max-width: 60rem;
+    }
 }
 @media only screen and (max-width: 767px) {
     #portfolio-detail .pf-hero-bleed {

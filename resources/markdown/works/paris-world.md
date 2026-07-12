@@ -129,4 +129,4 @@ caption: Storefront signage
 
 name: "Paris World"
 role: "Owner"
-quote: "The new logo has become the face of the business. Customers notice it, staff wear it proudly, and it finally feels like a brand that matches the quality of what we sell."
+quote: "Every time I walk into our store, I still stare at the logo like it's brand new — even though it's been over a year. I'm proud of our new look. It's bold on our fascia, and it makes perfect sense on every surface it touches."

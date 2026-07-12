@@ -107,4 +107,4 @@ without leaving the dashboard.
 
 name: "Patrick Arabono"
 role: "General Manager"
-quote: "When I spoke to Peter about how the website should look, he said we will do something way better. I thought it was a hype until he presented the design — and he over delivered. The organisation is proud of our new look and customer relation has changed drastically for the better."
+quote: "When I spoke to Peter about how the website should look, he said we will do something way better. I thought it was a hype until he presented the design and he over delivered. The organisation is proud of our new look and customer relation has changed drastically for the better."

@@ -20,8 +20,8 @@
     <meta property="og:title" content="{{ $metaTitle ?? 'Pacmedia Creatives - Forging Identity. Engineering Digital Infrastructure' }}"/>
     <meta property="og:description" content="{{ $metaDescription ?? 'Forging Digital Prestige. We engineer high-performance brand identities and digital infrastructure for companies that refuse to blend in.' }}"/>
     <meta property="og:url" content="{{ url()->current() }}"/>
-    <meta property="og:image" content="{{ asset('img/og-image.jpg') }}"/>
-    <meta property="og:image:secure_url" content="{{ asset('img/og-image.jpg') }}"/>
+    <meta property="og:image" content="{{ $metaOgImage ?? asset('img/og-image.jpg') }}"/>
+    <meta property="og:image:secure_url" content="{{ $metaOgImage ?? asset('img/og-image.jpg') }}"/>
     <meta property="og:image:width" content="1200"/>
     <meta property="og:image:height" content="630"/>
     <meta property="og:image:alt" content="{{ $metaTitle ?? 'Pacmedia Creatives' }}"/>
@@ -30,7 +30,7 @@
     <meta name="twitter:card" content="summary_large_image"/>
     <meta name="twitter:title" content="{{ $metaTitle ?? 'Pacmedia Creatives - Forging Identity. Engineering Digital Infrastructure' }}"/>
     <meta name="twitter:description" content="{{ $metaDescription ?? 'Where brand identity is forged and mission-critical digital infrastructure is engineered.' }}"/>
-    <meta name="twitter:image" content="{{ asset('img/og-image.jpg') }}"/>
+    <meta name="twitter:image" content="{{ $metaOgImage ?? asset('img/og-image.jpg') }}"/>
     <meta name="twitter:image:alt" content="{{ $metaTitle ?? 'Pacmedia Creatives' }}"/>
 
     <script type="application/ld+json">
@@ -119,18 +119,6 @@
 
     </div>
 </div>
-{{-- Remove the orphaned #loader-fallback div entirely --}}
-{{--<div id="loader" class="loader">--}}
-{{--    <div class="loader__wrapper">--}}
-{{--        <div class="loader__content">--}}
-{{--            <div class="loader__count">--}}
-{{--                <span class="count__text">0</span>--}}
-{{--                <span class="count__percent">%</span>--}}
-{{--            </div>--}}
-{{--        </div>--}}
-{{--    </div>--}}
-{{--</div>--}}
-
 {{-- ================================================ --}}
 {{-- NAVBAR — home page only (desktop navbar) --}}
 {{-- Inner pages are handled exclusively inside --}}
