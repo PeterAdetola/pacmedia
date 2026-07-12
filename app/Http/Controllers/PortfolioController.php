@@ -103,9 +103,24 @@ class PortfolioController extends Controller
         $pageIcon  = 'ph-briefcase';
 
         // OG meta for this project page
-        $metaTitle       = $project['title'] . ' — Pacmedia';
-        $metaDescription = $project['tagline'] ?? $project['brief_intro'] ?? null;
-        $metaOgImage     = file_exists(public_path('img/works/' . $slug . '/card.jpg'))
+        $metaTitle = $project['title'] . ' — Pacmedia';
+
+        // Prefer the pullquote (the assignment) over the problem-statement intro
+        $metaDescription = $project['tagline'] ?? null;
+        if (empty($metaDescription)) {
+            foreach ($project['blocks'] as $block) {
+                if ($block['type'] === 'brief' && !empty($block['pullquote'])) {
+                    $metaDescription = $block['pullquote'];
+                    break;
+                }
+            }
+        }
+        $metaDescription = $metaDescription ?? $project['brief_intro'] ?? null;
+
+        // Case-insensitive card.jpg check (Linux servers are case-sensitive)
+        $cardJpgPath = public_path('img/works/' . $slug . '/card.jpg');
+        $cardJpgAlt  = public_path('img/works/' . $slug . '/card.JPG');
+        $metaOgImage = (file_exists($cardJpgPath) || file_exists($cardJpgAlt))
             ? asset('img/works/' . $slug . '/card.jpg')
             : asset('img/og-image.jpg');
 
