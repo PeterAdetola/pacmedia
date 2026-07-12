@@ -1,4 +1,4 @@
-● STATUS: CLIENT PORTAL // LAUNCHING Q2 2026
+● STATUS: FULLY BOOKED // NEXT OPENING Q3 2026
 ---
 Elevating Your Identity
 Performance Engineering
@@ -6,6 +6,6 @@ Automating Busywork
 Designing for Impact
 Accelerating Growth
 ---
-Forging Digital Prestige
+Built To Endure
 ---
 Start Engagement →

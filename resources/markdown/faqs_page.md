@@ -4,7 +4,7 @@
 WORKING WITH US
 ---
 How do I get started with Pacmedia?
-Everything begins with a Tactical Briefing — a consultation where we learn about your business, goals, and where you're headed. You can initiate this directly on the website. From there, if there's strategic alignment and your brief qualifies, we'll move forward with onboarding. We don't take on every project — we take on the right ones.
+Everything begins with a Tactical Briefing — a consultation where we learn about your business, goals, and where you're headed. You can initiate this directly on the website. From there, if it's the right fit, we'll move forward with onboarding. We don't take on every project — we take on the right ones.
 
 ---
 What makes you selective? How do you vet partners?

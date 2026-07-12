@@ -1,3 +1,3 @@
-Ready to deploy tactical solutions that actually convert? Submit a briefing below. Our squad evaluates every intake and initiates contact for qualified missions within 24 hours.
+Ready to build something that actually converts? Submit a briefing below and we'll get back to you within 24 hours.
 
-**Unsure of the scope?** Submit your current status. If there isn't a strategic alignment for a full deployment, we'll provide a candid assessment and redirect you to the right personnel. No wasted maneuvers.
+**Not sure of the scope yet?** Tell us where things stand. If it's not the right fit for a full project, we'll give you a straight answer and point you toward what might work better.

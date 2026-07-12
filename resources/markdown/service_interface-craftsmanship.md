@@ -1,6 +1,6 @@
 # 02 | Interface<br>Craftsmanship
 
-## Interfaces forged to embody your brand's essence while creating seamless experiences your audience instinctively understands.
+## Interfaces built to embody your brand's essence while creating experiences your audience understands instinctively.
 
 Your website is not a brochure. It is not a portfolio piece. It is your most active business asset — the one surface that works around the clock, carries your brand's full weight, and is responsible for turning interest into action.
 

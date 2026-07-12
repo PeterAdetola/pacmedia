@@ -1,9 +1,9 @@
-Pacmedia deploys tactical digital solutions for companies that refuse to blend in. We combine strategic positioning, performance engineering, and intelligent automation to create digital assets that dominate—not participate.
+Pacmedia builds brand identities and digital systems for companies with something real to say. We combine strategic positioning, considered design, and precision engineering to create work that performs, not just impresses.
 
-We're operational. While others are still building portfolios, our squad is executing: forging brand identities that command attention, engineering applications that convert relentlessly, and deploying AI systems that handle operations while you focus on conquest.
+We work in small numbers, by design. Our team builds brand identities that hold up under scrutiny, applications that convert without gimmicks, and AI systems that handle repetitive work — so our judgement stays where it matters.
 
-We're selective. Our capacity is intentionally limited. We work with ambitious founders, established brands ready to evolve, and companies that understand digital presence is competitive infrastructure—not decoration.
+We're selective. Our capacity is intentionally limited — we work with founders and established brands who take their identity seriously and see digital presence as infrastructure, not decoration.
 ---
 True craftsmen finish the back of the cabinet knowing no one will ever see it. The quality isn't for the audience—it's the standard.
 ---
-This is why we're selective: We can't scale craftsmanship without compromising it. Every project receives the same obsessive attention—from database architecture to button hover states. We work with the few who understand that what's invisible determines what's undeniable.
+This is why we stay selective: craftsmanship doesn't scale without losing something. Every project gets the same level of care — from database architecture down to button hover states. What's invisible is still built properly. That's the standard we hold.
