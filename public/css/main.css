@@ -9122,8 +9122,8 @@ body:has(#portfolio-detail) .bottom__background { display: none; }
 }
 
 #service-detail blockquote { padding-left: 0; }
-#service-detail .service-covers  { padding-left: 0; }
-#service-detail .service-process { padding-left: 0; }
+#service-detail .service-covers  { padding-left: 2rem; }
+#service-detail .service-process { padding-left: 2rem; }
 
 @media only screen and (min-width: 768px) {
     #service-detail .service-body,

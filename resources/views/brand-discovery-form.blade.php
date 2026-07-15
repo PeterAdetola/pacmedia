@@ -3,12 +3,12 @@
 @section('title', 'Brand Discovery — Pacmedia')
 
 {{-- OG tags passed into layouts.app via $metaOgImage / $metaTitle / $metaDescription --}}
+
 @php
-    $metaTitle       = 'Brand Discovery & Positioning — Pacmedia';
-    $metaDescription = 'A strategic questionnaire that aligns your brand\'s core positioning, visual tone, and audience profile before we begin creative work.';
+    $metaTitle       = $metaTitle       ?? 'Brand Discovery & Positioning — Pacmedia';
+    $metaDescription = $metaDescription ?? 'A strategic questionnaire that aligns your brand\'s core positioning, visual tone, and audience profile before we begin creative work.';
     $metaOgImage     = asset('img/og-image.jpg');
 @endphp
-
 @section('content')
 
     {{-- ============================================================

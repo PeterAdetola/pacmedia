@@ -25,6 +25,8 @@ class BrandDiscoveryController extends Controller
     }
 
     /** Token-based link — prefills known fields, tracks opens, blocks resubmission. */
+    // app/Http/Controllers/BrandDiscoveryController.php
+
     public function showByToken(string $token)
     {
         $discovery = BrandDiscovery::where('token', $token)->firstOrFail();
@@ -33,7 +35,6 @@ class BrandDiscoveryController extends Controller
             return view('brand-discovery.already-submitted', compact('discovery'));
         }
 
-        // Only flip sent -> opened once; don't touch it if it's already opened.
         if ($discovery->status === 'sent') {
             $discovery->update(['status' => 'opened', 'opened_at' => now()]);
         }
@@ -42,6 +43,13 @@ class BrandDiscoveryController extends Controller
             'clientToken' => $discovery->client_token,
             'discovery'   => $discovery,
             'linkToken'   => $token,
+            // Personalized OG data — overrides the defaults set inside the view
+            'metaTitle'       => $discovery->brand_name
+                ? "Brand Discovery — {$discovery->brand_name}"
+                : 'Brand Discovery & Positioning — Pacmedia',
+            'metaDescription' => $discovery->name
+                ? "A short questionnaire prepared for {$discovery->name} to align brand positioning before we begin creative work."
+                : 'A strategic questionnaire that aligns your brand\'s core positioning, visual tone, and audience profile before we begin creative work.',
         ]);
     }
 

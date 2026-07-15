@@ -425,3 +425,4 @@ body:has(#brand-discovery) .bottom__background { display: none; }
     background: var(--bd-surface); border: 1px solid var(--bd-stroke-light);
     font-size: 1.4rem; line-height: 1.6; margin-bottom: 2rem;
 }
+
