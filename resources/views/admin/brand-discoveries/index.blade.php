@@ -253,6 +253,8 @@
                                         @endif
                                         @if($d->isExpired())
                                             <li><button type="button" class="dropdown-item bd-renew-btn" data-id="{{ $d->id }}"><i class="ri ri-refresh-line"></i> Renew Link</button></li>
+                                        @elseif(!$d->isSubmitted() && $d->token)
+                                            <li><button type="button" class="dropdown-item bd-expire-btn" data-id="{{ $d->id }}"><i class="ri ri-time-line"></i> Expire Now</button></li>
                                         @endif
                                         <li><hr class="dropdown-divider"></li>
                                         <li><button type="button" class="dropdown-item text-danger bd-delete-btn" data-id="{{ $d->id }}"><i class="ri ri-delete-bin-line"></i> Delete</button></li>
@@ -324,6 +326,31 @@
 
     @push('page-js')
         <script>
+            $(document).on('click', '.bd-expire-btn', function () {
+                const id = $(this).data('id');
+
+                Pac.confirm({
+                    title:   'Expire this link now?',
+                    message: 'The client won\'t be able to open it until you renew it.',
+                    confirm: 'Expire Now',
+                    type:    'warning',
+                }).then(() => {
+                    $.ajax({
+                        url: `/admin/brand-discoveries/${id}/expire`,
+                        method: 'POST',
+                        data: { _token: '{{ csrf_token() }}', _method: 'PATCH' },
+                        success: function (res) {
+                            if (res.success) {
+                                Pac.toast.success(res.message);
+                                setTimeout(() => location.reload(), 700);
+                            } else {
+                                Pac.toast.error(res.message);
+                            }
+                        },
+                        error: () => Pac.toast.error('Could not expire link.')
+                    });
+                });
+            });
 
             $(document).on('click', '.bd-renew-btn', function () {
                 const id = $(this).data('id');

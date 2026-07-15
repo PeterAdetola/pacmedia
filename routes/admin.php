@@ -121,6 +121,8 @@ Route::prefix('brand-discoveries')->name('admin.brand-discoveries.')->group(func
     Route::delete('/{brandDiscovery}',    [BrandDiscoveryController::class, 'destroy'])        ->name('destroy');
     Route::post('/create-link', [BrandDiscoveryController::class, 'createLink'])->name('create-link');
     Route::patch('/{brandDiscovery}/renew', [BrandDiscoveryController::class, 'renew'])->name('renew');
+    Route::patch('/{brandDiscovery}/expire', [BrandDiscoveryController::class, 'expireNow'])->name('expire');
+
 });
 
 // ── Session keepalive ──────────────────────────────────────────────────

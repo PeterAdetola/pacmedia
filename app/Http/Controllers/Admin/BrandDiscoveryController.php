@@ -95,6 +95,30 @@ class BrandDiscoveryController extends Controller
         ]);
     }
 
+    public function expireNow(BrandDiscovery $brandDiscovery)
+    {
+        if (!$brandDiscovery->token) {
+            return response()->json(['success' => false, 'message' => 'This submission has no link to expire.'], 422);
+        }
+
+        if ($brandDiscovery->isSubmitted()) {
+            return response()->json(['success' => false, 'message' => 'This link was already submitted — nothing to expire.'], 422);
+        }
+
+        if ($brandDiscovery->isExpired()) {
+            return response()->json(['success' => false, 'message' => 'This link is already expired.'], 422);
+        }
+
+        $brandDiscovery->update([
+            'expires_at' => now()->subMinute(),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Link expired. It can be renewed anytime.',
+        ]);
+    }
+
     public function renew(BrandDiscovery $brandDiscovery)
     {
         if (!$brandDiscovery->token) {
