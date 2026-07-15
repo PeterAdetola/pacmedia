@@ -112,6 +112,19 @@
             <span class="menu-header-text">Communication</span>
         </li>
 
+        {{-- ─── Brand Discoveries ───────────────────────────────────── --}}
+        <li class="menu-item {{ request()->routeIs('admin.brand-discoveries.*') ? 'active' : '' }}">
+            <a href="{{ route('admin.brand-discoveries.index') }}" class="menu-link">
+                <i class="menu-icon icon-base ri ri-compass-3-line"></i>
+                <div data-i18n="Brand Discoveries">Brand Discoveries</div>
+                {{-- Optional new-submission badge --}}
+                @php($newCount = \App\Models\BrandDiscovery::where('status','new')->count())
+                @if($newCount)
+                    <span class="badge badge-center rounded-pill bg-danger ms-auto">{{ $newCount }}</span>
+                @endif
+            </a>
+        </li>
+
         {{-- ─── Inbox ───────────────────────────────────────────── --}}
         <li class="menu-item {{ request()->routeIs('admin.inbox.*') ? 'active' : '' }}">
             <a href="{{ route('admin.inbox.index') }}" class="menu-link">

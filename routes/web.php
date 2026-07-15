@@ -6,6 +6,7 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\PortfolioController;
 use App\Http\Controllers\LlmsFullController;
+use App\Http\Controllers\BrandDiscoveryController;
 
 // ── Llms Controller ────────────────────────────────
 Route::get('/llms-full.txt', [LlmsFullController::class, 'index']);
@@ -57,6 +58,25 @@ Route::get('/privacy', [App\Http\Controllers\LegalController::class, 'privacy'])
 Route::post('/contact', [App\Http\Controllers\ContactController::class, 'submit'])
     ->name('contact.submit')
     ->middleware('throttle:6,1');
+
+Route::get('/brand-discovery', [BrandDiscoveryController::class, 'show'])
+    ->name('brand-discovery.show');
+
+Route::post('/brand-discovery/submit', [BrandDiscoveryController::class, 'store'])
+    ->middleware('throttle:6,1') // basic spam guard: 6 submits/min per IP
+    ->name('brand-discovery.submit');
+
+// ── Brand Discovery ──────────────────────────────────────────────────────────────
+Route::get('/brand-discovery', [BrandDiscoveryController::class, 'show'])
+    ->name('brand-discovery.show');
+
+// Token-based prefilled link
+Route::get('/brand-discovery/link/{token}', [BrandDiscoveryController::class, 'showByToken'])
+    ->name('brand-discovery.show-token');
+
+Route::post('/brand-discovery/submit', [BrandDiscoveryController::class, 'store'])
+    ->middleware('throttle:6,1')
+    ->name('brand-discovery.submit');
 
 // ── Dashboard (auth + verified + approved) ────────────────────────────────────
 Route::get('/dashboard', function () {

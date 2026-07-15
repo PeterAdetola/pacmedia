@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\LogController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\MailComposerController;
 use App\Http\Controllers\Admin\UserApprovalController;
+use App\Http\Controllers\Admin\BrandDiscoveryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -111,6 +112,15 @@ Route::prefix('settings')->name('admin.settings.')->group(function () {
 // ── Mail Composer ──────────────────────────────────────────────────────
 Route::get( '/mail/compose', [MailComposerController::class, 'index'])->name('admin.mail.compose');
 Route::post('/mail/compose', [MailComposerController::class, 'send'])->name('admin.mail.send');
+
+// ── Brand Discoveries ──────────────────────────────────────────────────
+Route::prefix('brand-discoveries')->name('admin.brand-discoveries.')->group(function () {
+    Route::get('/',                       [BrandDiscoveryController::class, 'index'])        ->name('index');
+    Route::get('/{brandDiscovery}',       [BrandDiscoveryController::class, 'show'])          ->name('show');
+    Route::patch('/{brandDiscovery}/status', [BrandDiscoveryController::class, 'updateStatus'])->name('status');
+    Route::delete('/{brandDiscovery}',    [BrandDiscoveryController::class, 'destroy'])        ->name('destroy');
+    Route::post('/create-link', [BrandDiscoveryController::class, 'createLink'])->name('create-link');
+});
 
 // ── Session keepalive ──────────────────────────────────────────────────
 Route::post('/ping', fn() => response()->noContent())->name('admin.ping');

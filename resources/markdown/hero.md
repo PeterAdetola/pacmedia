@@ -1,4 +1,4 @@
-● STATUS: FULLY BOOKED // NEXT OPENING Q3 2026
+
 ---
 Elevating Your Identity
 Performance Engineering
