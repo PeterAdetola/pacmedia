@@ -35,6 +35,10 @@ class BrandDiscoveryController extends Controller
             return view('brand-discovery.already-submitted', compact('discovery'));
         }
 
+        if ($discovery->isExpired()) {
+            return view('brand-discovery.expired', compact('discovery'));
+        }
+
         if ($discovery->status === 'sent') {
             $discovery->update(['status' => 'opened', 'opened_at' => now()]);
         }
@@ -81,6 +85,10 @@ class BrandDiscoveryController extends Controller
                     'success' => false,
                     'message' => 'This link has already been used or is invalid.',
                 ], 409);
+            }
+
+            if ($discovery->isExpired()) {
+                return response()->json(['success' => false, 'message' => 'This link has expired. Please ask us for a new one.'], 410);
             }
 
             $discovery->update($data);

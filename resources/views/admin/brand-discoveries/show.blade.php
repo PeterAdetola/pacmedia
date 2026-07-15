@@ -198,6 +198,11 @@
                                 <i class="ri ri-archive-line"></i> Archive
                             </button>
                         @endif
+                        @if($discovery->isExpired())
+                            <button type="button" class="btn btn-sm btn-outline-primary bd-renew-btn" data-id="{{ $discovery->id }}">
+                                <i class="ri ri-refresh-line"></i> Renew Link
+                            </button>
+                        @endif
                         <button type="button" class="btn btn-sm btn-outline-danger bd-delete-btn" data-id="{{ $discovery->id }}">
                             <i class="ri ri-delete-bin-line"></i> Delete Submission
                         </button>

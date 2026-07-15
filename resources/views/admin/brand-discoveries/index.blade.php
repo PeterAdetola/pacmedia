@@ -228,7 +228,13 @@
                         <td class="col-industry"><span style="font-weight:500;color:#4b5563;">{{ $d->industry ?: '—' }}</span></td>
                         <td class="col-urgency"><span class="bd-sub" style="font-size:.78rem;color:#6b7280;">{{ $d->urgency ?: '—' }}</span></td>
                         <td class="col-date"><div class="bd-date">{{ $d->created_at->format('d M, Y') }}</div></td>
-                        <td><span class="pac-pill p-{{ $d->status }}">{{ ucfirst($d->status) }}</span></td>
+                        <td>
+                            @if($d->isExpired())
+                                <span class="pac-pill" style="background:rgba(107,114,128,.1);color:#6b7280;">Expired</span>
+                            @else
+                                <span class="pac-pill p-{{ $d->status }}">{{ ucfirst($d->status) }}</span>
+                            @endif
+                        </td>
                         <td class="text-end" style="padding-right:1.25rem;">
                             <div class="d-inline-flex gap-1">
                                 <a href="{{ route('admin.brand-discoveries.show', $d) }}" class="bd-act-btn" title="View">
@@ -244,6 +250,9 @@
                                         @endif
                                         @if($d->status !== 'archived')
                                             <li><button type="button" class="dropdown-item bd-status-btn" data-id="{{ $d->id }}" data-status="archived"><i class="ri ri-archive-line"></i> Archive</button></li>
+                                        @endif
+                                        @if($d->isExpired())
+                                            <li><button type="button" class="dropdown-item bd-renew-btn" data-id="{{ $d->id }}"><i class="ri ri-refresh-line"></i> Renew Link</button></li>
                                         @endif
                                         <li><hr class="dropdown-divider"></li>
                                         <li><button type="button" class="dropdown-item text-danger bd-delete-btn" data-id="{{ $d->id }}"><i class="ri ri-delete-bin-line"></i> Delete</button></li>
@@ -315,6 +324,26 @@
 
     @push('page-js')
         <script>
+
+            $(document).on('click', '.bd-renew-btn', function () {
+                const id = $(this).data('id');
+
+                $.ajax({
+                    url: `/admin/brand-discoveries/${id}/renew`,
+                    method: 'POST',
+                    data: { _token: '{{ csrf_token() }}', _method: 'PATCH' },
+                    success: function (res) {
+                        if (res.success) {
+                            Pac.toast.success(res.message);
+                            setTimeout(() => location.reload(), 700);
+                        } else {
+                            Pac.toast.error(res.message);
+                        }
+                    },
+                    error: () => Pac.toast.error('Could not renew link.')
+                });
+            });
+
             $(document).on('click', '.bd-status-btn', function () {
                 const id     = $(this).data('id');
                 const status = $(this).data('status');

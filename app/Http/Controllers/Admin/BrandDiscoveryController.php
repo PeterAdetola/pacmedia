@@ -63,6 +63,7 @@ class BrandDiscoveryController extends Controller
             'client_token' => $request->client_token,
             'token'        => BrandDiscovery::generateToken(),
             'status'       => 'sent',
+            'expires_at'   => now()->addDays(BrandDiscovery::DEFAULT_EXPIRY_DAYS),
         ]);
 
         return response()->json([
@@ -91,6 +92,26 @@ class BrandDiscoveryController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Submission deleted.',
+        ]);
+    }
+
+    public function renew(BrandDiscovery $brandDiscovery)
+    {
+        if (!$brandDiscovery->token) {
+            return response()->json(['success' => false, 'message' => 'This submission has no link to renew.'], 422);
+        }
+
+        if ($brandDiscovery->isSubmitted()) {
+            return response()->json(['success' => false, 'message' => 'This link was already submitted — use Reopen instead.'], 422);
+        }
+
+        $brandDiscovery->update([
+            'expires_at' => now()->addDays(BrandDiscovery::DEFAULT_EXPIRY_DAYS),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Link renewed for another ' . BrandDiscovery::DEFAULT_EXPIRY_DAYS . ' days.',
         ]);
     }
 }

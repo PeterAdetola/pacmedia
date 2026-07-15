@@ -14,7 +14,7 @@ class BrandDiscovery extends Model
         'brand_description', 'existing_brand', 'persona', 'age_min', 'age_max',
         'profile', 'traits', 'colour', 'typography', 'touchpoints',
         'competitors', 'differentiator', 'admired', 'five_year', 'urgency',
-        'anything_else', 'status', 'ip_address', 'user_agent',
+        'anything_else', 'status', 'ip_address', 'user_agent', 'expires_at',
     ];
 
     protected $casts = [
@@ -27,6 +27,7 @@ class BrandDiscovery extends Model
         'age_max'      => 'integer',
         'opened_at'    => 'datetime',
         'submitted_at' => 'datetime',
+        'expires_at'   => 'datetime',
     ];
 
     public const TRAIT_KEYS = [
@@ -68,5 +69,15 @@ class BrandDiscovery extends Model
         } while (self::where('token', $token)->exists());
 
         return $token;
+    }
+
+    /** How long a generated link stays valid before it's considered stale. */
+    public const DEFAULT_EXPIRY_DAYS = 7;
+
+    public function isExpired(): bool
+    {
+        return $this->expires_at !== null
+            && $this->expires_at->isPast()
+            && !$this->isSubmitted();   // a submitted link is never "expired" — it's just locked
     }
 }
