@@ -113,9 +113,4 @@ caption: Website
 
 name: "Enamux Limited"
 role: "Client"
-quote: "I put Peter through a rigorous discovery phase but he was 100% all
-through — from the moodboard selection, going through 3 logo concepts until
-I opened up to him about the foundation of civil engineering — trusses. He
-came up with a remarkable brand mark and I was like, that's it. Coupled with
-web design that looks tailor-made with our new brand mark. All our
-stakeholders acknowledge Pacmedia's services as top-notch."
+quote: "I put Peter through a rigorous discovery phase, and he was fully committed every step of the way — from moodboard selection through three logo concepts, until I shared with him the foundation of civil engineering: trusses. He came back with a remarkable brand mark, and I knew instantly: that's it! Paired with a web design that feels tailor-made for our new brand identity, the result speaks for itself. All our stakeholders agree — Pacmedia's services are top-notch."
