@@ -4,7 +4,7 @@ client: "Paris World Boutique"
 service: "Visual Brand Identity"
 industry: "Retail & Fashion"
 type: "brand"
-order: 2
+order: 3
 hero: "img/works/paris-world/hero.webp"
 hero_mobile: "img/works/paris-world/hero-mobile.webp"
 card_color: "#fff100"

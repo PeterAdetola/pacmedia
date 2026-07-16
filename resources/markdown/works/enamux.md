@@ -5,6 +5,7 @@ service: "Visual Brand Identity & Web development"
 industry: "Structural Engineering"
 year: "2024"
 type: "brand"
+order: 1
 live_url: "https://enamux.com"
 live_url_label: "Visit website"
 hero: "img/works/enamux/hero.webp"
@@ -14,9 +15,9 @@ card_text_color: "light"
 card_image: "img/works/enamux/card.webp"
 card_service:
     - "Visual Brand Identity"
-overview: "Enamux Limited is a structural engineering firm whose dated monogram
-had outgrown the business it represented. What came out the other side was a
-mark rooted in trusses — the foundational geometry of their own discipline."
+overview: "Enamux Consulting Engineers is a structural engineering firm whose business had
+outgrown its dated monogram. What came out the other side was a mark rooted
+in trusses — the foundational geometry of their own discipline"
 ---
 
 ## Brief
@@ -45,9 +46,9 @@ caption: Before & after
 ## Process
 
 Three logo concepts were developed and set aside. Then the client introduced
-a concept new to the designer entirely: trusses. Three days of research into
+a concept new to the designer entirely: trusses. Time was committed researching into
 structural engineering principles later, the mark came back rooted in the
-client's own industry language — the A/M letterforms resolving into a truss
+client's own industry language — the NAM letterforms resolving into a truss
 node, the geometry that holds structures together.
 
 <!-- ─── CONCEPT ──────────────────────────────────────────────────────────── -->

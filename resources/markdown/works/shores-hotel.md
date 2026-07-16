@@ -4,7 +4,7 @@ client: "Shores Hotel"
 service: "Web Design & Development"
 industry: "Hospitality"
 type: "webdev"
-order: 1
+order: 2
 hero: "img/works/shores-hotel/hero.webp"
 hero_mobile: "img/works/shores-hotel/hero-mobile.webp"
 card_color: "#fea930"

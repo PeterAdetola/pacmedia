@@ -4,7 +4,7 @@ client: "Jupiter Corporate Services"
 service: "Brand Identity & Web developments"
 industry: "Corporate Services"
 type: "brand"
-order: 3
+order: 4
 hero: "img/works/jupiter-corporate/hero.webp"
 hero_mobile: "img/works/jupiter-corporate/hero-mobile.webp"
 overview: "A mark that encodes three initials and a scrolled document in a single calligraphic form — then a website built to convert serious business owners into consultation bookings."
