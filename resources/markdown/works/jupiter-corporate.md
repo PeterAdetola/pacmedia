@@ -1,7 +1,7 @@
 ---
 title: "Jupiter Corporate"
 client: "Jupiter Corporate Services"
-service: "Brand Identity & Web"
+service: "Brand Identity & Web developments"
 industry: "Corporate Services"
 type: "brand"
 order: 3

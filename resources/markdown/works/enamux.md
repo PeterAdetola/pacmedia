@@ -1,7 +1,7 @@
 ---
-title: "Enamux Limited"
-client: "Enamux Limited"
-service: "Visual Brand Identity"
+title: "Enamux"
+client: "Enamux"
+service: "Visual Brand Identity & Web development"
 industry: "Structural Engineering"
 year: "2024"
 type: "brand"
@@ -9,22 +9,21 @@ live_url: "https://enamux.com"
 live_url_label: "Visit website"
 hero: "img/works/enamux/hero.webp"
 hero_mobile: "img/works/enamux/hero-mobile.webp"
-card_color: "#253855"
+card_color: "#b09c83"
 card_text_color: "light"
 card_image: "img/works/enamux/card.webp"
 card_service:
     - "Visual Brand Identity"
-overview: "Enamux Limited is a structural engineering firm with no visual identity
-before this engagement — and a client who had been burned before. What came out
-the other side was a mark rooted in trusses, the foundational geometry of their
-own discipline."
+overview: "Enamux Limited is a structural engineering firm whose dated monogram
+had outgrown the business it represented. What came out the other side was a
+mark rooted in trusses — the foundational geometry of their own discipline."
 ---
 
 ## Brief
 
-Enamux Limited came in with no visual identity — no logo, no system, nothing
-to put in front of clients or stakeholders. The firm needed a mark that could
-hold up in a sector where credibility is read before a word is spoken.
+The existing mark — a decorative E monogram in an ornate frame — carried
+none of the precision or authority the firm had built. In structural
+engineering, credibility is read before a word is spoken.
 
 ---
 
@@ -33,9 +32,8 @@ not a generic professional mark, but something rooted in the discipline itself.
 
 ---
 
-Getting it wrong wasn't an option. The client had been defrauded on a previous
-technology project and arrived with high standards and hard-earned caution.
-The work had to earn trust before it earned approval.
+Some briefs resolve quickly. This one demanded patience — three concepts
+explored and set aside before the right question surfaced the right answer.
 
 <!-- ─── OLD & NEW LOGO ─────────────────────────────────────────────────── -->
 
@@ -46,11 +44,11 @@ caption: Before & after
 
 ## Process
 
-Three logo concepts were developed and rejected. Then the client introduced
-a concept the designer had never worked with before: trusses. Three days of
-research into structural engineering principles later, the mark came back
-rooted in the client's own industry language — the A/M letterforms resolving
-into a truss node, the geometry that holds structures together.
+Three logo concepts were developed and set aside. Then the client introduced
+a concept new to the designer entirely: trusses. Three days of research into
+structural engineering principles later, the mark came back rooted in the
+client's own industry language — the A/M letterforms resolving into a truss
+node, the geometry that holds structures together.
 
 <!-- ─── CONCEPT ──────────────────────────────────────────────────────────── -->
 
