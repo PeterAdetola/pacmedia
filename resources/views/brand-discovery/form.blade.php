@@ -72,6 +72,11 @@
                                         </div>
                                     </div>
 
+                                    <div class="bd-slider-hint">
+                                        <i class="ph ph-info"></i>
+                                        Not sure how to use the sliders? Skip them and describe your brand in your own words in the "Anything Else" section below — we'll translate it ourselves.
+                                    </div>
+
                                     <div class="bd-grid-2">
                                         <div class="bd-field">
                                             <label class="bd-field__label" for="name">Full Name *</label>

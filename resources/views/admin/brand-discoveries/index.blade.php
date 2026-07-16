@@ -256,6 +256,9 @@
                                         @elseif(!$d->isSubmitted() && $d->token)
                                             <li><button type="button" class="dropdown-item bd-expire-btn" data-id="{{ $d->id }}"><i class="ri ri-time-line"></i> Expire Now</button></li>
                                         @endif
+                                        @if($d->isSubmitted())
+                                            <li><a class="dropdown-item" href="{{ route('admin.brand-discoveries.edit', $d) }}"><i class="ri ri-edit-2-line"></i> Translate/Edit</a></li>
+                                        @endif
                                         <li><hr class="dropdown-divider"></li>
                                         <li><button type="button" class="dropdown-item text-danger bd-delete-btn" data-id="{{ $d->id }}"><i class="ri ri-delete-bin-line"></i> Delete</button></li>
                                     </ul>

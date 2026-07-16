@@ -15,6 +15,7 @@ class BrandDiscovery extends Model
         'profile', 'traits', 'colour', 'typography', 'touchpoints',
         'competitors', 'differentiator', 'admired', 'five_year', 'urgency',
         'anything_else', 'status', 'ip_address', 'user_agent', 'expires_at',
+        'admin_adjusted', 'admin_adjusted_at', 'original_submission',
     ];
 
     protected $casts = [
@@ -28,6 +29,9 @@ class BrandDiscovery extends Model
         'opened_at'    => 'datetime',
         'submitted_at' => 'datetime',
         'expires_at'   => 'datetime',
+        'admin_adjusted'      => 'boolean',
+        'admin_adjusted_at'   => 'datetime',
+        'original_submission' => 'array',
     ];
 
     public const TRAIT_KEYS = [
@@ -72,12 +76,26 @@ class BrandDiscovery extends Model
     }
 
     /** How long a generated link stays valid before it's considered stale. */
-    public const DEFAULT_EXPIRY_DAYS = 7;
+    public const DEFAULT_EXPIRY_DAYS = 1;
 
     public function isExpired(): bool
     {
         return $this->expires_at !== null
             && $this->expires_at->isPast()
             && !$this->isSubmitted();   // a submitted link is never "expired" — it's just locked
+    }
+
+    /** Snapshot the client's raw submission the first time it's ever edited. Idempotent. */
+    public function snapshotOriginalIfNeeded(): void
+    {
+        if ($this->original_submission !== null) {
+            return; // already snapshotted — never overwrite it again
+        }
+
+        $this->original_submission = $this->only([
+            'persona', 'traits', 'colour', 'typography', 'touchpoints',
+            'competitors', 'differentiator', 'admired', 'five_year', 'anything_else',
+        ]);
+        $this->save();
     }
 }

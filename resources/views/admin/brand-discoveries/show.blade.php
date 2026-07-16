@@ -207,6 +207,11 @@
                                 <i class="ri ri-time-line"></i> Expire Now
                             </button>
                         @endif
+                        @if($discovery->admin_adjusted)
+                            <span class="pac-pill" style="background:rgba(59,130,246,.1);color:#1d4ed8;margin-left:.5rem;">
+                                Adjusted {{ $discovery->admin_adjusted_at->diffForHumans() }}
+                            </span>
+                        @endif
                         <button type="button" class="btn btn-sm btn-outline-danger bd-delete-btn" data-id="{{ $discovery->id }}">
                             <i class="ri ri-delete-bin-line"></i> Delete Submission
                         </button>

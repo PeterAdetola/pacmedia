@@ -425,4 +425,12 @@ body:has(#brand-discovery) .bottom__background { display: none; }
     background: var(--bd-surface); border: 1px solid var(--bd-stroke-light);
     font-size: 1.4rem; line-height: 1.6; margin-bottom: 2rem;
 }
-
+#brand-discovery .bd-slider-hint {
+    display: flex; align-items: flex-start; gap: 0.8rem;
+    background: color-mix(in srgb, var(--t-bright) 5%, transparent);
+    border: 1px solid var(--bd-stroke-light);
+    border-radius: var(--bd-radius-s);
+    padding: 1.2rem 1.6rem; margin-bottom: 2.4rem;
+    font-size: 1.3rem; line-height: 1.5; color: var(--t-muted);
+}
+#brand-discovery .bd-slider-hint i { font-size: 1.6rem; color: var(--t-muted); flex-shrink: 0; margin-top: 0.1rem; }

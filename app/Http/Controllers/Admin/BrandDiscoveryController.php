@@ -138,4 +138,47 @@ class BrandDiscoveryController extends Controller
             'message' => 'Link renewed for another ' . BrandDiscovery::DEFAULT_EXPIRY_DAYS . ' days.',
         ]);
     }
+
+    public function edit(BrandDiscovery $brandDiscovery)
+    {
+        if (!$brandDiscovery->isSubmitted()) {
+            return redirect()
+                ->route('admin.brand-discoveries.show', $brandDiscovery)
+                ->with('error', 'This form hasn\'t been submitted yet — nothing to translate.');
+        }
+
+        return view('admin.brand-discoveries.edit', ['discovery' => $brandDiscovery]);
+    }
+
+    public function update(Request $request, BrandDiscovery $brandDiscovery)
+    {
+        $validated = $request->validate([
+            'colour'        => 'nullable|array',
+            'colour.*'      => 'string|max:255',
+            'typography'    => 'nullable|array',
+            'typography.*'  => 'string|max:255',
+        ]);
+
+        foreach (BrandDiscovery::TRAIT_KEYS as $key) {
+            $validated[$key] = $request->input($key, 0);
+        }
+
+        // Snapshot BEFORE we touch anything — captures exactly what the client wrote.
+        $brandDiscovery->snapshotOriginalIfNeeded();
+
+        $traits = [];
+        foreach (BrandDiscovery::TRAIT_KEYS as $key) {
+            $traits[$key] = (int) ($validated[$key] ?? 0);
+            unset($validated[$key]);
+        }
+        $validated['traits'] = $traits;
+        $validated['admin_adjusted']    = true;
+        $validated['admin_adjusted_at'] = now();
+
+        $brandDiscovery->update($validated);
+
+        return redirect()
+            ->route('admin.brand-discoveries.show', $brandDiscovery)
+            ->with('success', 'Discovery updated — client\'s original wording preserved.');
+    }
 }

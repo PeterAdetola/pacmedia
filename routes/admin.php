@@ -122,7 +122,8 @@ Route::prefix('brand-discoveries')->name('admin.brand-discoveries.')->group(func
     Route::post('/create-link', [BrandDiscoveryController::class, 'createLink'])->name('create-link');
     Route::patch('/{brandDiscovery}/renew', [BrandDiscoveryController::class, 'renew'])->name('renew');
     Route::patch('/{brandDiscovery}/expire', [BrandDiscoveryController::class, 'expireNow'])->name('expire');
-
+    Route::get('/{brandDiscovery}/edit', [BrandDiscoveryController::class, 'edit'])->name('edit');
+    Route::put('/{brandDiscovery}', [BrandDiscoveryController::class, 'update'])->name('update');
 });
 
 // ── Session keepalive ──────────────────────────────────────────────────
