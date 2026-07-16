@@ -7,7 +7,9 @@ type: "brand"
 order: 4
 hero: "img/works/jupiter-corporate/hero.webp"
 hero_mobile: "img/works/jupiter-corporate/hero-mobile.webp"
-overview: "A mark that encodes three initials and a scrolled document in a single calligraphic form — then a website built to convert serious business owners into consultation bookings."
+overview: "A mark that encodes three initials and a scrolled document in a
+single calligraphic form — then a website built to convert serious business
+owners into consultation bookings."
 card_color: "#0a1628"
 card_text_color: "light"
 card_image: "img/works/jupiter-corporate/card.webp"
@@ -36,6 +38,10 @@ Build a mark that means something — then build the platform to carry it.
 
 ---
 
+A corporate services firm lives or dies on first impressions. The identity
+had to signal competence before a client read a single word — and the
+website had to turn that signal into a booked consultation.
+
 ::image
 src: img/works/jupiter-corporate/old-new-logo.webp
 caption: Before & after
@@ -48,11 +54,11 @@ caption: Concept exploration
 
 ## Process
 
-The mark started on paper with a single question: what does Jupiter
-Corporate Services actually do? It files documents. It creates legal
-entities. It turns intention into registration. The answer became the logo —
-a fluid, calligraphic J-mark that encodes all three initials and reads as a
-scrolled document on closer inspection.
+We started with a single question: what does Jupiter Corporate Services
+actually do? It files documents. It creates legal entities. It turns
+intention into registration. The answer became the logo — a fluid,
+calligraphic J-mark that encodes all three initials and reads as a scrolled
+document on closer inspection.
 
 ::image
 src: img/works/jupiter-corporate/construction.webp
@@ -112,8 +118,13 @@ hero: "img/works/jupiter-corporate/jl-hero.webp"
 hero_mobile: "img/works/jupiter-corporate/jl-hero-mobile.webp"
 live_url: "https://thejupiterlegal.com"
 live_url_label: "Visit website"
-description: "A year after Jupiter Corporate, the same client returned with a new brief — a separate legal practice built on the same J-mark. Gold replaced orange. The weight deepened. The website shifted from energetic dark tones to a refined, counsel-grade register."
-colour_note: "Where Corporate is orange, Legal is gold — the right signal for a practice advising on banking, fintech, real estate, and public sector mandates."
+description: "A year after Jupiter Corporate, the same client returned with
+a new brief — a separate legal practice built on the same J-mark. Gold
+replaced orange. The weight deepened. The website shifted from energetic
+dark tones to a refined, counsel-grade register."
+colour_note: "Where Corporate is orange, Legal is gold — the right signal
+for a practice advising on banking, fintech, real estate, and public sector
+mandates."
 
 ::image
 src: img/works/jupiter-corporate/jl-color-palette.webp
@@ -148,6 +159,7 @@ caption: Legal — brand collateral
 
 ## Feedback
 
-name: "Jupiter Corporate Services"
-role: "Client"
-quote: "I love the simplicity of our logo — unlike the brand mark we outgrew. I couldn't change it even for the sister brand. Peter did an excellent work on Jupiter Corporate and when I came back for the sister brand, it was beyond what I anticipated. Pacmedia are the masters of their craft."
+name: "Enore Sandra Olu-Ayoola. Esq"
+role: "Founder"
+avatar: "img/works/jupiter-corporate/client.webp"
+quote: "I love the simplicity of our logo — such a contrast to the brand mark we outgrew. I wouldn't change a thing about it, not even for our sister brand. Peter did an excellent job on Jupiter Corporate, and when we returned for the sister brand, he exceeded expectations yet again. Pacmedia are truly masters of their craft."

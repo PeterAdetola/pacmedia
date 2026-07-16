@@ -15,9 +15,9 @@ card_text_color: "light"
 card_image: "img/works/enamux/card.webp"
 card_service:
     - "Visual Brand Identity"
-overview: "Enamux Consulting Engineers is a structural engineering firm whose business had
-outgrown its dated monogram. What came out the other side was a mark rooted
-in trusses — the foundational geometry of their own discipline"
+overview: "Enamux Consulting Engineers is a structural engineering firm whose
+business had outgrown its dated monogram. What came out the other side was a
+mark rooted in trusses — the foundational geometry of their own discipline."
 ---
 
 ## Brief
@@ -46,10 +46,10 @@ caption: Before & after
 ## Process
 
 Three logo concepts were developed and set aside. Then the client introduced
-a concept new to the designer entirely: trusses. Time was committed researching into
-structural engineering principles later, the mark came back rooted in the
-client's own industry language — the NAM letterforms resolving into a truss
-node, the geometry that holds structures together.
+us to a concept we had never worked with before: trusses. We committed time
+to researching structural engineering principles before returning with a mark
+rooted in the client's own industry language — the NAM letterforms resolving
+into a truss node, the geometry that holds structures together.
 
 <!-- ─── CONCEPT ──────────────────────────────────────────────────────────── -->
 
@@ -88,29 +88,35 @@ caption: Logo variants
 
 ## Outcome
 
-The client shared the completed work with technology professionals in his
-network unprompted. Their response was unanimous. The brand now lives at
-enamux.com — a site built to match the mark.
+Upon completion, the client shared the work with technology professionals
+in his network unprompted. Their response was unanimous. The brand now
+lives at enamux.com — a site we built to match the mark.
 
 <!-- ─── MOCKUPS ─────────────────────────────────────────────────────────── -->
 
 ::image
-src: img/works/enamux/mockup-1.webp
+src: img/works/enamux/public-home.webp
 caption: Stationery
 ::
 
 ::image
-src: img/works/enamux/mockup-2.webp
+src: img/works/enamux/public-about-1.webp
 caption: Brand collateral
 ::
 
 ::image
-src: img/works/enamux/mockup-3.webp
+src: img/works/enamux/public-about-2.webp
+caption: Website
+::
+
+::image
+src: img/works/enamux/public-project.webp
 caption: Website
 ::
 
 ## Feedback
 
-name: "Enamux Limited"
-role: "Client"
+name: "Ahmed Adekunle Badmus"
+role: "Principal Consultant"
+avatar: "img/works/enamux/client.webp"
 quote: "I put Peter through a rigorous discovery phase, and he was fully committed every step of the way — from moodboard selection through three logo concepts, until I shared with him the foundation of civil engineering: trusses. He came back with a remarkable brand mark, and I knew instantly: that's it! Paired with a web design that feels tailor-made for our new brand identity, the result speaks for itself. All our stakeholders agree — Pacmedia's services are top-notch."

@@ -11,13 +11,17 @@ card_color: "#fff100"
 card_image: "img/works/paris-world/card.webp"
 card_service:
     - "Visual Brand Identity"
-overview: "Paris World Boutique is an Ibadan-based wholesale and retail fashion destination offering clothing, shoes, bags, and accessories for style-conscious young adults and middle-income earners who refuse to compromise quality for affordability."
+overview: "Paris World Boutique is an Ibadan-based wholesale and retail
+fashion destination offering clothing, shoes, bags, and accessories for
+style-conscious young adults and middle-income earners who refuse to
+compromise quality for affordability."
 ---
 
 ## Brief
 
 The existing mark — an ornate Eiffel Tower illustration — couldn't hold up
-across packaging, signage, or digital at the scale the business was moving into.
+across packaging, signage, or digital at the scale the business was moving
+into.
 
 ---
 
@@ -26,9 +30,9 @@ dated mark that can't scale or fit where the business stands today.
 
 ---
 
-A mark that had served the storefront for years was quietly becoming a liability.
-The new direction had to earn its place at every scale — from a 14mm badge to a
-6-metre fascia — without compromise.
+A mark that had served the storefront for years was quietly becoming a
+liability. The new direction had to earn its place at every scale — from a
+14mm badge to a 6-metre fascia — without compromise.
 
 <!-- ─── OLD & NEW LOGO ─────────────────────────────────────────────────── -->
 
@@ -129,4 +133,4 @@ caption: Storefront signage
 
 name: "Paris World"
 role: "Owner"
-quote: "Every time I walk into our store, I still stare at the logo like it's brand new — even though it's been over a year. I'm proud of our new look. It's bold on our fascia, and it makes perfect sense on every surface it touches."
+quote: "Even a year on, I still catch myself staring at our logo like it's brand new every time I walk into the store. I'm genuinely proud of our new look — bold on the fascia, and it just makes sense on every surface it touches."
