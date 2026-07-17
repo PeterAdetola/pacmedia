@@ -3,7 +3,6 @@ title: "Enamux"
 client: "Enamux"
 service: "Visual Brand Identity & Web development"
 industry: "Structural Engineering"
-year: "2024"
 type: "brand"
 order: 1
 live_url: "https://enamux.com"
