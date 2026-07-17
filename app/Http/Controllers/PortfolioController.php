@@ -102,10 +102,8 @@ class PortfolioController extends Controller
         $pageTitle = $project['title'];
         $pageIcon  = 'ph-briefcase';
 
-        // OG meta for this project page
         $metaTitle = $project['title'] . ' — Pacmedia';
 
-        // Prefer the pullquote (the assignment) over the problem-statement intro
         $metaDescription = $project['tagline'] ?? null;
         if (empty($metaDescription)) {
             foreach ($project['blocks'] as $block) {
@@ -117,12 +115,17 @@ class PortfolioController extends Controller
         }
         $metaDescription = $metaDescription ?? $project['brief_intro'] ?? null;
 
-        // Case-insensitive card.jpg check (Linux servers are case-sensitive)
+        // Case-insensitive card.jpg check — now uses whichever filename actually matched
         $cardJpgPath = public_path('img/works/' . $slug . '/card.jpg');
         $cardJpgAlt  = public_path('img/works/' . $slug . '/card.JPG');
-        $metaOgImage = (file_exists($cardJpgPath) || file_exists($cardJpgAlt))
-            ? asset('img/works/' . $slug . '/card.jpg')
-            : asset('img/og-image.jpg');
+
+        if (file_exists($cardJpgPath)) {
+            $metaOgImage = asset('img/works/' . $slug . '/card.jpg');
+        } elseif (file_exists($cardJpgAlt)) {
+            $metaOgImage = asset('img/works/' . $slug . '/card.JPG');   // ← preserves the real casing
+        } else {
+            $metaOgImage = asset('img/og-image.jpg');
+        }
 
         return view('portfolio.show', compact(
             'project', 'pageTitle', 'pageIcon',
