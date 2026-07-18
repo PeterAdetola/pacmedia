@@ -8162,7 +8162,16 @@ form textarea:required:valid {
    breadcrumb. This one opens DOWNWARD (top instead of bottom-fixed)
    because the navbar sits at the top of the page. */
 .inner-nav__dropdown-wrap {
-    position: relative;
+    /*position: relative;*/
+    display: none;
+}
+@media only screen and (min-width: 1200px) {
+    .inner-nav__dropdown-wrap {
+        display: -webkit-inline-box;
+        display: -moz-inline-box;
+        display: -ms-inline-flexbox;
+        display: inline-flex;
+    }
 }
 
 .inner-nav__dropdown-trigger {
