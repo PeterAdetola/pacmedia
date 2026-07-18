@@ -434,3 +434,5 @@ body:has(#brand-discovery) .bottom__background { display: none; }
     font-size: 1.3rem; line-height: 1.5; color: var(--t-muted);
 }
 #brand-discovery .bd-slider-hint i { font-size: 1.6rem; color: var(--t-muted); flex-shrink: 0; margin-top: 0.1rem; }
+
+
