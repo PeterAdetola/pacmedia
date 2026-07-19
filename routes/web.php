@@ -100,7 +100,7 @@ Route::get('/auth/{provider}/callback', [SocialAuthController::class, 'callback'
 
 // ── Content for LLMs ───────────────────────────────────────────────────────────────
 
-Route::get('/content.md', function () {
+Route::get('/content', function () {
     $sections = [];
 
     // Grab ALL .md files directly in resources/markdown/
@@ -197,55 +197,6 @@ Route::get('/show-deploy-log', function () {
     $lines = file($log);
     $last200 = array_slice($lines, -200);
     return response('<pre>' . implode('', $last200) . '</pre>');
-});
-
-Route::get('/debug-content', function () {
-    $results = [];
-
-    // Check if resource_path works
-    $results['resource_path'] = resource_path('markdown');
-
-    // Check if the folder exists
-    $results['folder_exists'] = is_dir(resource_path('markdown'));
-
-    // Check if glob finds files
-    $results['root_files'] = glob(resource_path('markdown/*.md'));
-    $results['work_files'] = glob(resource_path('markdown/works/*.md'));
-
-    return response()->json($results);
-});
-
-Route::get('/debug-content-2', function () {
-    try {
-        $sections = [];
-
-        $rootFiles = glob(resource_path('markdown/*.md'));
-        foreach ($rootFiles as $file) {
-            $slug = pathinfo($file, PATHINFO_FILENAME);
-            $content = file_get_contents($file);
-            $sections[] = "# [{$slug}]\n\n" . $content;
-        }
-
-        $works = glob(resource_path('markdown/works/*.md'));
-        foreach ($works as $file) {
-            $slug = pathinfo($file, PATHINFO_FILENAME);
-            $content = file_get_contents($file);
-            $sections[] = "# [work: {$slug}]\n\n" . $content;
-        }
-
-        $output = implode("\n\n---\n\n", $sections);
-
-        return response($output, 200, [
-            'Content-Type' => 'text/plain; charset=utf-8',
-        ]);
-
-    } catch (\Exception $e) {
-        return response()->json([
-            'error' => $e->getMessage(),
-            'file'  => $e->getFile(),
-            'line'  => $e->getLine(),
-        ]);
-    }
 });
 
 Route::get('/deploy/{token}', function (string $token) {
