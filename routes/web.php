@@ -175,6 +175,21 @@ Route::get('/llms.txt', function () {
 });
 
 // ── Debug routes ──────────────────────────────────────────────────────────────
+Route::get('/purge-cache', function () {
+    // Clear all Laravel caches
+    Artisan::call('cache:clear');
+    Artisan::call('config:clear');
+    Artisan::call('route:clear');
+    Artisan::call('view:clear');
+
+    // Also clear the OPcache if available
+    if (function_exists('opcache_reset')) {
+        opcache_reset();
+    }
+
+    return 'All caches purged.';
+});
+
 Route::get('/system-check', function() {
     return [
         'opcache' => function_exists('opcache_get_status') ? 'Enabled' : 'Disabled',
