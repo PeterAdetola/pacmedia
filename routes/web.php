@@ -199,6 +199,22 @@ Route::get('/show-deploy-log', function () {
     return response('<pre>' . implode('', $last200) . '</pre>');
 });
 
+Route::get('/debug-content', function () {
+    $results = [];
+
+    // Check if resource_path works
+    $results['resource_path'] = resource_path('markdown');
+
+    // Check if the folder exists
+    $results['folder_exists'] = is_dir(resource_path('markdown'));
+
+    // Check if glob finds files
+    $results['root_files'] = glob(resource_path('markdown/*.md'));
+    $results['work_files'] = glob(resource_path('markdown/works/*.md'));
+
+    return response()->json($results);
+});
+
 Route::get('/deploy/{token}', function (string $token) {
     if ($token !== env('DEPLOY_TOKEN')) {
         abort(403);
