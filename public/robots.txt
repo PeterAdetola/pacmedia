@@ -1,2 +1,28 @@
 User-agent: *
-Disallow:
+Allow: /
+Disallow: /admin
+Disallow: /nova
+Disallow: /*.env
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: GoogleOther
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+Sitemap: https://thepacmedia.com/sitemap.xml

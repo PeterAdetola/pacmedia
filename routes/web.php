@@ -98,6 +98,84 @@ Route::get('/auth/{provider}', [SocialAuthController::class, 'redirect'])
 Route::get('/auth/{provider}/callback', [SocialAuthController::class, 'callback']);
 
 
+// ── Content for LLMs ───────────────────────────────────────────────────────────────
+
+Route::get('/content.md', function () {
+    $sections = [];
+
+    // Grab ALL .md files directly in resources/markdown/
+    $rootFiles = glob(resource_path('markdown/*.md'));
+    foreach ($rootFiles as $file) {
+        $slug    = pathinfo($file, PATHINFO_FILENAME);
+        $content = file_get_contents($file);
+        $sections[] = "# [{$slug}]\n\n" . $content;
+    }
+
+    // Grab ALL portfolio works in resources/markdown/works/
+    $works = glob(resource_path('markdown/works/*.md'));
+    foreach ($works as $file) {
+        $slug    = pathinfo($file, PATHINFO_FILENAME);
+        $content = file_get_contents($file);
+        $sections[] = "# [work: {$slug}]\n\n" . $content;
+    }
+
+    return response(implode("\n\n---\n\n", $sections), 200, [
+        'Content-Type' => 'text/plain; charset=utf-8',
+    ]);
+});
+
+// Individual work files
+Route::get('/content/works/{slug}.md', function ($slug) {
+    $path = resource_path("markdown/works/{$slug}.md");
+    abort_if(!file_exists($path), 404);
+
+    return response(file_get_contents($path), 200, [
+        'Content-Type' => 'text/plain; charset=utf-8',
+    ]);
+});
+
+// Individual root markdown files
+Route::get('/content/{slug}.md', function ($slug) {
+    $path = resource_path("markdown/{$slug}.md");
+    abort_if(!file_exists($path), 404);
+
+    return response(file_get_contents($path), 200, [
+        'Content-Type' => 'text/plain; charset=utf-8',
+    ]);
+});
+
+// llms.txt — full index
+Route::get('/llms.txt', function () {
+    $lines = [
+        "# Pacmedia Creatives",
+        "> Tactical digital studio specializing in brand identity and digital infrastructure.",
+        "",
+        "## Full Content (all pages aggregated)",
+        "- [All Content](https://thepacmedia.com/content.md)",
+        "",
+        "## Pages",
+    ];
+
+    $rootFiles = glob(resource_path('markdown/*.md'));
+    foreach ($rootFiles as $file) {
+        $slug    = pathinfo($file, PATHINFO_FILENAME);
+        $lines[] = "- [{$slug}](https://thepacmedia.com/content/{$slug}.md)";
+    }
+
+    $lines[] = "";
+    $lines[] = "## Portfolio Works";
+
+    $works = glob(resource_path('markdown/works/*.md'));
+    foreach ($works as $file) {
+        $slug    = pathinfo($file, PATHINFO_FILENAME);
+        $lines[] = "- [{$slug}](https://thepacmedia.com/content/works/{$slug}.md)";
+    }
+
+    return response(implode("\n", $lines), 200, [
+        'Content-Type' => 'text/plain; charset=utf-8',
+    ]);
+});
+
 // ── Debug routes ──────────────────────────────────────────────────────────────
 Route::get('/system-check', function() {
     return [
