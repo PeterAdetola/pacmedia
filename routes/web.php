@@ -125,20 +125,18 @@ Route::get('/content', function () {
 });
 
 // Individual work files
-Route::get('/content/works/{slug}.md', function ($slug) {
+Route::get('/content/works/{slug}', function ($slug) {
     $path = resource_path("markdown/works/{$slug}.md");
     abort_if(!file_exists($path), 404);
-
     return response(file_get_contents($path), 200, [
         'Content-Type' => 'text/plain; charset=utf-8',
     ]);
 });
 
 // Individual root markdown files
-Route::get('/content/{slug}.md', function ($slug) {
+Route::get('/content/{slug}', function ($slug) {
     $path = resource_path("markdown/{$slug}.md");
     abort_if(!file_exists($path), 404);
-
     return response(file_get_contents($path), 200, [
         'Content-Type' => 'text/plain; charset=utf-8',
     ]);
