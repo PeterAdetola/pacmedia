@@ -176,6 +176,58 @@ Route::get('/llms.txt', function () {
 
 // ── Debug routes ──────────────────────────────────────────────────────────────
 
+Route::get('/llms', function () {
+    $works = glob(resource_path('markdown/works/*.md'));
+    $workLinks = '';
+    foreach ($works as $file) {
+        $slug = pathinfo($file, PATHINFO_FILENAME);
+        $workLinks .= "- [Portfolio Works](https://thepacmedia.com/content/works/{$slug})\n";
+    }
+
+    $content = <<<EOT
+# Pacmedia Creatives
+> Pacmedia Creatives is a Lagos-based brand and digital studio that forges elite identities and engineers mission-critical digital infrastructure for ambitious brands worldwide.
+
+## About
+- Founded by Shores (Peter Adetola)
+- Location: Lagos, Nigeria — serving clients worldwide
+- Tagline: "Forging Identity. Engineering Digital Infrastructure."
+- Website: https://thepacmedia.com
+- Contact: reach@thepacmedia.com
+
+## Services
+- Brand Identity Forging
+- Digital Infrastructure Engineering
+- Laravel Web Development
+- AI Automation Systems
+- Custom CRM & Inventory Solutions
+- UI/UX Interface Craftsmanship
+- Performance Engineering
+
+## Core Pages
+- [Home](https://thepacmedia.com/)
+- [Services](https://thepacmedia.com/services)
+- [Work](https://thepacmedia.com/work)
+- [Contact](https://thepacmedia.com/contact)
+
+## LLM Context Streams
+- [Full Site Context](https://thepacmedia.com/content): Complete compiled text for all core pages and service offerings.
+{$workLinks}
+## Crawlable Content
+- [All Content Aggregated](https://thepacmedia.com/content)
+- [Sitemap](https://thepacmedia.com/sitemap.xml)
+EOT;
+
+    return response($content, 200, [
+        'Content-Type' => 'text/plain; charset=utf-8',
+        'Cache-Control' => 'no-cache, no-store, must-revalidate',
+    ]);
+});
+
+Route::get('/llms.txt', function () {
+    return redirect('/llms', 301);
+});
+
 Route::get('/system-check', function() {
     return [
         'opcache' => function_exists('opcache_get_status') ? 'Enabled' : 'Disabled',

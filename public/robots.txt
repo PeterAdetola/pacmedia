@@ -26,3 +26,5 @@ User-agent: Bytespider
 Allow: /
 
 Sitemap: https://thepacmedia.com/sitemap.xml
+
+X-Robots-LLM: https://thepacmedia.com/llms
