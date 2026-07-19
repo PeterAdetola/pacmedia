@@ -215,6 +215,39 @@ Route::get('/debug-content', function () {
     return response()->json($results);
 });
 
+Route::get('/debug-content-2', function () {
+    try {
+        $sections = [];
+
+        $rootFiles = glob(resource_path('markdown/*.md'));
+        foreach ($rootFiles as $file) {
+            $slug = pathinfo($file, PATHINFO_FILENAME);
+            $content = file_get_contents($file);
+            $sections[] = "# [{$slug}]\n\n" . $content;
+        }
+
+        $works = glob(resource_path('markdown/works/*.md'));
+        foreach ($works as $file) {
+            $slug = pathinfo($file, PATHINFO_FILENAME);
+            $content = file_get_contents($file);
+            $sections[] = "# [work: {$slug}]\n\n" . $content;
+        }
+
+        $output = implode("\n\n---\n\n", $sections);
+
+        return response($output, 200, [
+            'Content-Type' => 'text/plain; charset=utf-8',
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => $e->getMessage(),
+            'file'  => $e->getFile(),
+            'line'  => $e->getLine(),
+        ]);
+    }
+});
+
 Route::get('/deploy/{token}', function (string $token) {
     if ($token !== env('DEPLOY_TOKEN')) {
         abort(403);
