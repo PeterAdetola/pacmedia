@@ -236,7 +236,7 @@
                                                 <div class="col-12 col-xl-8">
                                                     <div class="pf-feedback">
                                                         <div class="pf-feedback__header">
-                                                            <div class="pf-feedback__avatar">
+                                                            <div class="pf-feedback__avatar mb-3">
                                                                 @if (!empty($block['avatar']))
                                                                     <img src="{{ asset($block['avatar']) }}" alt="{{ $block['name'] }}">
                                                                 @else
