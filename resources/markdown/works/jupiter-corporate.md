@@ -118,10 +118,7 @@ hero: "img/works/jupiter-corporate/jl-hero.webp"
 hero_mobile: "img/works/jupiter-corporate/jl-hero-mobile.webp"
 live_url: "https://thejupiterlegal.com"
 live_url_label: "Visit website"
-description: "A year after Jupiter Corporate, the same client returned with
-a new brief — a separate legal practice built on the same J-mark. Gold
-replaced orange. The weight deepened. The website shifted from energetic
-dark tones to a refined, counsel-grade register."
+description: "A year after Jupiter Corporate, our client returned with a new brief — a separate legal practice built on the same J-mark. Gold replaced orange. The weight deepened. The website shifted from energetic dark tones to a refined, counsel-grade register." 
 colour_note: "Where Corporate is orange, Legal is gold — the right signal
 for a practice advising on banking, fintech, real estate, and public sector
 mandates."

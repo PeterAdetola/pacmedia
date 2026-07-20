@@ -131,6 +131,7 @@ caption: Storefront signage
 
 ## Feedback
 
-name: "Paris World"
-role: "Owner"
+name: "Kemi Omisore"
+role: "Founder"
+avatar: "img/works/paris-world/client.webp"
 quote: "Even a year on, I still catch myself staring at our logo like it's brand new every time I walk into the store. I'm genuinely proud of our new look — bold on the fascia, and it just makes sense on every surface it touches."
