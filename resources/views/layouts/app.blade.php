@@ -18,7 +18,7 @@
     <meta property="og:type" content="website"/>
     <meta property="og:site_name" content="Pacmedia Creatives"/>
     <meta property="og:title" content="{{ $metaTitle ?? 'Pacmedia Creatives - Forging Identity. Engineering Digital Infrastructure' }}"/>
-    <meta property="og:description" content="{{ $metaDescription ?? 'Forging Digital Prestige. We engineer high-performance brand identities and digital infrastructure for companies that refuse to blend in.' }}"/>
+    <meta property="og:description" content="{{ $metaDescription ?? 'Built To Endure. We engineer high-performance brand identities and digital infrastructure for companies that refuse to blend in.' }}"/>
     <meta property="og:url" content="{{ url()->current() }}"/>
     <meta property="og:image" content="{{ $metaOgImage ?? asset('img/og-image.jpg') }}"/>
     <meta property="og:image:secure_url" content="{{ $metaOgImage ?? asset('img/og-image.jpg') }}"/>
