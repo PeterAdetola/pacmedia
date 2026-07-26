@@ -7,10 +7,13 @@ Disallow: /*.env
 User-agent: GPTBot
 Allow: /
 
-User-agent: Claude-Web
+User-agent: ClaudeBot
 Allow: /
 
-User-agent: anthropic-ai
+User-agent: Claude-User
+Allow: /
+
+User-agent: Claude-SearchBot
 Allow: /
 
 User-agent: PerplexityBot
@@ -26,5 +29,3 @@ User-agent: Bytespider
 Allow: /
 
 Sitemap: https://thepacmedia.com/sitemap.xml
-
-X-Robots-LLM: https://thepacmedia.com/llms

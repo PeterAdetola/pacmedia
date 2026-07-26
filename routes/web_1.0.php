@@ -2,13 +2,11 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Str;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\PortfolioController;
 use App\Http\Controllers\LlmsFullController;
 use App\Http\Controllers\BrandDiscoveryController;
-use Symfony\Component\Yaml\Yaml;
 
 // ── Llms Controller ────────────────────────────────
 Route::get('/llms-full.txt', [LlmsFullController::class, 'index']);
@@ -146,65 +144,36 @@ Route::get('/content/{slug}', function ($slug) {
 
 // llms.txt — full index
 Route::get('/llms.txt', function () {
-
-    // ── Parse services.md for live service titles/descriptions/slugs ────────
-    $servicesRaw   = file_get_contents(resource_path('markdown/services.md'));
-    $serviceBlocks = preg_split('/\n(?=# )/', trim($servicesRaw));
-    $serviceLines  = '';
-
-    foreach ($serviceBlocks as $block) {
-        $lines = array_values(array_filter(
-            array_map('trim', explode("\n", $block)),
-            fn ($l) => $l !== ''
-        ));
-
-        $title = trim(str_replace(['#', '<br>'], ['', ' '], $lines[0] ?? ''));
-        $description = $lines[1] ?? '';
-
-        preg_match('/slug:\s*(.+)/', $block, $m);
-        $slug = trim($m[1] ?? '');
-
-        $serviceLines .= "- [{$title}](https://thepacmedia.com/services/{$slug}): {$description}\n";
+    $works = glob(resource_path('markdown/works/*.md'));
+    $workLinks = '';
+    foreach ($works as $file) {
+        $slug  = pathinfo($file, PATHINFO_FILENAME);
+        $title = Str::of($slug)->replace(['-', '_'], ' ')->title();
+        $workLinks .= "- [{$title}](https://thepacmedia.com/work/{$slug}): See case study\n";
     }
-
-    // ── Parse each work file's YAML frontmatter for case study summaries ───
-    $workFiles = glob(resource_path('markdown/works/*.md'));
-    $workLines = '';
-
-    foreach ($workFiles as $file) {
-        $slug = pathinfo($file, PATHINFO_FILENAME);
-        $raw  = file_get_contents($file);
-
-        preg_match('/^---\n(.*?)\n---/s', $raw, $m);
-        $frontmatter = \Symfony\Component\Yaml\Yaml::parse($m[1] ?? '');
-
-        $title    = $frontmatter['title'] ?? Str::of($slug)->replace(['-', '_'], ' ')->title();
-        $overview = $frontmatter['overview'] ?? '';
-
-        $workLines .= "- [{$title}](https://thepacmedia.com/work/{$slug}): {$overview}\n";
-    }
-
-    // ── Pull the blockquote straight from about.md's opening paragraph ─────
-    $aboutRaw    = file_get_contents(resource_path('markdown/about.md'));
-    $aboutIntro  = trim(explode('---', $aboutRaw)[0]);
-    $blockquote  = trim(explode("\n\n", $aboutIntro)[0]);
 
     $content = <<<EOT
-# Pacmedia
+# Pacmedia Creatives
+> Pacmedia Creatives is a Lagos-based brand and digital studio that forges elite identities and engineers mission-critical digital infrastructure for ambitious brands worldwide.
 
-> {$blockquote}
+## About
+- Founded by Shores (Peter Adetola)
+- Location: Lagos, Nigeria — serving clients worldwide
+- Tagline: "Forging Identity. Engineering Digital Infrastructure."
+- Contact: reach@thepacmedia.com
 
 ## Services
-{$serviceLines}
-## Case Studies
-{$workLines}
-## About
-- [Home](https://thepacmedia.com/): Studio overview (about, process, and how to start a project — all homepage sections, no separate URLs needed).
-- [FAQs](https://thepacmedia.com/faqs): Getting started, pricing, timelines, revisions, and process — organised by topic.
+- [Brand Architecture](https://thepacmedia.com/services/brand-architecture): Brand identity and positioning
+- [Interface Craftsmanship](https://thepacmedia.com/services/interface-craftsmanship): UI/UX design and build
+- [Performance Engineering](https://thepacmedia.com/services/performance-engineering): Speed and infrastructure optimization
+- [Intelligent Automation](https://thepacmedia.com/services/intelligent-automation): AI and workflow automation systems
 
-## Legal
-- [Terms & Conditions](https://thepacmedia.com/terms)
-- [Privacy Policy](https://thepacmedia.com/privacy)
+## Case Studies
+{$workLinks}
+## Resources
+- [FAQs](https://thepacmedia.com/faqs): Answers to common questions about our services and process
+- [Terms](https://thepacmedia.com/terms)
+- [Privacy](https://thepacmedia.com/privacy)
 
 ## Full Content
 - [llms-full.txt](https://thepacmedia.com/llms-full.txt): Complete page content for deeper context
@@ -216,5 +185,44 @@ EOT;
     ]);
 });
 
+
+// ── Debug routes ──────────────────────────────────────────────────────────────
+
+Route::get('/system-check', function() {
+    return [
+        'opcache' => function_exists('opcache_get_status') ? 'Enabled' : 'Disabled',
+        'queue_count' => DB::table('jobs')->count(),
+        'last_log' => file_exists(storage_path('logs/laravel.log')) ? date('Y-m-d H:i:s', filemtime(storage_path('logs/laravel.log'))) : 'N/A'
+    ];
+})->middleware('auth.admin');
+
+Route::get('/clear-cache', function () {
+    Artisan::call('route:clear');
+    Artisan::call('config:clear');
+    Artisan::call('cache:clear');
+    return response()->json(['done' => true]);
+});
+
+Route::get('/show-deploy-log', function () {
+    $log = '/home/thepacme/domains/thepacmedia.com/pacmedia/storage/logs/deployment.log';
+    $lines = file($log);
+    $last200 = array_slice($lines, -200);
+    return response('<pre>' . implode('', $last200) . '</pre>');
+});
+
+Route::get('/deploy/{token}', function (string $token) {
+    if ($token !== env('DEPLOY_TOKEN')) {
+        abort(403);
+    }
+
+    $base = base_path();
+    $output = shell_exec("cd {$base} && php artisan route:clear 2>&1");
+    $output .= shell_exec("cd {$base} && php artisan config:clear 2>&1");
+    $output .= shell_exec("cd {$base} && git pull origin main 2>&1");
+    $output .= shell_exec("cd {$base} && php artisan migrate --force 2>&1");
+    $output .= shell_exec("cd {$base} && php artisan optimize 2>&1");
+
+    return '<pre>' . $output . '</pre>';
+})->middleware('throttle:3,1');
 
 require __DIR__.'/auth.php';
