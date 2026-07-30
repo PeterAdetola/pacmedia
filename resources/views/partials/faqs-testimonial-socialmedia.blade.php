@@ -58,7 +58,7 @@
                                 <div class="faq-lines__divider"></div>
                                 <ul class="faq-lines d-flex flex-column">
 
-                                    @foreach($faqs as $index => $faq)
+                                    @foreach($homeFaqs as $index => $faq)
                                         <li class="faq-lines__item">
                                             <div class="faq-lines__trigger">
                                                 <h4 class="animate-in-up">

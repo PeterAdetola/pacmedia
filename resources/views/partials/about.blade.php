@@ -9,7 +9,7 @@
                     <div class="inner__name">
                         <div class="content__block name-block">
                                 <span class="section-name icon-right animate-in-up">
-                                    <span class="section-name-caption">The Squad</span>
+                                    <span class="section-name-caption">The Unit</span>
                                     <i class="ph ph-arrow-down-right"></i>
                                 </span>
                         </div>

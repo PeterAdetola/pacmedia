@@ -159,4 +159,4 @@ caption: Legal — brand collateral
 name: "Enore Sandra Olu-Ayoola. Esq"
 role: "Founder"
 avatar: "img/works/jupiter-corporate/client.webp"
-quote: "I love the simplicity of our logo — such a contrast to the brand mark we outgrew. I wouldn't change a thing about it, not even for our sister brand. Peter did an excellent job on Jupiter Corporate, and when we returned for the sister brand, he exceeded expectations yet again. Pacmedia are truly masters of their craft."
+quote: "I love the simplicity of our logo — such a contrast to the brand mark we outgrew. I wouldn't change a thing about it, not even for our sister brand. Peter did an excellent job on Jupiter Corporate, and when we returned for the sister brand, he exceeded expectations yet again."

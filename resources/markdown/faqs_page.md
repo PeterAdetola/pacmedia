@@ -3,19 +3,19 @@
 ---
 WORKING WITH US
 ---
-How do I get started with Pacmedia?
-Everything begins with a Tactical Briefing — a consultation where we learn about your business, goals, and where you're headed. You can initiate this directly on the website. From there, if it's the right fit, we'll move forward with onboarding. We don't take on every project — we take on the right ones.
+How do I get started with Pacmedia? [home]
+Everything begins with an Initiate Briefing — a consultation where we learn about your business, goals, and where you're headed. You can initiate this directly on the website. From there, if it's the right fit, we'll move forward with onboarding. We don't take on every project — we take on the right ones.
 
 ---
-What makes you selective? How do you vet partners?
+What makes you selective? How do you vet partners? [home]
 We limit our active projects intentionally so every client gets the full weight of our attention — not a template and a handoff. We look for founders and businesses that are serious about their brand, understand the value of well-engineered digital systems, and have a clear direction they're building toward. If we're not the right fit for your brief, we'll tell you honestly and point you in the right direction.
 
 ---
-Do you work with clients outside Nigeria?
+Do you work with clients outside Nigeria? [home]
 Yes — and increasingly so. Our entire process is built to work remotely: discovery, approvals, feedback, and delivery all happen through structured digital touchpoints. Time zone differences are manageable; we coordinate around your schedule. All project communication and invoicing is conducted in English, and payments are handled in USD.
 
 ---
-How long does a typical project take?
+How long does a typical project take? [home]
 Timelines depend on the scope. As a general guide: Brand Identity projects run 2–4 weeks from discovery to final delivery. Website design and development projects typically run 4–8 weeks depending on complexity. Web applications (inventory systems, CRMs, custom platforms) are scoped individually — usually 6–16 weeks. All timelines are confirmed during the briefing stage and tracked transparently throughout the project.
 
 ---
@@ -57,7 +57,7 @@ We can advise on and set up hosting environments, configure domains, and deploy 
 ---
 PROJECT TRACKING & COMMUNICATION
 ---
-How will I know where my project stands at any given time?
+How will I know where my project stands at any given time? [home]
 Every active client has access to a project dashboard inside the client portal. It shows exactly what has been completed, what's currently in progress, and what comes next — no need to chase us for updates. Major milestones require your sign-off before we proceed, so you're always in the loop.
 
 ---
@@ -68,12 +68,12 @@ Project communication is consolidated inside the client portal to keep everythin
 PRICING & PAYMENTS
 ---
 How much does a project cost?
-Project investment is scoped during the Tactical Briefing once we understand the full requirements. What we can say: we price for quality and sustainability, not to win a race to the bottom. If budget is a concern, raise it in the briefing and we'll tell you honestly what's achievable.
+Project investment is scoped during the Initiate Briefing once we understand the full requirements. What we can say: we price for quality and sustainability, not to win a race to the bottom. If budget is a concern, raise it in the briefing and we'll tell you honestly what's achievable.
 
 ---
 What are your payment terms?
 Projects are typically split into milestone-based payments: a deposit to commence, an interim payment at an agreed midpoint, and a final payment before delivery. The exact structure is confirmed in your project agreement. No work proceeds without a signed agreement and cleared deposit.
 
 ---
-Do you offer ongoing retainers or post-project support?
+Do you offer ongoing retainers or post-project support? [home]
 Yes. For clients who want continued design support, application maintenance, or iterative development after the initial project, we offer structured retainer arrangements. These are scoped individually based on the volume and nature of work required. Existing clients get priority access to our capacity.

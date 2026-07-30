@@ -143,39 +143,63 @@ class HomeController extends Controller
         }
 
         // ------------------------------------------------
-        // FAQS — resources/markdown/faqs.md
+        // FAQS — single source: resources/markdown/faqs_page.md
         // Format:
-        //   # Section Title
-        //   ## Subtitle
+        //   # Page Title|Subtitle
         //   ---
-        //   Question
+        //   SECTION NAME
+        //   ---
+        //   Question [home]   <- [home] tag optional, marks homepage inclusion
         //   Answer
         //   (repeat)
         // ------------------------------------------------
-                $faqsRaw = file_get_contents(resource_path('markdown/faqs.md'));
-                $faqParts = array_map('trim', explode('---', $faqsRaw));
+        $faqsRaw = file_get_contents(resource_path('markdown/faqs_page.md'));
+        $faqParts = array_map('trim', explode('---', $faqsRaw));
 
-        // First block contains title and subtitle
-                $faqHeader = array_shift($faqParts);
-                $faqHeaderLines = array_values(array_filter(
-                    array_map('trim', explode("\n", $faqHeader))
-                ));
-                $faqTitle = str_replace('|', '<br>', ltrim($faqHeaderLines[0] ?? 'FAQs', '# '));
-                $faqSubtitle = ltrim($faqHeaderLines[1] ?? '', '## ');
+        // First block is page title/subtitle
+        $faqHeader = array_shift($faqParts);
+        $faqHeaderLines = array_values(array_filter(array_map('trim', explode("\n", $faqHeader))));
+        $faqPageTitle = str_replace('|', '<br>', ltrim($faqHeaderLines[0] ?? 'FAQs', '# '));
 
-        // Remaining blocks are question/answer pairs
-                $faqs = [];
-                foreach ($faqParts as $block) {
-                    $lines = array_values(array_filter(
-                        array_map('trim', explode("\n", $block))
-                    ));
-                    if (count($lines) >= 2) {
-                        $faqs[] = [
-                            'question' => $lines[0],
-                            'answer'   => implode(' ', array_slice($lines, 1)),
-                        ];
-                    }
+        $faqs = [];        // full page, grouped by section
+        $homeFaqs = [];    // homepage subset only
+        $currentSection = null;
+
+        foreach ($faqParts as $block) {
+            $lines = array_values(array_filter(array_map('trim', explode("\n", $block))));
+
+            if (count($lines) === 0) {
+                continue;
+            }
+
+            // Section headers are single-line blocks in ALL CAPS
+            if (count($lines) === 1 && $lines[0] === strtoupper($lines[0])) {
+                $currentSection = $lines[0];
+                continue;
+            }
+
+            if (count($lines) >= 2) {
+                $question = $lines[0];
+                $isHome = false;
+
+                if (str_ends_with($question, '[home]')) {
+                    $isHome = true;
+                    $question = trim(str_replace('[home]', '', $question));
                 }
+
+                $entry = [
+                    'section'  => $currentSection,
+                    'question' => $question,
+                    'answer'   => implode(' ', array_slice($lines, 1)),
+                ];
+
+                $faqs[] = $entry;
+
+                if ($isHome) {
+                    $homeFaqs[] = $entry;
+                }
+            }
+        }
 
         // ------------------------------------------------
         // CONTACT — resources/markdown/contact.md
@@ -183,6 +207,8 @@ class HomeController extends Controller
         // ------------------------------------------------
         $contactRaw = file_get_contents(resource_path('markdown/contact.md'));
         $contactIntro = $this->converter->convert($contactRaw);
+        $faqTitle = 'Are you<br>curious too?';
+        $faqSubtitle = 'We have answers';
 
         return view('index', compact(
             'heroStatus',
@@ -198,7 +224,7 @@ class HomeController extends Controller
             'services',
             'faqTitle',
             'faqSubtitle',
-            'faqs',
+            'homeFaqs',
             'contactIntro'
         ), ['isHomePage' => true]
         );

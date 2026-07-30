@@ -118,4 +118,4 @@ caption: Website
 name: "Ahmed Adekunle Badmus"
 role: "Principal Consultant"
 avatar: "img/works/enamux/client.webp"
-quote: "I put Peter through a rigorous discovery phase, and he was fully committed every step of the way — from moodboard selection through three logo concepts, until I shared with him the foundation of civil engineering: trusses. He came back with a remarkable brand mark, and I knew instantly: that's it! Paired with a web design that feels tailor-made for our new brand identity, the result speaks for itself. All our stakeholders agree — Pacmedia's services are top-notch."
+quote: "I put Peter through a rigorous discovery phase, and he was fully committed every step of the way — from moodboard selection through three logo concepts, until I shared with him the foundation of civil engineering: trusses. He came back with a remarkable brand mark, and I knew instantly: that's it! Paired with a web design that feels tailor-made for our new brand identity, the result speaks for itself."

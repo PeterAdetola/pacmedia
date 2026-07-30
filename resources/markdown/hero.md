@@ -1,10 +1,10 @@
 
 ---
-Elevating Your Identity
-Performance Engineering
-Automating Busywork
+Positioning Before Pixels
+Engineering First Impressions
+Systems, Not Templates
 Designing for Impact
-Accelerating Growth
+Infrastructure That Outlasts Trends
 ---
 Built To Endure
 ---

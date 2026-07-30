@@ -36,7 +36,10 @@ class FaqController extends Controller
                     $groups[$current] = [];
                 }
             } elseif (count($lines) >= 2) {
-                $question = $lines[0];
+                // Strip the [home] tag here — this block feeds the full FAQ
+                // page, so the tag (used only to flag homepage inclusion
+                // elsewhere) should never be visible in the rendered question.
+                $question = trim(str_replace('[home]', '', $lines[0]));
                 $answer   = implode(' ', array_slice($lines, 1));
                 if ($current) {
                     $groups[$current][] = [
