@@ -428,29 +428,21 @@ class InvoiceController extends Controller
     {
         $request->validate(['amount' => 'required|numeric|min:0.01']);
 
-        $invoice->increment('paid_amount', $request->amount);
-        $invoice->refresh();
-        $invoice->loadMissing(['completedItems', 'subscriptionItems', 'proposedItems']);
+        // Load relationships BEFORE updating
+        $invoice->load(['completedItems', 'subscriptionItems', 'proposedItems']);
+
+        // Use Eloquent instead of increment to keep model state clean
+        $invoice->paid_amount = (float) $invoice->paid_amount + (float) $request->amount;
+        $invoice->save();
 
         $outstanding = $invoice->grandOutstanding();
 
-        \Log::info('Payment debug', [
-            'invoice_id'       => $invoice->id,
-            'paid_amount'      => $invoice->paid_amount,
-            'grandOutstanding' => $outstanding,
-            'rounded'          => round($outstanding, 2),
-            'will_mark_paid'   => round($outstanding, 2) <= 0,
-            'current_status'   => $invoice->status,
-        ]);
-
         if (round($outstanding, 2) <= 0) {
-            $result = $invoice->update(['status' => 'paid']);
-            \Log::info('Status update result', [
-                'result'     => $result,
-                'new_status' => $invoice->fresh()->status,
-            ]);
+            $invoice->status = 'paid';
+            $invoice->save();
         } elseif ($invoice->paid_amount > 0) {
-            $invoice->update(['status' => 'partial']);
+            $invoice->status = 'partial';
+            $invoice->save();
         }
 
         return back()->with('success', $invoice->formatAmount($request->amount) . ' payment recorded.');
