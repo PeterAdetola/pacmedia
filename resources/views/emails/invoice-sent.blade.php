@@ -313,16 +313,16 @@
                     @if($invoice->paid_amount > 0)
                         <tr class="detail-row">
                             <td style="padding:14px 20px; border-bottom:1px solid #8f93a1; width:38%;">
-                                <span class="detail-label"
-                                      style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.12em; color:#797d83;">
-                                    Paid
-                                </span>
+            <span class="detail-label"
+                  style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.12em; color:#797d83;">
+                Paid
+            </span>
                             </td>
                             <td style="padding:14px 20px; border-bottom:1px solid #8f93a1;">
-                                <span class="detail-value"
-                                      style="font-size:14px; font-weight:400; color:#151617;">
-                                    &minus; {{ $invoice->formatAmount($invoice->paid_amount) }}
-                                </span>
+            <span class="detail-value"
+                  style="font-size:14px; font-weight:400; color:#151617;">
+                {{ $invoice->formatAmount($invoice->paid_amount) }}
+            </span>
                             </td>
                         </tr>
                     @endif

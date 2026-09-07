@@ -428,18 +428,33 @@ class InvoiceController extends Controller
     {
         $request->validate(['amount' => 'required|numeric|min:0.01']);
 
-        // Load relationships BEFORE updating
         $invoice->load(['completedItems', 'subscriptionItems', 'proposedItems']);
 
-        // Use Eloquent instead of increment to keep model state clean
         $invoice->paid_amount = (float) $invoice->paid_amount + (float) $request->amount;
         $invoice->save();
 
+        \Log::info('After paid_amount save', [
+            'id'         => $invoice->id,
+            'paid_amount' => $invoice->paid_amount,
+            'status'     => $invoice->fresh()->status,
+        ]);
+
         $outstanding = $invoice->grandOutstanding();
+
+        \Log::info('Outstanding calculated', [
+            'outstanding'    => $outstanding,
+            'rounded'        => round($outstanding, 2),
+            'will_mark_paid' => round($outstanding, 2) <= 0,
+        ]);
 
         if (round($outstanding, 2) <= 0) {
             $invoice->status = 'paid';
             $invoice->save();
+
+            \Log::info('After status save', [
+                'status_in_memory' => $invoice->status,
+                'status_in_db'     => $invoice->fresh()->status,
+            ]);
         } elseif ($invoice->paid_amount > 0) {
             $invoice->status = 'partial';
             $invoice->save();
