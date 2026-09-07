@@ -535,7 +535,10 @@ class InvoiceController extends Controller
             $request->input('from_address'),
         );
 
-        $invoice->update(['status' => 'sent']);
+        // Only move to 'sent' if invoice hasn't already been paid or partially paid
+        if (!in_array($invoice->status, ['paid', 'partial'])) {
+            $invoice->update(['status' => 'sent']);
+        }
 
         return back()->with('success', "Invoice #{$invoice->number} sent to {$invoice->client->email}.");
     }
