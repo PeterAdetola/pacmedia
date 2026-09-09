@@ -163,7 +163,7 @@
 
                                     @php
                                         $sectionLabel = match($block['type']) {
-                                            'brief'   => 'The Brief',
+                                            'brief'   => 'The Challenge',
                                             'process' => 'The Process',
                                             'outcome' => 'The Outcome',
                                             default   => $block['label'] ?? ucfirst($block['type']),
